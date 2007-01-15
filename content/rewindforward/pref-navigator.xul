@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://rewindforward/locale/">
+
+<overlay
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script type="application/x-javascript"><![CDATA[
+
+_elementIDs.push('rewindButton');
+_elementIDs.push('fastforwardButton');
+_elementIDs.push('rewindPrevButton');
+_elementIDs.push('fastforwardNextButton');
+
+]]></script>
+
+<vbox id="prefShowButtonsbox">
+	<checkbox id="rewindButton"
+		label="&rewindCmd.label;"
+		prefstring="browser.toolbars.showbutton.rewind"/>
+	<checkbox id="fastforwardButton"
+		label="&fastforwardCmd.label;"
+		prefstring="browser.toolbars.showbutton.fastforward"/>
+	<checkbox id="rewindPrevButton"
+		label="&prevCmd.label;"
+		prefstring="browser.toolbars.showbutton.rewind-prev"/>
+	<checkbox id="fastforwardNextButton"
+		label="&nextCmd.label;"
+		prefstring="browser.toolbars.showbutton.fastforward-next"/>
+	<hbox>
+		<button label="&rewindforward.about.button;"
+			oncommand="window.openDialog('chrome://rewindforward/content/about.xul', '', 'chrome,dialog,modal');"/>
+	</hbox>
+</vbox>
+
+</overlay>

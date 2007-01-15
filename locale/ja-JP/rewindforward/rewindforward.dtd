@@ -1,0 +1,81 @@
+<!ENTITY rewindCmd.label           "巻き戻し">
+<!ENTITY rewindButton.tooltip      "前のドメインまで巻き戻す">
+<!ENTITY rewindButton.tooltip.toEndPoint "ドメインの最初まで巻き戻す">
+<!ENTITY fastforwardCmd.label      "早送り">
+<!ENTITY fastforwardButton.tooltip "次のドメインまで早送りする">
+<!ENTITY fastforwardButton.tooltip.toEndPoint "ドメインの最後まで早送りする">
+<!ENTITY prevCmd.label             "前ページ">
+<!ENTITY prevButton.tooltip        "前のページ（&#37;s）">
+<!ENTITY prevButton.tooltip.blank  "前のページはありません">
+<!ENTITY nextCmd.label             "次ページ">
+<!ENTITY nextButton.tooltip        "次のページ（&#37;s）">
+<!ENTITY nextButton.tooltip.blank  "次のページはありません">
+
+<!ENTITY matchingPatterns.next     "次|進|先|ツギ|つぎへ|next|forward|after|ahead|Next|Forward|After|Ahead|NEXT|FORWARD|AFTER|AHEAD|&gt;&gt;|-&gt;|=&gt;|→|＞">
+<!ENTITY matchingPatterns.prev     "前|戻|モドル|もどる|まえへ|prev|previous|back|return|before|Prev|Previous|Back|Return|Before|PREV|PREVIOUS|BACK|RETURN|BEFORE|&lt;&lt;|&lt;-|&lt;=|←|＜">
+<!ENTITY matchingPatterns.next.blacklist "目次">
+<!ENTITY matchingPatterns.prev.blacklist "トラックバック|trackback|Trackback|TrackBack">
+
+
+<!ENTITY rewindforward.general.tab             "全般">
+
+<!ENTITY rewindforward.override_button.caption "戻る/進む">
+<!ENTITY rewindforward.override_button.back    "「戻る」ボタンを「巻き戻し」ボタンの代わりに使う">
+<!ENTITY rewindforward.override_button.forward "「進む」ボタンを「早送り」ボタンの代わりに使う">
+
+<!ENTITY rewindforward.history.caption            "早送り/巻き戻し">
+<!ENTITY rewindforward.history.fill_history_menu  "ボタンのコンテキストメニューに履歴の項目を表示する">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.enabled  "ドメインの最初のページまで巻き戻す">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.disabled "前のドメインのページまで巻き戻す">
+
+
+<!ENTITY rewindforward.related.tab                "関連付けられたページ">
+<!ENTITY rewindforward.related.caption            "関連付けられたページ">
+<!ENTITY rewindforward.related.find_next_links         "関連づけられたページがある時に「早送り」ボタンを「次のページ」ボタンにする">
+<!ENTITY rewindforward.related.find_prev_links         "関連づけられたページがある時に「巻き戻し」ボタンを「前のページ」ボタンにする">
+<!ENTITY rewindforward.related.virtual_link.enabled "連番のURLを「次のページ」「前のページ」と見なす">
+<!ENTITY rewindforward.related.gonextprev.enabled "ページをスクロールする時、ページの最後で次のページに移動する">
+<!ENTITY rewindforward.related.customizeRules.button  "検索条件の詳細設定">
+
+<!ENTITY rewindforward.icon.caption "「次のページ」「前のページ」ボタンのアイコン（次回起動時より有効）">
+<!ENTITY rewindforward.icon.normal  "アイコン1を使う">
+<!ENTITY rewindforward.icon.another "アイコン2を使う">
+
+
+<!ENTITY rewindforward.rules.title  "次のページ・前のページの検索条件の詳細設定">
+<!ENTITY rewindforward.rules.desc   "次のページ・前のページへのリンクを検索するXPath式を指定して下さい。ドメイン名の指定にはワイルドカード（*）も使えます。">
+<!ENTITY rewindforward.rules.col.domain "ドメイン">
+<!ENTITY rewindforward.rules.col.prev   "前のページ">
+<!ENTITY rewindforward.rules.col.next   "次のページ">
+
+<!ENTITY button.newRule.label    "新しい条件">
+<!ENTITY button.modifyPrev.label "前のページを編集">
+<!ENTITY button.modifyNext.label "次のページを編集">
+<!ENTITY button.delete.label     "削除">
+<!ENTITY button.reset.label      "初期状態に戻す">
+
+<!ENTITY copyDomain.label       "ドメインをコピー">
+<!ENTITY copyDomain.accesskey   "C">
+<!ENTITY copyXPath.label        "式をコピー">
+<!ENTITY copyXPath.accesskey    "X">
+<!ENTITY newRule.label          "新しい条件を登録">
+<!ENTITY newRule.accesskey      "M">
+<!ENTITY modifyPrev.label       "前のページの式を編集">
+<!ENTITY modifyPrev.accesskey   "P">
+<!ENTITY modifyNext.label       "次のページの式を編集">
+<!ENTITY modifyNext.accesskey   "N">
+<!ENTITY delete.label           "削除">
+<!ENTITY delete.accesskey       "D">
+
+
+
+<!ENTITY rewindforward.about.button      "設定">
+
+<!ENTITY rewindforward.about.title       "早送り/巻き戻しボタンについて">
+<!ENTITY rewindforward.about.caption     "バージョン情報">
+<!ENTITY rewindforward.about.name_before "早送り/巻き戻しボタン Ver.">
+<!ENTITY rewindforward.about.name_after  "">
+<!ENTITY rewindforward.about.destributed "http://piro.sakura.ne.jp/">
+<!ENTITY rewindforward.about.uninstall   "アンインストール">
+
+<!ENTITY rewindforward.OK                "OK">

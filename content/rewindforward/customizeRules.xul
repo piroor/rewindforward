@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<!-- this bases on "config.xul" in Firefox -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE dialog SYSTEM "chrome://rewindforward/locale/">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		title="&rewindforward.rules.title;"
+		orient="vertical"
+		onload="onLoad();"
+		onunload="onUnload();"
+		ondialogaccept="window.close();"
+		buttons="accept"
+		width="550"
+		height="400"
+		persist="width height screenX screenY">
+
+<script type="application/x-javascript" src="chrome://global/content/XPCNativeWrapper.js"/>
+<script type="application/x-javascript" src="chrome://rewindforward/content/pXPCNativeWrapper.js"/>
+
+<script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
+<script type="application/x-javascript" src="chrome://rewindforward/content/customizeRules.js"/>
+<script type="application/x-javascript"><![CDATA[
+
+const WINMAN = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
+function opener()
+{
+	return WINMAN.getMostRecentWindow('navigator:browser');
+}
+
+]]></script>
+
+<stringbundle id="stringBundle" src="chrome://rewindforward/locale/rewindforward.properties"/>
+
+<broadcaster id="functions-for-tree" disabled="true"/>
+
+<popup id="rulesContext">
+	<menuitem id="copyDomain"
+		label="&copyDomain.label;"
+		accesskey="&copyDomain.accesskey;"
+		oncommand="copyDomain();"
+		observes="functions-for-tree"/>
+	<menuitem id="copyXPath"
+		label="&copyXPath.label;"
+		accesskey="&copyXPath.accesskey;"
+		oncommand="copyXPath();"
+		observes="functions-for-tree"/>
+
+	<menuseparator/>
+	<menuitem id="newRule"
+		label="&newRule.label;"
+		accesskey="&newRule.accesskey;"
+		oncommand="NewRule();"
+		observes="functions-for-tree"/>
+
+	<menuseparator/>
+	<menuitem id="modifyPrev"
+		label="&modifyPrev.label;"
+		accesskey="&modifyPrev.accesskey;"
+		oncommand="modifySelectedPrev();"
+		observes="functions-for-tree"/>
+	<menuitem id="modifyNext"
+		label="&modifyNext.label;"
+		accesskey="&modifyNext.accesskey;"
+		oncommand="modifySelectedNext();"
+		observes="functions-for-tree"/>
+
+	<menuseparator/>
+	<menuitem id="delete"
+		label="&delete.label;"
+		accesskey="&delete.accesskey;"
+		oncommand="DeleteSelected();"
+		observes="functions-for-tree"/>
+</popup>
+
+<tree id="rulesTree"
+	flex="1"
+	class="plain focusring"
+	seltype="single"
+	enableColumnDrag="true"
+	context="rulesContext"
+	onkeypress="onEnter(event);"
+	onselect="onSelect();">
+	<treecols>
+		<treecol id="domainCol"
+			label="&rewindforward.rules.col.domain;" flex="2"
+			class="sortDirectionIndicator"
+			ignoreincolumnpicker="true"
+			persist="hidden width ordinal sortDirection"/>
+		<splitter class="tree-splitter"/>
+		<treecol id="prevCol"
+			label="&rewindforward.rules.col.prev;" flex="5"
+			class="sortDirectionIndicator"
+			persist="hidden width ordinal sortDirection"/>
+		<splitter class="tree-splitter"/>
+		<treecol id="nextCol"
+			label="&rewindforward.rules.col.next;" flex="5"
+			class="sortDirectionIndicator"
+			persist="hidden width ordinal sortDirection"/>
+	</treecols>
+	<treechildren id="rulesTreeBody"
+		ondblclick="onTreeClick(event);"/>
+</tree>
+
+<spacer style="height:0.5em"/>
+
+<box orient="horizontal" align="center">
+	<button id="deleteButton"
+		label="&button.delete.label;"
+		oncommand="DeleteSelected();"
+		observes="functions-for-tree"/>
+	<spacer flex="1"/>
+	<button id="newRuleButton"
+		label="&button.newRule.label;"
+		oncommand="NewRule();"/>
+	<button id="modifyPrevButton"
+		label="&button.modifyPrev.label;"
+		oncommand="modifySelectedPrev();"
+		observes="functions-for-tree"/>
+	<button id="modifyNextButton"
+		label="&button.modifyNext.label;"
+		oncommand="modifySelectedNext();"
+		observes="functions-for-tree"/>
+</box>
+<box orient="horizontal" align="center">
+	<button id="resetButton"
+		label="&button.reset.label;"
+		oncommand="reset();"/>
+	<spacer flex="1"/>
+</box>
+
+
+</dialog>

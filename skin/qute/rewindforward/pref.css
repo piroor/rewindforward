@@ -1,0 +1,16 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* If the skin has no other style, use this:
+#useAnotherIconsGroup {
+	visibility: collapse;
+}
+*/
+
+#useAnotherIcons radio[value="false"] {
+	list-style-image: url("chrome://rewindforward/skin/buttons-small2.png");
+	-moz-image-region: rect(0px 80px 20px 60px);
+}
+#useAnotherIcons radio[value="true"] {
+	list-style-image: url("chrome://rewindforward/skin/buttons-small.png");
+	-moz-image-region: rect(0px 80px 20px 60px);
+}

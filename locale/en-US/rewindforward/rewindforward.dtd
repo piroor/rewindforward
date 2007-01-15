@@ -1,0 +1,81 @@
+<!ENTITY rewindCmd.label           "Rewind">
+<!ENTITY rewindButton.tooltip      "Rewind to the previous domain">
+<!ENTITY rewindButton.tooltip.toEndPoint "Rewind to the start of the domain">
+<!ENTITY fastforwardCmd.label      "Fastforward">
+<!ENTITY fastforwardButton.tooltip "Forward to the next domain">
+<!ENTITY fastforwardButton.tooltip.toEndPoint "Forward to the end of the domain">
+<!ENTITY prevCmd.label             "Prev.">
+<!ENTITY prevButton.tooltip        "Previous page (&#37;s)">
+<!ENTITY prevButton.tooltip.blank  "No Previous page">
+<!ENTITY nextCmd.label             "Next">
+<!ENTITY nextButton.tooltip        "Next page (&#37;s)">
+<!ENTITY nextButton.tooltip.blank  "No Next page">
+
+<!ENTITY matchingPatterns.next     "next|forward|after|ahead|Next|Forward|After|Ahead|NEXT|FORWARD|AFTER|AHEAD|&gt;&gt;|-&gt;|=&gt;">
+<!ENTITY matchingPatterns.prev     "prev|previous|back|return|before|Prev|Previous|Back|Return|Before|PREV|PREVIOUS|BACK|RETURN|BEFORE|&lt;&lt;|&lt;-|&lt;=">
+<!ENTITY matchingPatterns.next.blacklist "">
+<!ENTITY matchingPatterns.prev.blacklist "trackback|Trackback|TrackBack">
+
+
+<!ENTITY rewindforward.general.tab             "General">
+
+<!ENTITY rewindforward.override_button.caption "Back/Forward">
+<!ENTITY rewindforward.override_button.back    "Use &quot;Back&quot; button instead of &quot;Rewind&quot; button">
+<!ENTITY rewindforward.override_button.forward "Use &quot;Forward&quot; button instead of &quot;Fastforward&quot; button">
+
+
+<!ENTITY rewindforward.history.caption           "Rewind/Fastforward">
+<!ENTITY rewindforward.history.fill_history_menu "Fill up history items into the context menu on the buttons">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.enabled  "Rewind to the First Page of the domain">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.disabled "Rewind to the page of the Previous Domain">
+
+<!ENTITY rewindforward.related.tab               "Related Pages">
+<!ENTITY rewindforward.related.caption           "Related Pages">
+<!ENTITY rewindforward.related.find_next_links   "Use &quot;Next Page&quot; button instead of &quot;Fastforward&quot; button, for related pages">
+<!ENTITY rewindforward.related.find_prev_links   "Use &quot;Previous Page&quot; button instead of &quot;Rewind&quot; button, for related pages">
+<!ENTITY rewindforward.related.virtual_link.enabled "Visit sequential URLs by &quot;Previous Page&quot; and &quot;Next Page&quot; buttons">
+<!ENTITY rewindforward.related.gonextprev.enabled "Go to next pages when I scroll down on the bottom of pages">
+<!ENTITY rewindforward.related.customizeRules.button  "Customize matching rules">
+
+<!ENTITY rewindforward.icon.caption "Icons of &quot;Next Page&quot; and &quot;Previous Page&quot; buttons (restarting required)">
+<!ENTITY rewindforward.icon.normal  "Use type-1 icons">
+<!ENTITY rewindforward.icon.another "Use type-2 icons">
+
+
+<!ENTITY rewindforward.rules.title  "Matching Rules for Next/Previous pages">
+<!ENTITY rewindforward.rules.desc   "Enter XPath expressions to find links they refer to next or previous pages. Wildcard character (*) is available for domain names.">
+<!ENTITY rewindforward.rules.col.domain "Domains">
+<!ENTITY rewindforward.rules.col.prev   "Next">
+<!ENTITY rewindforward.rules.col.next   "Previous">
+
+<!ENTITY button.newRule.label    "New Rule">
+<!ENTITY button.modifyPrev.label "Edit &quot;Prev.&quot; expression">
+<!ENTITY button.modifyNext.label "Edit &quot;Next&quot; expression">
+<!ENTITY button.delete.label     "Delete">
+<!ENTITY button.reset.label      "Reset to Default">
+
+<!ENTITY copyDomain.label       "Copy Domain">
+<!ENTITY copyDomain.accesskey   "C">
+<!ENTITY copyXPath.label        "Copy Expressions">
+<!ENTITY copyXPath.accesskey    "x">
+<!ENTITY newRule.label          "Make New Rule">
+<!ENTITY newRule.accesskey      "M">
+<!ENTITY modifyPrev.label       "Edit &quot;Previous&quot; expression">
+<!ENTITY modifyPrev.accesskey   "P">
+<!ENTITY modifyNext.label       "Edit &quot;Next&quot; expression">
+<!ENTITY modifyNext.accesskey   "N">
+<!ENTITY delete.label           "Delete">
+<!ENTITY delete.accesskey       "D">
+
+
+
+<!ENTITY rewindforward.about.button      "About">
+
+<!ENTITY rewindforward.about.title       "About Rewind/Fastforward Buttons">
+<!ENTITY rewindforward.about.caption     "Version Info">
+<!ENTITY rewindforward.about.name_before "Rewind/Fastforward Buttons Ver.">
+<!ENTITY rewindforward.about.name_after  "">
+<!ENTITY rewindforward.about.destributed "http://piro.sakura.ne.jp/">
+<!ENTITY rewindforward.about.uninstall   "Uninstall">
+
+<!ENTITY rewindforward.OK                "OK">

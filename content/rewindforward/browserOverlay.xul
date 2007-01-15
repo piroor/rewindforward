@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://rewindforward/locale/">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:rewindforward="http://white.sakura.ne.jp/~piro/rdf#">
+
+<script type="application/x-javascript" src="chrome://global/content/XPCNativeWrapper.js"/>
+<script type="application/x-javascript" src="chrome://rewindforward/content/pXPCNativeWrapper.js"/>
+
+<script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
+
+<commandset id="mainCommandSet">
+	<command id="Browser:Rewind"
+		oncommand="BrowserRewind(this.getAttribute('mode') == 'navigation');"
+		disabled="true"
+		mode="navigation"
+		patterns="&matchingPatterns.prev;"
+		patterns-blacklist="&matchingPatterns.prev.blacklist;"
+		label-navigation="&rewindCmd.label;"
+		label-link="&prevCmd.label;"
+		tooltiptext-navigation="&rewindButton.tooltip;"
+		tooltiptext-navigation-toEndPoint="&rewindButton.tooltip.toEndPoint;"
+		tooltiptext-link="&prevButton.tooltip;"/>
+	<command id="Browser:RewindPrev"
+		oncommand="BrowserRewindPrev();"
+		disabled="true"
+		mode="link"
+		tooltiptext-link="&prevButton.tooltip;"
+		tooltiptext-link-blank="&prevButton.tooltip.blank;"/>
+
+	<command id="Browser:Fastforward"
+		oncommand="BrowserFastforward(this.getAttribute('mode') == 'navigation');"
+		disabled="true"
+		mode="navigation"
+		patterns="&matchingPatterns.next;"
+		patterns-blacklist="&matchingPatterns.next.blacklist;"
+		label-navigation="&fastforwardCmd.label;"
+		label-link="&nextCmd.label;"
+		tooltiptext-navigation="&fastforwardButton.tooltip;"
+		tooltiptext-navigation-toEndPoint="&fastforwardButton.tooltip.toEndPoint;"
+		tooltiptext-link="&nextButton.tooltip;"/>
+	<command id="Browser:FastforwardNext"
+		oncommand="BrowserFastforwardNext();"
+		disabled="true"
+		mode="link"
+		tooltiptext-link="&nextButton.tooltip;"
+		tooltiptext-link-blank="&nextButton.tooltip.blank;"/>
+</commandset>
+
+<popupset id="mainPopupSet">
+	<popup id="rewindMenu"
+		ref-command="Browser:Rewind"
+		onpopupshowing="return rewindforwardFillPopupMenu(event);"
+		oncommand="gotoHistoryIndex(event);">
+		<menuitem id="rewindMenuItem"
+			rewindforward-menuitem="true"
+			class="menuitem-iconic rewindMenuItem"
+			label="&rewindCmd.label;"
+			tooltiptext-navigation="&rewindButton.tooltip;"
+			tooltiptext-navigation-toEndPoint="&rewindButton.tooltip.toEndPoint;"
+			oncommand="BrowserRewind(true); event.stopPropagation();"
+			onclick="BrowserRewind(true, event); event.stopPropagation();"/>
+		<menuseparator/>
+	</popup>
+	<popup id="fastforwardMenu"
+		ref-command="Browser:Fastforward"
+		onpopupshowing="return rewindforwardFillPopupMenu(event);"
+		oncommand="gotoHistoryIndex(event);">
+		<menuitem id="fastforwardMenuItem"
+			rewindforward-menuitem="true"
+			class="menuitem-iconic fastforwardMenuItem"
+			label="&fastforwardCmd.label;"
+			tooltiptext-navigation="&fastforwardButton.tooltip;"
+			tooltiptext-navigation-toEndPoint="&fastforwardButton.tooltip.toEndPoint;"
+			oncommand="BrowserFastforward(true); event.stopPropagation();"
+			onclick="BrowserFastforward(true, event); event.stopPropagation();"/>
+		<menuseparator/>
+	</popup>
+</popupset>
+
+
+
+<toolbarpalette id="BrowserToolbarPalette">
+	<toolbarbutton id="rewind-button"/>
+	<toolbarbutton id="rewind-prev-button"/>
+	<toolbarbutton id="fastforward-button"/>
+	<toolbarbutton id="fastforward-next-button"/>
+</toolbarpalette>
+
+<toolbarbutton id="rewind-button" class="rewind-button toolbarbutton-1"
+	command="Browser:Rewind"
+	onclick="BrowserRewind(false, event);"
+	label="&rewindCmd.label;"
+	tooltiptext="&rewindButton.tooltip;"
+	context="rewindMenu"
+	mode="navigation"/>
+<toolbarbutton id="rewind-prev-button" class="rewind-button toolbarbutton-1"
+	command="Browser:RewindPrev"
+	onclick="BrowserRewindPrev(event);"
+	label="&prevCmd.label;"
+	tooltiptext="&prevButton.tooltip.blank;"
+	mode="link"/>
+
+<toolbarbutton id="fastforward-button" class="fastforward-button toolbarbutton-1"
+	command="Browser:Fastforward"
+	onclick="BrowserFastforward(false, event);"
+	label="&fastforwardCmd.label;"
+	tooltiptext="&fastforwardButton.tooltip;"
+	context="fastforwardMenu"
+	mode="navigation"/>
+<toolbarbutton id="fastforward-next-button" class="fastforward-button toolbarbutton-1"
+	command="Browser:FastforwardNext"
+	onclick="BrowserFastforwardNext(event);"
+	label="&nextCmd.label;"
+	tooltiptext="&nextButton.tooltip.blank;"
+	mode="link"/>
+
+</overlay>

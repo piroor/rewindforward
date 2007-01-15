@@ -1,0 +1,116 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+
+.rewindMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/rewind-navigator.png");
+}
+.fastforwardMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/fastforward-navigator.png");
+}
+
+menuitem[rewindforward-menuitem-backforward="true"] image {
+	max-width: 16px;
+	max-height: 16px;
+}
+#back-button menuitem[rewindforward-menuitem-backforward="true"] {
+	list-style-image: url("chrome://navigator/skin/icons/btn1.gif");
+	-moz-image-region: rect(0px 19px 20px 0px);
+}
+#forward-button menuitem[rewindforward-menuitem-backforward="true"] {
+	list-style-image: url("chrome://navigator/skin/icons/btn1.gif");
+	-moz-image-region: rect(20px 19px 40px 0px);
+}
+
+
+.toolbarbutton-1.rewind-button,
+.toolbarbutton-1.fastforward-button,
+#back-button[rewindforward-override],
+#forward-button[rewindforward-override] {
+	list-style-image: url("chrome://rewindforward/skin/buttons-navigator2.png");
+}
+
+[rewindforward-anothericon="true"] .toolbarbutton-1.rewind-button,
+[rewindforward-anothericon="true"] .toolbarbutton-1.fastforward-button,
+[iconsize="small"] #back-button[rewindforward-override],
+[iconsize="small"] #forward-button[rewindforward-override] {
+	list-style-image: url("chrome://rewindforward/skin/buttons-navigator.png");
+}
+
+
+.toolbarbutton-1.rewind-button,
+#back-button[rewindforward-override="navigation"] {
+	-moz-image-region: rect(0px 19px 20px 0px);
+}
+.toolbarbutton-1.rewind-button[buttonover="true"],
+.toolbarbutton-1.rewind-button:hover,
+#back-button[rewindforward-override="navigation"][buttonover="true"],
+#back-button[rewindforward-override="navigation"]:hover {
+	-moz-image-region: rect(0px 38px 20px 19px);
+}
+.toolbarbutton-1.rewind-button[buttondown="true"],
+#back-button[rewindforward-override="navigation"][buttondown="true"] {
+	-moz-image-region: rect(0px 57px 20px 38px);
+}
+.toolbarbutton-1.rewind-button[mode="link"],
+#back-button[rewindforward-override="link"] {
+	-moz-image-region: rect(40px 19px 60px 0px);
+}
+.toolbarbutton-1.rewind-button[mode="link"][buttondown="true"],
+#back-button[rewindforward-override="link"][buttondown="true"] {
+	-moz-image-region: rect(40px 57px 60px 38px);
+}
+.toolbarbutton-1.rewind-button[mode="link"][buttonover="true"],
+.toolbarbutton-1.rewind-button[mode="link"]:hover,
+#back-button[rewindforward-override="link"][buttonover="true"],
+#back-button[rewindforward-override="link"]:hove {
+	-moz-image-region: rect(40px 38px 60px 19px);
+}
+.toolbarbutton-1.rewind-button[disabled="true"],
+.toolbarbutton-1.rewind-button[disabled="true"][buttonover="true"],
+.toolbarbutton-1.rewind-button[disabled="true"]:hover {
+	-moz-image-region: rect(0px 76px 20px 57px);
+}
+.toolbarbutton-1.rewind-button[disabled="true"][mode="link"],
+.toolbarbutton-1.rewind-button[disabled="true"][mode="link"][buttonover="true"],
+.toolbarbutton-1.rewind-button[disabled="true"][mode="link"]:hover {
+	-moz-image-region: rect(40px 76px 60px 57px);
+}
+
+.toolbarbutton-1.fastforward-button,
+#forward-button[rewindforward-override="navigation"] {
+	-moz-image-region: rect(20px 19px 40px 0px);
+}
+.toolbarbutton-1.fastforward-button[buttonover="true"],
+.toolbarbutton-1.fastforward-button:hover,
+#forward-button[rewindforward-override="link"][buttonover="true"],
+#forward-button[rewindforward-override="link"]:hover {
+	-moz-image-region: rect(20px 38px 40px 19px);
+}
+.toolbarbutton-1.fastforward-button[buttondown="true"],
+#forward-button[rewindforward-override="link"][buttondown="true"] {
+	-moz-image-region: rect(20px 57px 40px 38px);
+}
+.toolbarbutton-1.fastforward-button[mode="link"],
+#forward-button[rewindforward-override="link"] {
+	-moz-image-region: rect(60px 19px 80px 0px);
+}
+.toolbarbutton-1.fastforward-button[mode="link"][buttondown="true"],
+#forward-button[rewindforward-override="link"][buttondown="true"] {
+	-moz-image-region: rect(60px 57px 80px 38px);
+}
+.toolbarbutton-1.fastforward-button[mode="link"][buttonover="true"],
+.toolbarbutton-1.fastforward-button[mode="link"]:hover,
+#forward-button[rewindforward-override="link"][buttonover="true"],
+#forward-button[rewindforward-override="link"]:hover {
+	-moz-image-region: rect(60px 38px 80px 19px);
+}
+.toolbarbutton-1.fastforward-button[disabled="true"],
+.toolbarbutton-1.fastforward-button[disabled="true"][buttonover="true"],
+.toolbarbutton-1.fastforward-button[disabled="true"]:hover {
+	-moz-image-region: rect(20px 76px 40px 57px);
+}
+.toolbarbutton-1.fastforward-button[disabled="true"][mode="link"],
+.toolbarbutton-1.fastforward-button[disabled="true"][mode="link"][buttonover="true"],
+.toolbarbutton-1.fastforward-button[disabled="true"][mode="link"]:hover {
+	-moz-image-region: rect(60px 76px 80px 57px);
+}
