@@ -426,10 +426,10 @@ pref("rewindforward.rule.prev.scrapture.org",
 pref("rewindforward.rule.next.www.altphotos.com",
 	"//a[text()='NEXT>' or text()='>>']");
 
-// www.nicovideo.jp
-pref("rewindforward.rule.next.www.altphotos.com",
+// ニコニコ動画
+pref("rewindforward.rule.next.www.nicovideo.jp",
 	"//a[child::img[@src='img/common/pager_next_on.gif']]");
-pref("rewindforward.rule.prev.www.altphotos.com",
+pref("rewindforward.rule.prev.www.nicovideo.jp",
 	"//a[child::img[@src='img/common/pager_back_on.gif']]");
 
 // メリットデメリット
