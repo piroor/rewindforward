@@ -215,7 +215,7 @@ pref("rewindforward.rule.next.www.last.fm",
 // はてなブックマーク - 注目エントリー
 // はてなブックマーク
 pref("rewindforward.rule.next.b.hatena.ne.jp",
-	"(//div[@class='pager'])[last()]/a[last()]|//div[@class="pager"]/a[last()]|//div[@class="pager"][last()]//a[last()]");
+	"(//div[@class='pager'])[last()]/a[last()]|//div[@class='pager']/a[last()]|//div[@class='pager'][last()]//a[last()]");
 
 // MozillaZine Forums
 // MozillaZine Forums (topic)
