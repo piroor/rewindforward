@@ -447,3 +447,7 @@ pref("rewindforward.rule.prev.*.google.*",
 // photobucket
 pref("rewindforward.rule.next.*.photobucket.com",
 	"//a[text()='next']");
+
+// pigmotel
+pref("rewindforward.rule.next.www.pigmotel.com",
+	"//a[@class='next']");
