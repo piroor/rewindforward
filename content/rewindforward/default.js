@@ -102,10 +102,6 @@ pref("rewindforward.rule.next.mixi.jp",
 pref("rewindforward.rule.prev.mixi.jp",
 	"//*[contains(test(), '\u6708\u306e\u30ab\u30ec\u30f3\u30c0\u30fc')]/preceding:*[text()='\uff1c']");
 
-// Blogger
-pref("rewindforward.rule.prev.*.blogspot.com",
-	"//*[text()='Previous Posts']/following:*[@href]");
-
 // É`ÉÉÉìÉlÉãñkçëtv
 pref("rewindforward.rule.next.ch.kitaguni.tv",
 	"//*[@id='menu']//*[@href][4]");
@@ -214,3 +210,41 @@ pref("rewindforward.rule.next.jbbs.livedoor.jp",
 	"//*[@href and (text()='\u6b21\u306e\u30da\u30fc\u30b8') or text()='\u65b0\u7740\u8868\u793a']");
 pref("rewindforward.rule.prev.jbbs.livedoor.jp",
 	"//*[@href and text()='\u524d\u306e\u30da\u30fc\u30b8']");
+
+
+
+
+
+// from http://swdyh.infogami.com/autopagerize
+
+// Dailymotion
+pref("rewindforward.rule.next.www.dailymotion.com",
+	"(//div[@class='dm_widget_pagination'])[last()]/div[@class='next']/a");
+pref("rewindforward.rule.prev.www.dailymotion.com",
+	"(//div[@class='dm_widget_pagination'])[last()]/div[@class='prev']/a");
+
+// Blogger
+pref("rewindforward.rule.next.*.blogspot.com",
+	"id('Blog1_blog-pager-newer-link')");
+pref("rewindforward.rule.prev.*.blogspot.com",
+	"id('Blog1_blog-pager-older-link')");
+
+// It's Knuttz
+pref("rewindforward.rule.next.knuttz.net",
+	"((//div[@class='navigator'])[last()]//a)[last()]");
+
+// tumblr(dashboard)
+pref("rewindforward.rule.next.www.tumblr.com",
+	"id('posts')/following-sibling::div[2]//a[last()]");
+
+// tumblr(dashboard)
+pref("rewindforward.rule.next.*.tumblr.com",
+	"//div[@id='content' or @id='container']/div[last()]/a[last()]");
+
+// CNET Venture View
+pref("rewindforward.rule.next.v.japan.cnet.com",
+	"//div[@class='next']/a");
+
+// Last.fm Charts
+pref("rewindforward.rule.next.www.last.fm",
+	"//a[@class='nextlink']");
