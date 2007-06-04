@@ -7,28 +7,16 @@
 
 
 // Infoseek
-pref("rewindforward.rule.next.www.infoseek.co.jp",
-	"//*[starts-with(text(), '\u6b21\u306e') and contains(text(), '\u4ef6>>')]");
-pref("rewindforward.rule.prev.www.infoseek.co.jp",
-	"//*[starts-with(text(), '<<\u524d\u306e') and contains(text(), '\u4ef6')]");
+pref("rewindforward.rule.next.search.www.infoseek.co.jp",
+	"//span[@class='sl-next']/a");
+pref("rewindforward.rule.prev.search.www.infoseek.co.jp",
+	"//span[@class='sl-back']/a");
 
 // goo
 pref("rewindforward.rule.next.search.goo.ne.jp",
-	"//*[text()='\u6b21\u306e\u7d50\u679c']");
+	"id('paging')/a[last()][child::strong]");
 pref("rewindforward.rule.prev.search.goo.ne.jp",
-	"//*[text()='\u524d\u306e\u7d50\u679c']");
-
-// Yahoo!
-pref("rewindforward.rule.next.search.yahoo.com",
-	"//*[text()='Next']");
-pref("rewindforward.rule.prev.search.yahoo.com",
-	"//*[text()='Prev']");
-
-// Yahoo! Shopping Auctions
-pref("rewindforward.rule.next.search.auctions.shopping.yahoo.com",
-	"//*[text()='Next >>']");
-pref("rewindforward.rule.prev.search.auctions.shopping.yahoo.com",
-	"//*[text()='<< Prev']");
+	"id('paging')/a[first()][child::strong]");
 
 // teoma (by Norbert Wienholz)
 pref("rewindforward.rule.next.*.teoma.com",
@@ -38,39 +26,32 @@ pref("rewindforward.rule.prev.*.teoma.com",
 
 // AllAbout Japan
 pref("rewindforward.rule.next.allabout.co.jp",
-	"//*[text()='>>']/preceding:*[text()='\u6b21\u3078']");
+	"//a[child::img[contains(@src, 'icn_next.gif')]]");
 pref("rewindforward.rule.prev.allabout.co.jp",
-	"//*[text()='<<']/following:*[text()='\u524d\u3078']");
+	"//a[child::img[contains(@src, 'icn_back.gif')]]");
 
 
 
 // Bulkfeeds
 pref("rewindforward.rule.next.bulkfeeds.net",
-	"(//DIV[@class='searchResultNavi']//span[@class='searchResultCurrent']/following-sibling::A)");
+	"//span[@class='searchResultCurrent']/following-sibling::A");
 pref("rewindforward.rule.prev.bulkfeeds.net",
-	"(//DIV[@class='searchResultNavi']//span[@class='searchResultCurrent']/preceding-sibling::A)");
+	"//span[@class='searchResultCurrent']/preceding-sibling::A");
 
 
 
-// はてなダイアリー
-pref("rewindforward.rule.next.d.hatena.ne.jp",
-	"(//*[@class='calendar']//*[text()='\u6b21\u306e3\u65e5\u5206>']|//*[@href and ((starts-with(text(), '\u6b21\u306e') and contains(text(), '\u65e5\u5206>')) or text()='\u6b21\u306e\u65e5>')])");
-pref("rewindforward.rule.prev.d.hatena.ne.jp",
-	"(//*[@class='calendar']//*[text()='<\u524d\u306e3\u65e5\u5206']|//*[@href and ((starts-with(text(), '<\u524d\u306e') and contains(text(), '\u65e5\u5206')) or text()='<\u524d\u306e\u65e5')])");
 
 // ココログ
 pref("rewindforward.rule.next.*.cocolog-nifty.com",
-	"//*[@id='container']//*[@class='content']//*[contains(text(), '\u00bb')]");
-//pref("rewindforward.rule.prev.*.cocolog-nifty.com",
-//	"//*[@id='container']//*[@class='content']//*[start-with(text(), '\u00ab')]");
+	"//*[@class='entry-nav']//*[contains(text(), '\u00bb')]");
 pref("rewindforward.rule.prev.*.cocolog-nifty.com",
-	"//*[@id='container']//*[@class='content']//*[contains(text(), '\u00ab')]");
+	"//*[@class='entry-nav']//*[contains(text(), '\u00ab')]");
 
 // Mixi
 pref("rewindforward.rule.next.mixi.jp",
-	"//*[contains(test(), '\u6708\u306e\u30ab\u30ec\u30f3\u30c0\u30fc')]/following:*[text()='\uff1e']");
+	"//a[contains(text(), '\u6b21\u3092\u8868\u793a')]");
 pref("rewindforward.rule.prev.mixi.jp",
-	"//*[contains(test(), '\u6708\u306e\u30ab\u30ec\u30f3\u30c0\u30fc')]/preceding:*[text()='\uff1c']");
+	"//a[contains(text(), '\u524d\u3092\u8868\u793a')]");
 
 // チャンネル北国tv
 pref("rewindforward.rule.next.ch.kitaguni.tv",
@@ -275,17 +256,23 @@ pref("rewindforward.rule.prev.twitter.com",
 pref("rewindforward.rule.next.del.icio.us",
 	"//a[@accesskey='e']");
 
-// YahooJapan検索
-pref("rewindforward.rule.next.search.yahoo.co.jp",
-	"id('yschpg')/p/big[last()]/a|//*[starts-with(text(), '\u6b21\u306e') and contains(text(), '\u4ef6\u3092\u8868\u793a')]");
-pref("rewindforward.rule.prev.search.yahoo.co.jp",
-	"id('yschpg')/p/big[first()]/a|//*[starts-with(text(), '\u524d\u306e') and contains(text(), '\u4ef6\u3092\u8868\u793a')]");
+// Yahoo! Shopping Auctions
+pref("rewindforward.rule.next.search.auctions.shopping.yahoo.com",
+	"//*[text()='Next >>']");
+pref("rewindforward.rule.prev.search.auctions.shopping.yahoo.com",
+	"//*[text()='<< Prev']");
 
 // Yahoo! Japan Auctions
 pref("rewindforward.rule.next.search.auction.yahoo.co.jp",
-	"//td[@align='right' and @width='1%']/small/b[last()]/a|//*[starts-with(text(), '\u6b21\u306e') and contains(text(), '\u4ef6')]");
+	"//td[@align='right' and @width='1%']/small/b[last()]/a");
 pref("rewindforward.rule.prev.search.auction.yahoo.co.jp",
-	"//td[@align='right' and @width='1%']/small/b[first()]/a|//*[starts-with(text(), '\u524d\u306e') and contains(text(), '\u4ef6')]");
+	"//td[@align='right' and @width='1%']/small/b[first()]/a");
+
+// Yahoo検索
+pref("rewindforward.rule.next.*.yahoo.*",
+	"id('yschpg')//big[last()]/a | id('yshppg')//big[last()]/a");
+pref("rewindforward.rule.prev.*.yahoo.*",
+	"id('yschpg')//big[first()]/a | id('yshppg')//big[first()]/a");
 
 // UP板＠おっちゃんねる サムネイル一覧
 pref("rewindforward.rule.next.up.nm78.com",
@@ -327,11 +314,20 @@ pref("rewindforward.rule.prev.yaplog.jp",
 
 // はてなダイアリー
 pref("rewindforward.rule.next.*.d.hatena.ne.jp",
-	"//div[@class='calendar']/a[contains(@href, '?of=')][1]");
+	"//div[@class='calendar']/a[last()]");
+pref("rewindforward.rule.next.d.hatena.ne.jp",
+	"//div[@class='calendar']/a[last()]");
+pref("rewindforward.rule.prev.*.d.hatena.ne.jp",
+	"//div[@class='calendar']/a[first()]");
+pref("rewindforward.rule.prev.d.hatena.ne.jp",
+	"//div[@class='calendar']/a[first()]");
+
 
 // はてなグループ
 pref("rewindforward.rule.next.*.g.hatena.ne.jp",
-	"//div[@class='calendar']/a[contains(@href, '?of=')][1]");
+	"//div[@class='calendar']/a[contains(@href, '?of=')][last()]");
+pref("rewindforward.rule.prev.*.g.hatena.ne.jp",
+	"//div[@class='calendar']/a[contains(@href, '?of=')][first()]");
 
 // Google Scholar
 pref("rewindforward.rule.next.scholar.google.com",
@@ -339,6 +335,8 @@ pref("rewindforward.rule.next.scholar.google.com",
 
 // CPAN Search
 pref("rewindforward.rule.next.search.cpan.org",
+	"//div[@class='pages']//td//a[last()]");
+pref("rewindforward.rule.prev.search.cpan.org",
 	"//div[@class='pages']//td//a[first()]");
 
 // TTYShare Recent entries
