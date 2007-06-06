@@ -156,6 +156,10 @@ pref("rewindforward.rule.prev.jbbs.livedoor.jp",
 
 // from http://swdyh.infogami.com/autopagerize
 
+// Style.com
+pref("rewindforward.rule.next.www.style.com",
+	"(//a[@class='paginator'])[last()]");
+
 // はてなアンテナ
 pref("rewindforward.rule.next.a.hatena.ne.jp",
 	"id('pager_bottom')/a[@class='navi_next']");
@@ -451,3 +455,23 @@ pref("rewindforward.rule.next.*.photobucket.com",
 // pigmotel
 pref("rewindforward.rule.next.www.pigmotel.com",
 	"//a[@class='next']");
+
+// Orbium
+pref("rewindforward.rule.next.sasapanda.net",
+	"//div[@class='previous']/a[1]");
+
+// Wikipedia検索
+pref("rewindforward.rule.next.athlon64.fsij.org",
+	"//a[@class='navi'][last()]");
+
+// 1470.net 新着メモ
+pref("rewindforward.rule.next.1470.net",
+	"(//div[@class='pageNavigationArea']//a)[last()]");
+
+// Saaf
+pref("rewindforward.rule.next.saaf.jp",
+	"//a[@class='next']");
+
+// find.2ch.net
+pref("rewindforward.rule.next.find.2ch.net",
+	"//a[text()='\u6b21\u3078']");
