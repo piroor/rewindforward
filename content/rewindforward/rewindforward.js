@@ -1663,10 +1663,10 @@ function rewindforwardInitialShow()
 			) == 0) {
 			bar.currentSet = newset;
 			bar.setAttribute('currentset', newset);
-			document.persist(bar.id, 'currentset');
+				document.persist(bar.id, 'currentset');
 		}
 		if ('BrowserToolboxCustomizeDone' in window)
-			BrowserToolboxCustomizeDone(true);
+			window.setTimeout('BrowserToolboxCustomizeDone(true);', 0);
 	}
 }
   
