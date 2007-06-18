@@ -123,13 +123,6 @@ pref("rewindforward.rule.prev.blog.goo.ne.jp",
 
 
 
-// IT Pro
-pref("rewindforward.rule.next.itpro.nikkeibp.co.jp",
-	"//*[@href and text()='NEXT>']");
-pref("rewindforward.rule.prev.itpro.nikkeibp.co.jp",
-	"//*[@href and text()='<BACK']");
-
-
 
 
 
@@ -155,6 +148,28 @@ pref("rewindforward.rule.prev.jbbs.livedoor.jp",
 
 
 // from http://swdyh.infogami.com/autopagerize
+
+
+// Getchu.com 詳細検索
+// Getchu.com カレンダー
+pref("rewindforward.rule.next.www.getchu.com",
+	"//a[@title='next page']|//center/a[last()]");
+
+// SHOUTcast
+pref("rewindforward.rule.next.www.shoutcast.com",
+	"//a[text()='[ Next ]']");
+
+// fc2 blog
+pref("rewindforward.rule.next.*.blog*.fc2.com",
+	"//div[@class='pageLink']/a[last()]");
+
+// 2ch.ru/g
+pref("rewindforward.rule.next.2ch.ru",
+	"//body/table[last()]/tbody/tr/td[last()]/form");
+
+// FFFFOUND!
+pref("rewindforward.rule.next.ffffound.com",
+	"id('paging-next')");
 
 // Style.com
 pref("rewindforward.rule.next.www.style.com",
@@ -475,3 +490,87 @@ pref("rewindforward.rule.next.saaf.jp",
 // find.2ch.net
 pref("rewindforward.rule.next.find.2ch.net",
 	"//a[text()='\u6b21\u3078']");
+
+// Wassr 日本中のひとこと、MYページ
+pref("rewindforward.rule.next.wassr.jp",
+	"(//div[@class='PageNav']/p/a)[last()]");
+
+// 日経BP ITpro コラム
+pref("rewindforward.rule.next.itpro.nikkeibp.co.jp",
+	"//a[text()='>>']|//*[@href and text()='NEXT>']");
+pref("rewindforward.rule.prev.itpro.nikkeibp.co.jp",
+	"//a[text()='<<']|//*[@href and text()='<BACK']");
+
+// 日経BP ITpro コラム
+pref("rewindforward.rule.next.business.nikkeibp.co.jp",
+	"//img[@src='/nboimgs/btn_next.gif']/parent::a");
+pref("rewindforward.rule.prev.business.nikkeibp.co.jp",
+	"//img[@src='/nboimgs/btn_back.gif']/parent::a");
+
+// デジタルARENA
+pref("rewindforward.rule.next.arena.nikkeibp.co.jp",
+	"(id('articlecontent')/ul[@class='page']//a)[last()]");
+pref("rewindforward.rule.prev.arena.nikkeibp.co.jp",
+	"(id('articlecontent')/ul[@class='page']//a)[first()]");
+
+// [Z]ZAPAブロ～グ2.0
+pref("rewindforward.rule.next.zapanet.info",
+	"//div[@class='in']/div[@class='ido']/span[@class='next']/a");
+
+// Son of a BIT
+pref("rewindforward.rule.next.uchihara.info",
+	"//a[4]");
+
+// danbooru
+pref("rewindforward.rule.next.miezaru.donmai.us",
+	"(id('paginator')/a[@class='arrow'])[last()]");
+pref("rewindforward.rule.prev.miezaru.donmai.us",
+	"(id('paginator')/a[@class='arrow'])[first()]");
+
+// @IT
+pref("rewindforward.rule.next.www.atmarkit.co.jp",
+	"//a[contains(img/@src,'/images/next.gif')]");
+pref("rewindforward.rule.prev.www.atmarkit.co.jp",
+	"//a[contains(img/@src,'/images/prev.gif')]");
+
+// はてな検索
+pref("rewindforward.rule.next.search.hatena.ne.jp",
+	"id('hatena-search-pager')/strong[last()]/a");
+pref("rewindforward.rule.prev.search.hatena.ne.jp",
+	"id('hatena-search-pager')/strong[first()]/a");
+
+// LifeHacker (VIEW: Blog)
+pref("rewindforward.rule.next.lifehacker.com",
+	"//a[contains(string(.), 'next')]");
+
+// デイリーポータルZ
+pref("rewindforward.rule.next.portal.nifty.com",
+	"(//td[@width='640' and @align='center']//a[contains(string(.), '\uff1e')])[last()]");
+pref("rewindforward.rule.prev.portal.nifty.com",
+	"(//td[@width='640' and @align='center']//a[contains(string(.), '\uff1c')])[last()]");
+
+// CodeZine
+pref("rewindforward.rule.next.codezine.jp",
+	"//td[@class='pg_bar_next']/a");
+
+// Iconlet
+pref("rewindforward.rule.next.www.iconlet.com",
+	"id('index')/a[text()='Next']");
+
+// クックパッド(レシピ検索)
+pref("rewindforward.rule.next.cookpad.com",
+	"//div[@align='center']/a[text()='\u6b21\u3078\u00bb']");
+
+// screenfluent
+pref("rewindforward.rule.next.screenfluent.com",
+	"id('containernavibot')/a[last()]");
+
+// Engadget Japanese
+pref("rewindforward.rule.next.japanese.engadget.com",
+	"//a[starts-with(text(),'\u6b21\u306e')]");
+
+// livedoor クリップ - マイクリップ
+// livedoor クリップ - 人気ページ
+// livedoor クリップ
+pref("rewindforward.rule.next.clip.livedoor.com",
+	"//a[@class='pager-next']|//a[@class='pager-yesterday']");
