@@ -1,4 +1,4 @@
-var version     = '1.4.2006100801',
+var version     = '1.4.2007061801',
 	displayName = 'Rewind/Fastforward Buttons',
 	appName     = 'rewindforward',
 	author      = 'SHIMODA Hiroshi',
