@@ -1,47 +1,40 @@
-<?xml version="1.0"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	 xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-	<Description about="urn:mozilla:install-manifest">
-
-		<em:id>{FA4658DE-935B-4f39-AED3-0B5034DDE225}</em:id>
-
-		<em:version>1.4.2007061801</em:version>
-
-
-		<em:targetApplication>
-			<Description><!-- Firefox -->
-				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>1.0</em:minVersion>
-				<em:maxVersion>2.0.0.*</em:maxVersion>
-			</Description>
-			<Description><!-- Mozilla Suite -->
-				<em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
-				<em:minVersion>1.0</em:minVersion>
-				<em:maxVersion>1.8</em:maxVersion>
-			</Description>
-		</em:targetApplication>
-
-		<em:name>Rewind/Fastforward Buttons</em:name>
-		<em:description>Adds "Rewind" and "Fastforward" buttons for the toolbar.</em:description>
-		<em:creator>SHIMODA Hiroshi</em:creator>
-		<em:homepageURL>http://piro.sakura.ne.jp/xul/_rewindforward.html.en</em:homepageURL>
-		<em:updateURL>https://pub.cozmixng.org/~piro/xul/xul.rdf.en</em:updateURL>
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest"
+                   em:id="{FA4658DE-935B-4f39-AED3-0B5034DDE225}"
+                   em:name="Rewind/Fastforward Buttons"
+                   em:version="1.4.2007061801"
+                   em:creator="SHIMODA Hiroshi"
+                   em:description="Adds "Rewind" and "Fastforward" buttons for the toolbar."
+                   em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en"
+                   em:iconURL="chrome://rewindforward/content/icon.png"
+                   em:optionsURL="chrome://rewindforward/content/about.xul">
 
 
-		<em:optionsURL>chrome://rewindforward/content/about.xul</em:optionsURL>
-		<!--em:aboutURL>chrome://rewindforward/content/about.xul</em:aboutURL-->
-		<em:iconURL>chrome://rewindforward/content/icon.png</em:iconURL>
+    <em:updateURL>https://pub.cozmixng.org/~piro/xul/xul.rdf.en</em:updateURL>
 
 
-		<em:file>
-			<Description about="urn:mozilla:extension:file:rewindforward.jar">
-				<em:package>content/rewindforward/</em:package>
-				<em:locale>locale/en-US/rewindforward/</em:locale>
-				<em:locale>locale/ja-JP/rewindforward/</em:locale>
-				<em:skin>skin/classic/rewindforward/</em:skin>
-				<em:skin>skin/qute/rewindforward/</em:skin>
-				<em:skin>skin/winestripe/rewindforward/</em:skin>
-			</Description>
-		</em:file>
-	</Description>
-</RDF>
+    <em:targetApplication>
+      <!-- Firefox -->
+      <RDF:Description em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+                       em:minVersion="1.0"
+                       em:maxVersion="2.0.0.*" />
+      <!-- Mozilla Suite -->
+      <RDF:Description em:id="{86c18b42-e466-45a9-ae7a-9b95ba6f5640}"
+                       em:minVersion="1.0"
+                       em:maxVersion="1.8.*" />
+    </em:targetApplication>
+	<em:file>
+		<RDF:Description RDF:about="urn:mozilla:extension:file:rewindforward.jar">
+			<em:package>content/rewindforward/</em:package>
+			<em:locale>locale/en-US/rewindforward/</em:locale>
+			<em:locale>locale/ja-JP/rewindforward/</em:locale>
+			<em:skin>skin/classic/rewindforward/</em:skin>
+			<em:skin>skin/qute/rewindforward/</em:skin>
+			<em:skin>skin/winestripe/rewindforward/</em:skin>
+		</RDF:Description>
+	</em:file>
+  </RDF:Description>
+</RDF:RDF>
