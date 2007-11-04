@@ -1,805 +1,735 @@
-const kREWINDFORWARD_DEBUG = false; 
-
-// type
-const kREWINDFORWARD_LINK_TYPE_RELATED = 1;
-const kREWINDFORWARD_LINK_TYPE_LABELED = 2;
-const kREWINDFORWARD_LINK_TYPE_VIRTUAL = 4;
-
-// rate
-const kREWINDFORWARD_LINK_RELATED        = 10;
-const kREWINDFORWARD_LINK_RELATED_CUSTOM = 20;
-const kREWINDFORWARD_LINK_LABELED        = 2;
-const kREWINDFORWARD_LINK_INCREMENTED    = 1;
-const kREWINDFORWARD_LINK_SAME_DOMAIN    = 1;
- 
-// do rewind/fastforward 
-function BrowserRewind(aForceToRewind, aEvent)
-{
-	BrowserRewindOrFastforward('rewind', aForceToRewind, aEvent);
-}
-function BrowserRewindPrev(aEvent)
-{
-	if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
-
-	var link = rewindforwardGetLinkInMainFrame(
-			rewindforwardGetLinksFromAllFrames('prev')
-		);
-	if (!link) return;
-
-	var usetab = aEvent && aEvent.button == 1;
-
-	if ('referrerBlocked' in gBrowser.selectedTab && gBrowser.selectedTab.referrerBlocked)
-		link.referrer = null;
-
-	if (usetab)
-		rewindforwardOpenNewTab(link.href, link.referrer);
-	else
-		rewindforwardLoadLink(link.href, link.referrer, link.view, -1);
-}
-
-function BrowserFastforward(aForceToFastforward, aEvent)
-{
-	BrowserRewindOrFastforward('fastforward', aForceToFastforward, aEvent);
-}
-function BrowserFastforwardNext(aEvent)
-{
-	if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
-
-	var link = rewindforwardGetLinkInMainFrame(
-			rewindforwardGetLinksFromAllFrames('next')
-		);
-	if (!link) return;
-
-	var usetab = aEvent && aEvent.button == 1;
-
-	if ('referrerBlocked' in gBrowser.selectedTab && gBrowser.selectedTab.referrerBlocked)
-		link.referrer = null;
-
-	if (usetab)
-		rewindforwardOpenNewTab(link.href, link.referrer);
-	else
-		rewindforwardLoadLink(link.href, link.referrer, link.view, 1);
-}
+var RewindForwardService = { 
+	initialized : false,
+	 
+	// constant properties 
 	
-function BrowserRewindOrFastforward(aType, aForce, aEvent) 
-{
-	if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
+	kFOUND_PREFIX   : 'rewindforward-found-first-links-', 
+	kRELATED_PREFIX : 'rewindforward-found-related-links-',
+	kLABELED_PREFIX : 'rewindforward-found-labeled-links-',
+	kVIRTUAL_PREFIX : 'rewindforward-found-virtual-links-',
 
-	var usetab = aEvent && aEvent.button == 1;
+	kGENERATED_ID_PREFIX : 'rewindforward-found-link-',
 
+	domainRegExp : /^\w+:\/\/([^:\/]+)(\/|$)/,
+ 
+	// type 
+	kLINK_TYPE_RELATED : 1,
+	kLINK_TYPE_LABELED : 2,
+	kLINK_TYPE_VIRTUAL : 4,
+ 
+	// rate 
+	kLINK_RELATED        : 10,
+	kLINK_RELATED_CUSTOM : 20,
+	kLINK_LABELED        : 2,
+	kLINK_INCREMENTED    : 1,
+	kLINK_SAME_DOMAIN    : 1,
+  
+	// utils 
+	
+	getDocShellFromDocument : function(aDocument, aRootDocShell) 
+	{
+		var doc = aDocument;
+		if (!doc) return null;
 
-	var link = (aType == 'rewind') ?
-				(
-					rf_shouldFindPrevLinks() ?
-						rewindforwardGetLinksFromAllFrames('prev') :
-						null
-				) :
-				(
-					rf_shouldFindNextLinks() ?
-						rewindforwardGetLinksFromAllFrames('next') :
-						null
-				);
+		const kDSTreeNode = Components.interfaces.nsIDocShellTreeNode;
+		const kDSTreeItem = Components.interfaces.nsIDocShellTreeItem;
+		const kWebNav     = Components.interfaces.nsIWebNavigation;
 
-	if (!aForce && link && link.length) {
-		link = rewindforwardGetLinkInMainFrame(link);
+		if (doc.defaultView)
+			return doc.defaultView
+					.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+					.getInterface(kWebNav)
+					.QueryInterface(Components.interfaces.nsIDocShell);
+
+		var aRootDocShell = aRootDocShell
+				.QueryInterface(kDSTreeNode)
+				.QueryInterface(kDSTreeItem)
+				.QueryInterface(kWebNav);
+		var docShell = aRootDocShell;
+		traceDocShellTree:
+		do {
+			if (docShell.document == aDocument)
+				return docShell;
+
+			if (docShell.childCount) {
+				docShell = docShell.getChildAt(0);
+				docShell = docShell
+					.QueryInterface(kDSTreeNode)
+					.QueryInterface(kWebNav);
+			}
+			else {
+				parentDocShell = docShell.parent.QueryInterface(kDSTreeNode);
+				while (docShell.childOffset == parentDocShell.childCount-1)
+				{
+					docShell = parentDocShell;
+					if (docShell == aRootDocShell || !docShell.parent)
+						break traceDocShellTree;
+					parentDocShell = docShell.parent.QueryInterface(kDSTreeNode);
+				}
+				docShell = parentDocShell.getChildAt(docShell.childOffset+1)
+					.QueryInterface(kDSTreeNode)
+					.QueryInterface(kWebNav);
+			}
+		} while (docShell != aRootDocShell);
+
+		return null;
+	},
+ 
+	getHistoryEntryAt : function(aIndex) 
+	{
+		var entry  = gBrowser.sessionHistory.getEntryAtIndex(aIndex, false);
+		var info = { URI : null, referrerURI : null };
+		if (entry) {
+			entry = entry.QueryInterface(Components.interfaces.nsIHistoryEntry)
+						.QueryInterface(Components.interfaces.nsISHEntry);
+			if (entry.URI)
+				info.URI = entry.URI;
+			if (entry.referrerURI)
+				info.referrerURI = entry.referrerURI;
+		}
+		return info;
+	},
+ 
+	openNewTab : function(aURI, aReferrer) 
+	{
+		var tab = ('TabbrowserService' in window) ? gBrowser.addTabInternal(aURI, aReferrer, { parentTab : gBrowser.selectedTab.tabId }) : gBrowser.addTab(aURI, aReferrer) ;
+
+		var loadInBackground = this.getPref('browser.tabs.loadInBackground');
+		if (aEvent.shiftKey) loadInBackground = !loadInBackground;
+
+		if (loadInBackground) gBrowser.selectedTab = tab;
+
+		if (aEvent.target.localName == 'menuitem')
+			aEvent.target.parentNode.hidePopup();
+	},
+ 
+	loadLink : function(aURI, aReferrer, aWindow, aHistoryDirection) 
+	{
+		var win = aWindow || document.commandDispatcher.focusedWindow;
+		if (win == window) return;
+
+		var docShell = win
+				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+				.getInterface(Components.interfaces.nsIWebNavigation)
+				.QueryInterface(Components.interfaces.nsIDocShellTreeItem);
+		if (docShell.itemType && docShell.itemType != Components.interfaces.nsIDocShellTreeItem.typeContent)
+			return;
+
+		// もし読み込むページがすでに前後の履歴にある場合は、そちらを優先する
+		if (
+			aHistoryDirection != 0 &&
+			win == gBrowser.contentWindow // フレーム内については未実装……
+			) {
+			var SH    = gBrowser.sessionHistory;
+			var index = SH.index + (aHistoryDirection > 0 ? 1 : -1 );
+			if (index > -1 && index < SH.count) {
+				var entry = this.getHistoryEntryAt(index);
+				if (entry.URI.spec == aURI) {
+					gBrowser.webNavigation.gotoIndex(index);
+					return;
+				}
+			}
+		}
+
+		docShell.loadURI(aURI, docShell.LOAD_FLAGS_IS_LINK , aReferrer, null, null);
+	},
+  
+	// do rewind/fastforward 
+	 
+	goRewind : function(aForceToRewind, aEvent) 
+	{
+		this.rewindOrFastforward('rewind', aForceToRewind, aEvent);
+	},
+ 
+	goPrevious : function(aEvent) 
+	{
+		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
+
+		var link = this.getLinkInMainFrame(
+				this.getLinksFromAllFrames('prev')
+			);
+		if (!link) return;
+
+		var usetab = aEvent && aEvent.button == 1;
 
 		if ('referrerBlocked' in gBrowser.selectedTab && gBrowser.selectedTab.referrerBlocked)
 			link.referrer = null;
 
 		if (usetab)
-			rewindforwardOpenNewTab(link.href, link.referrer);
+			this.openNewTab(link.href, link.referrer);
 		else
-			rewindforwardLoadLink(link.href, link.referrer, link.view, (aType == 'rewind' ? -1 : 1 ));
-
-		return;
-	}
-
-
-	var SH      = gBrowser.sessionHistory;
-	var current = rewindforwardGetHistoryEntryAt(SH.index);
-	var c_host  = current.URI ? current.URI.host : null ;
-
-	var check = (aType == 'rewind') ? function(aIndex) { return aIndex > -1 } : function(aIndex) { return aIndex < SH.count }
-	var step  = (aType == 'rewind') ? -1 : 1 ;
-	var start = (aType == 'rewind') ? SH.index-1 : SH.index+1 ;
-
-	var entry,
-		t_host;
-	for (var i = start; check(i); i += step)
+			this.loadLink(link.href, link.referrer, link.view, -1);
+	},
+ 
+	goFastforward : function(aForceToFastforward, aEvent) 
 	{
-		entry  = rewindforwardGetHistoryEntryAt(i);
-		t_host = entry.URI ? entry.URI.host : null ;
-		if ((c_host && !t_host) || (!c_host && t_host) || (c_host != t_host)) {
+		this.rewindOrFastforward('fastforward', aForceToFastforward, aEvent);
+	},
+ 
+	goNext : function(aEvent) 
+	{
+		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
 
-			if (rewindforwardGetPref('rewindforward.goToEndPointOfCurrentDomain')) {
-				if (i == start) {
-					c_host = t_host;
-					continue;
-				}
-				i -= step;
-			}
+		var link = this.getLinkInMainFrame(
+				this.getLinksFromAllFrames('next')
+			);
+		if (!link) return;
+
+		var usetab = aEvent && aEvent.button == 1;
+
+		if ('referrerBlocked' in gBrowser.selectedTab && gBrowser.selectedTab.referrerBlocked)
+			link.referrer = null;
+
+		if (usetab)
+			this.openNewTab(link.href, link.referrer);
+		else
+			this.loadLink(link.href, link.referrer, link.view, 1);
+	},
+ 
+	rewindOrFastforward : function(aType, aForce, aEvent) 
+	{
+		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
+
+		var usetab = aEvent && aEvent.button == 1;
+
+
+		var link = (aType == 'rewind') ?
+					(
+						this.shouldFindPrevLinks ?
+							this.getLinksFromAllFrames('prev') :
+							null
+					) :
+					(
+						this.shouldFindNextLinks ?
+							this.getLinksFromAllFrames('next') :
+							null
+					);
+
+		if (!aForce && link && link.length) {
+			link = this.getLinkInMainFrame(link);
+
+			if ('referrerBlocked' in gBrowser.selectedTab && gBrowser.selectedTab.referrerBlocked)
+				link.referrer = null;
 
 			if (usetab)
-				rewindforwardOpenNewTab(entry.URI.spec, entry.referrerURI);
-			else {
-				try {
-					gBrowser.webNavigation.gotoIndex(i);
-				}
-				catch(e) {
-				}
-			}
+				this.openNewTab(link.href, link.referrer);
+			else
+				this.loadLink(link.href, link.referrer, link.view, (aType == 'rewind' ? -1 : 1 ));
+
 			return;
 		}
-	}
 
-	if (usetab)
-		rewindforwardOpenNewTab(entry.URI.spec, entry.referrerURI);
-	else
-		gBrowser.webNavigation.gotoIndex((aType == 'rewind') ? 0 : SH.count-1 );
-}
- 
-function rewindforwardGetHistoryEntryAt(aIndex) 
-{
-	var entry  = gBrowser.sessionHistory.getEntryAtIndex(aIndex, false);
-	var info = { URI : null, referrerURI : null };
-	if (entry) {
-		entry = entry.QueryInterface(Components.interfaces.nsIHistoryEntry)
-					.QueryInterface(Components.interfaces.nsISHEntry);
-		if (entry.URI)
-			info.URI = entry.URI;
-		if (entry.referrerURI)
-			info.referrerURI = entry.referrerURI;
-	}
-	return info;
-}
- 
-function rewindforwardOpenNewTab(aURI, aReferrer) 
-{
-	var tab = ('TabbrowserService' in window) ? gBrowser.addTabInternal(aURI, aReferrer, { parentTab : gBrowser.selectedTab.tabId }) : gBrowser.addTab(aURI, aReferrer) ;
 
-	var loadInBackground = rewindforwardGetPref('browser.tabs.loadInBackground');
-	if (aEvent.shiftKey) loadInBackground = !loadInBackground;
+		var SH      = gBrowser.sessionHistory;
+		var current = this.getHistoryEntryAt(SH.index);
+		var c_host  = this.domainRegExp.test(current.URI.spec) ? RegExp.$1 : null ;
 
-	if (loadInBackground) gBrowser.selectedTab = tab;
+		var check = (aType == 'rewind') ? function(aIndex) { return aIndex > -1 } : function(aIndex) { return aIndex < SH.count }
+		var step  = (aType == 'rewind') ? -1 : 1 ;
+		var start = (aType == 'rewind') ? SH.index-1 : SH.index+1 ;
 
-	if (aEvent.target.localName == 'menuitem')
-		aEvent.target.parentNode.hidePopup();
-}
- 
-function rewindforwardLoadLink(aURI, aReferrer, aWindow, aHistoryDirection) 
-{
-	var win = aWindow || document.commandDispatcher.focusedWindow;
-	if (win == window) return;
+		var entry,
+			t_host;
+		for (var i = start; check(i); i += step)
+		{
+			entry  = this.getHistoryEntryAt(i);
+			t_host = this.domainRegExp.test(entry.URI.spec) ? RegExp.$1 : null ;
+			if ((c_host && !t_host) || (!c_host && t_host) || (c_host != t_host)) {
 
-	var winWrapper = new XPCNativeWrapper(win, 'QueryInterface()');
-	var docShell = winWrapper
-			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-			.getInterface(Components.interfaces.nsIWebNavigation)
-			.QueryInterface(Components.interfaces.nsIDocShellTreeItem);
-	if (docShell.itemType && docShell.itemType != Components.interfaces.nsIDocShellTreeItem.typeContent)
-		return;
+				if (this.getPref('rewindforward.goToEndPointOfCurrentDomain')) {
+					if (i == start) {
+						c_host = t_host;
+						continue;
+					}
+					i -= step;
+				}
 
-	// もし読み込むページがすでに前後の履歴にある場合は、そちらを優先する
-	if (
-		aHistoryDirection != 0 &&
-		win == gBrowser.contentWindow // フレーム内については未実装……
-		) {
-		var SH    = gBrowser.sessionHistory;
-		var index = SH.index + (aHistoryDirection > 0 ? 1 : -1 );
-		if (index > -1 && index < SH.count) {
-			var entry = rewindforwardGetHistoryEntryAt(index);
-			if (entry.URI.spec == aURI) {
-				gBrowser.webNavigation.gotoIndex(index);
+				if (usetab)
+					this.openNewTab(entry.URI.spec, entry.referrerURI);
+				else {
+					try {
+						gBrowser.webNavigation.gotoIndex(i);
+					}
+					catch(e) {
+					}
+				}
 				return;
 			}
 		}
-	}
 
-	docShell.loadURI(aURI, docShell.LOAD_FLAGS_IS_LINK , aReferrer, null, null);
-}
- 
-function rewindforwardNewBrowserBack(aEvent) 
-{
-	var button = document.getElementById('back-button');
-	if (aEvent && aEvent.target.id == 'back-button') {
-		if (button.getAttribute('rewindforward-prev') == 'true')
-			return BrowserRewindPrev(aEvent);
-		else if (button.getAttribute('rewindforward-override') == 'navigation')
-			return BrowserRewind(true, aEvent);
-	}
-
-	return __rewindforward__BrowserBack(aEvent);
-}
- 
-function rewindforwardNewBrowserForward(aEvent) 
-{
-	var button = document.getElementById('forward-button');
-	if (aEvent && aEvent.target.id == 'forward-button') {
-		if (button.getAttribute('rewindforward-next') == 'true')
-			return BrowserFastforwardNext(aEvent);
-		else if (button.getAttribute('rewindforward-override') == 'navigation')
-			return BrowserFastforward(true, aEvent);
-	}
-
-	return __rewindforward__BrowserForward(aEvent);
-}
-  
-// get next/prev link 
+		if (usetab)
+			this.openNewTab(entry.URI.spec, entry.referrerURI);
+		else
+			gBrowser.webNavigation.gotoIndex((aType == 'rewind') ? 0 : SH.count-1 );
+	},
+  	
+	// get next/prev link 
 	
-// collect "next" and "previous" links from all frames 
-function rewindforwardGetLinksFromAllFrames(aType)
-{
-	return rewindforwardGetLinksFromAllFramesInternal(
-		[
-			gBrowser.contentWindow
-		],
-		aType
-	);
-}
-function rewindforwardGetLinksFromAllFramesInternal(aFrames, aType)
-{
-	var frames;
-	var frameWrapper;
-	var link;
-	var links = [];
-	var foundLinks;
-	for (var i = 0; i < aFrames.length; i++)
+	// collect "next" and "previous" links from all frames 
+	getLinksFromAllFrames : function(aType)
 	{
-		link = rewindforwardGetFirstLink(aType, aFrames[i]);
-		if (link)
-			links.push(link);
-
-		try {
-			frameWrapper = new XPCNativeWrapper(aFrames[i],
-					'frames'
-				);
-			if (!frameWrapper.frames) continue;
-
-			foundLinks = rewindforwardGetLinksFromAllFramesInternal(frameWrapper.frames, aType);
-			if (foundLinks && foundLinks.length)
-				links = links.concat(foundLinks);
-		}
-		catch(e) {
-		}
-	}
-
-	return links;
-}
- 
-function rewindforwardGetFirstLink(aType, aWindow) 
-{
-	var w = aWindow || document.commandDispatcher.focusedWindow;
-	if (!w || Components.lookupMethod(w, 'top').call(w) != gBrowser.contentWindow)
-		w = gBrowser.contentWindow;
-
-	var winWrapper = new XPCNativeWrapper(w,
-			'document',
-			'QueryInterface()'
+		return this.getLinksFromAllFramesInternal(
+			[gBrowser.contentWindow],
+			aType
 		);
-	var docWrapper = new XPCNativeWrapper(winWrapper.document,
-			'getElementsByTagName()'
-		);
-
-
-	var lastCount = docWrapper.getElementsByTagName('*').length;
-
-	if ('__rewindforward__foundFirstLinks' in w &&
-		w.__rewindforward__foundFirstLinks[aType] &&
-		w.__rewindforward__foundFirstLinks[aType+'LastCount'] == lastCount)
-		return w.__rewindforward__foundFirstLinks[aType];
-
-
-	var domain;
-	try {
-		domain = winWrapper
-			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-			.getInterface(Components.interfaces.nsIWebNavigation)
-			.currentURI.host;
-	}
-	catch(e) {
-	}
-
-	var result      = {};
-	var resultArray = [];
-	var links = [].concat(
-			rewindforwardGetRelatedLinks(aType, aWindow),
-			rewindforwardGetLabeledLinks(aType, aWindow),
-			[rewindforwardGetVirtualLink(aType, aWindow)]
-		);
-	const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
-	var uri;
-
-	for (var i in links)
+	},
+	
+	getLinksFromAllFramesInternal : function(aFrames, aType) 
 	{
-		if (
-			!links[i] ||
-			links[i].href == (new XPCNativeWrapper((new XPCNativeWrapper(links[i].view, 'location')).location, 'href')).href
-			)
-			continue;
-
-		if (!(links[i].href in result)) {
-			resultArray.push(links[i]);
-			result[links[i].href]       = links[i];
-			result[links[i].href].index = resultArray.length-1;
+		var frames;
+		var link;
+		var links = [];
+		var foundLinks;
+		for (var i = 0; i < aFrames.length; i++)
+		{
+			link = this.getFirstLink(aType, aFrames[i]);
+			if (link) {
+				links.push(link);
+			}
 
 			try {
-				uri = ioService.newURI(links[i].href, null, null);
-				if (uri.host && uri.host == domain)
-					result[links[i].href].level += kREWINDFORWARD_LINK_SAME_DOMAIN;
+				if (!aFrames[i].frames) continue;
+
+				foundLinks = this.getLinksFromAllFramesInternal(aFrames[i].frames, aType);
+				if (foundLinks && foundLinks.length)
+					links = links.concat(foundLinks);
 			}
 			catch(e) {
 			}
 		}
-		else if (!(result[links[i].href].type & links[i].type)) {
-			result[links[i].href].level += links[i].level;
-			result[links[i].href].type  += links[i].type;
+
+		return links;
+	},
+  
+	// find "next" and "previous" link in a window 
+	getFirstLink : function(aType, aWindow)
+	{
+		var w = aWindow || document.commandDispatcher.focusedWindow;
+		if (!w || w.top != gBrowser.contentWindow)
+			w = gBrowser.contentWindow;
+
+		var d = w.document;
+		var lastCount = d.getElementsByTagName('*').length;
+
+		var lastResult = d.documentElement.getAttribute(this.kFOUND_PREFIX + aType);
+		if (lastResult &&
+			d.documentElement.getAttribute(this.kFOUND_PREFIX + aType+'LastCount') == lastCount) {
+			lastResult = eval(lastResult);
+			lastResult.referrer = referrer;
+			lastResult.view = w;
+			return lastResult;
 		}
 
-	}
-
-
-	if (kREWINDFORWARD_DEBUG) {
-		dump('=====REWINDFORWARD FOUND LINKS START=====\n');
-		for (i = 0; i < resultArray.length; i++)
-			if (resultArray[i])
-				dump(resultArray[i].href +' : '+resultArray[i].level+'\n');
-		dump('=====REWINDFORWARD FOUND LINKS END=====\n');
-	}
-
-
-	resultArray.sort(function(aA, aB) {
-		return (aA.level < aB.level) ? 1 : -1 ;
-	});
-
-	if (resultArray.length) {
-		if (!('__rewindforward__foundFirstLinks' in w))
-			w.__rewindforward__foundFirstLinks = {};
-
-		w.__rewindforward__foundFirstLinks[aType] = resultArray[0];
-		w.__rewindforward__foundFirstLinks[aType+'LastCount'] = lastCount;
-		return resultArray[0];
-	}
-
-	return null;
-}
-	
-// find "next" and "previous" link in a window 
-	
-function rewindforwardGetRelatedLinks(aType, aWindow) 
-{
-	var w = aWindow || document.commandDispatcher.focusedWindow;
-	if (!w || Components.lookupMethod(w, 'top').call(w) != gBrowser.contentWindow)
-		w = gBrowser.contentWindow;
-
-	var winWrapper = new XPCNativeWrapper(w,
-			'document',
-			'QueryInterface()'
-		);
-	var docWrapper = new XPCNativeWrapper(winWrapper.document,
-			'getElementsByTagName()'
-		);
-
-	var lastCount = docWrapper.getElementsByTagName('*').length;
-
-	// use cache
-	if ('__rewindforward__foundRelatedLinks' in w &&
-		w.__rewindforward__foundRelatedLinks[aType] &&
-		w.__rewindforward__foundRelatedLinks[aType+'LastCount'] == lastCount)
-		return w.__rewindforward__foundRelatedLinks[aType];
-
-	const rel = aType;
-	const rev = (rel == 'next') ? 'prev' : 'next' ;
-
-	var rate = kREWINDFORWARD_LINK_RELATED;
-
-
-	// get rules to find links
-	var customRule;
-	var domain;
-
-	const uri = winWrapper
-			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-			.getInterface(Components.interfaces.nsIWebNavigation)
-			.currentURI;
-	try {
-		domain = encodeURI(uri.host);
-	}
-	catch(e) {
-	}
-	if (domain) {
-		const pref = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPref);
-		const branch = pref.getBranch('rewindforward.rule.'+rel+'.');
-
-		var count   = { value : 0 };
-		const list  = branch.getChildList('', count);
-
-		var regexp  = new RegExp('', 'g');
-		var matchingResult = domain.match(
-				regexp.compile([
-					'(',
-					list.join('\n')
-						.replace(/^\*\n|\n\*$/g,'')
-						.replace(/\n\*\n/g,'\n')
-						.replace(/\./g, '\\.')
-						.replace(/\?/g, '.')
-						.replace(/\*/g, '.+')
-						.replace(/\n/g,')|('),
-					')'
-				].join(''))
+		var domain = this.domainRegExp.test(w.location.href) ? RegExp.$1 : null ;
+		var result      = {};
+		var resultArray = [];
+		var links = [].concat(
+				this.getRelatedLinks(aType, aWindow),
+				this.getLabeledLinks(aType, aWindow),
+				[this.getVirtualLink(aType, aWindow)]
 			);
-		if (matchingResult) {
-			// String.match() returns the found word as a first element of the result, so we have to remove it from the list.
-			matchingResult.shift();
-			// Replace other results to single letters for the next step.
-			matchingResult = ['[', matchingResult.join(']['), ']'].join('')
-								.replace(/\[(undefined)?\]/g, '/')
-								.replace(/\[|\]/g, '');
-//dump('result: '+matchingResult+'\n')
-			// Which rule matched? We can know it with this step.
-			const pos = matchingResult.indexOf(domain);
-//dump('found at '+pos+'\n');
-			if (pos > -1) {
-				// "list[pos]" is the rule. But if there is "*" rule, list[0] is "*" and the rule is "list[pos+1]".
-				const offset = rewindforwardGetPref('rewindforward.rule.'+rel+'.*') ? 1 : 0 ;
-				const customRuleEntry = list[pos+offset];
-//dump('found entry: '+customRuleEntry+'\n');
-				customRule = rewindforwardGetPref('rewindforward.rule.'+rel+'.'+customRuleEntry);
+
+		var referrer = Components.classes['@mozilla.org/network/io-service;1']
+						.getService(Components.interfaces.nsIIOService)
+						.newURI(w.location.href, null, null);
+		links = links.filter(function(aLink) {
+			return aLink ? true : false ;
+		});
+
+		var uri;
+		for (var i in links)
+		{
+			if (links[i].href == w.location.href) continue;
+
+			uri = links[i].href;
+			if (uri in result) continue;
+
+			result[uri] = links[i];
+			links[i].index = resultArray.length-1;
+			if (this.domainRegExp.test(uri) && RegExp.$1 == domain)
+				result[uri].level = (result[uri].level || 0) + this.kLINK_SAME_DOMAIN;
+			resultArray.push(result[uri]);
+
+//			else if (!(result[uri].type & links[i].type)) {
+//				result[uri].level = (result[uri].level || 0) + links[i].level;
+//				result[uri].type  = (result[uri].type || 0)  + links[i].type;
+//			}
+		}
+
+		resultArray.sort(function(aA, aB) {
+			return aB.level - aA.level;
+		});
+
+		if (resultArray.length) {
+			d.documentElement.setAttribute(this.kFOUND_PREFIX + aType, resultArray[0].toSource());
+			d.documentElement.setAttribute(this.kFOUND_PREFIX + aType+'LastCount', lastCount);
+
+			resultArray[0].referrer = referrer;
+			resultArray[0].view = w;
+
+			return resultArray[0];
+		}
+
+		return null;
+	},
+	 
+	getRelatedLinks : function(aType, aWindow) 
+	{
+		var w = aWindow || document.commandDispatcher.focusedWindow;
+		if (!w || w.top != gBrowser.contentWindow)
+			w = gBrowser.contentWindow;
+
+		var d = w.document;
+		var lastCount = d.getElementsByTagName('*').length;
+
+		// use cache
+		var lastResult = d.documentElement.getAttribute(this.kRELATED_PREFIX + aType);
+		if (lastResult &&
+			d.documentElement.getAttribute(this.kRELATED_PREFIX + aType+'LastCount') == lastCount) {
+			lastResult = eval(lastResult);
+			return lastResult;
+		}
+
+		const rel = aType;
+		const rev = (rel == 'next') ? 'prev' : 'next' ;
+
+		var rate = this.kLINK_RELATED;
+
+		// get rules to find links
+		var customRule;
+		var domain = this.domainRegExp.test(w.location.href) ? RegExp.$1 : null ;
+		if (domain) {
+			const pref = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPref);
+			const branch = pref.getBranch('rewindforward.rule.'+rel+'.');
+
+			var count   = { value : 0 };
+			const list  = branch.getChildList('', count);
+
+			var regexp  = new RegExp('', 'g');
+			var matchingResult = domain.match(
+					regexp.compile([
+						'(',
+						list.join('\n')
+							.replace(/^\*\n|\n\*$/g,'')
+							.replace(/\n\*\n/g,'\n')
+							.replace(/\./g, '\\.')
+							.replace(/\?/g, '.')
+							.replace(/\*/g, '.+')
+							.replace(/\n/g,')|('),
+						')'
+					].join(''))
+				);
+			if (matchingResult) {
+				// String.match() returns the found word as a first element of the result, so we have to remove it from the list.
+				matchingResult.shift();
+				// Replace other results to single letters for the next step.
+				matchingResult = ['[', matchingResult.join(']['), ']'].join('')
+									.replace(/\[(undefined)?\]/g, '/')
+									.replace(/\[|\]/g, '');
+	//dump('result: '+matchingResult+'\n')
+				// Which rule matched? We can know it with this step.
+				const pos = matchingResult.indexOf(domain);
+	//dump('found at '+pos+'\n');
+				if (pos > -1) {
+					// "list[pos]" is the rule. But if there is "*" rule, list[0] is "*" and the rule is "list[pos+1]".
+					const offset = this.getPref('rewindforward.rule.'+rel+'.*') ? 1 : 0 ;
+					const customRuleEntry = list[pos+offset];
+	//dump('found entry: '+customRuleEntry+'\n');
+					customRule = this.getPref('rewindforward.rule.'+rel+'.'+customRuleEntry);
+				}
+			}
+			if (!customRule) {
+				customRule = this.getPref('rewindforward.rule.'+rel+'.*');
+			}
+			else {
+				rate = this.kLINK_RELATED_CUSTOM;
 			}
 		}
-		if (!customRule) {
-			customRule = rewindforwardGetPref('rewindforward.rule.'+rel+'.*');
+
+
+		// find "next" or "prev" link with XPath
+		var xpath;
+		if (customRule) {
+			xpath = customRule;
 		}
 		else {
-			rate = kREWINDFORWARD_LINK_RELATED_CUSTOM;
+			xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rel, " "), " ', rel, ' ")]'].join('');
 		}
-	}
+	//dump('XPATH: '+xpath+'\n');
+		var links = this.getLinksFromXPath(xpath, d, rate, this.kLINK_TYPE_RELATED);
+
+		// find reverse links
+		if (!customRule && !links.length) {
+			xpath = ['descendant::*[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rev, " "), " ', rev, ' ")]'].join('');
+			links = this.getLinksFromXPath(xpath, d, this.kLINK_RELATED);
+		}
 
 
-	// find "next" or "prev" link with XPath
-	var xpath;
-	if (customRule) {
-		xpath = customRule;
-	}
-	else {
-		xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rel, " "), " ', rel, ' ")]'].join('');
-	}
-//dump('XPATH: '+xpath+'\n');
-	var links = rewindforwardGetLinksFromXPath(xpath, winWrapper.document, rate, kREWINDFORWARD_LINK_TYPE_RELATED);
+	//dump('FOUND RELATED LINKS: '+links.length+'\n')
+		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType, links.toSource());
+		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType+'LastCount', lastCount);
 
-	// find reverse links
-	if (!customRule && !links.length) {
-		xpath = ['descendant::*[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rev, " "), " ', rev, ' ")]'].join('');
-		links = rewindforwardGetLinksFromXPath(xpath, winWrapper.document, kREWINDFORWARD_LINK_RELATED);
-	}
-
-	if (!('__rewindforward__foundRelatedLinks' in w))
-		w.__rewindforward__foundRelatedLinks = {};
-
-//dump('FOUND RELATED LINKS: '+links.length+'\n')
-	w.__rewindforward__foundRelatedLinks[aType] = links;
-	w.__rewindforward__foundRelatedLinks[aType+'LastCount'] = lastCount;
-
-	return links;
-}
+		return links;
+	},
  
-function rewindforwardGetLabeledLinks(aType, aWindow) 
-{
-	var w = aWindow || document.commandDispatcher.focusedWindow;
-	if (!w || Components.lookupMethod(w, 'top').call(w) != gBrowser.contentWindow)
-		w = gBrowser.contentWindow;
-
-	var winWrapper = new XPCNativeWrapper(w,
-			'document',
-			'QueryInterface()'
-		);
-	var docWrapper = new XPCNativeWrapper(winWrapper.document,
-			'getElementsByTagName()'
-		);
-
-	var lastCount = docWrapper.getElementsByTagName('*').length;
-
-	// use cache
-	if ('__rewindforward__foundLabeledLinks' in w &&
-		w.__rewindforward__foundLabeledLinks[aType] &&
-		w.__rewindforward__foundLabeledLinks[aType+'LastCount'] == lastCount)
-		return w.__rewindforward__foundLabeledLinks[aType];
-
-	const rel = aType;
-
-	var links = [];
-
-	var xpath;
-	xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT")'];
-
-	var positivePatterns = [];
-
-	var matchingPatterns = document.getElementById(rel == 'next' ? 'Browser:Fastforward' : 'Browser:Rewind' ).getAttribute('patterns');
-	if (matchingPatterns) {
-		positivePatterns = matchingPatterns.split('|');
-		xpath.push(' and contains(concat(@alt, " ", @title, " ", @src, " ", text()), "');
-		xpath.push(matchingPatterns.replace(/\|/g, '") or contains(concat(@alt, " ", @title, " ", @src, " ", text()), "'));
-		xpath.push('")');
-	}
-
-	matchingPatterns = document.getElementById(rel == 'next' ? 'Browser:Fastforward' : 'Browser:Rewind' ).getAttribute('patterns-blacklist');
-	if (matchingPatterns) {
-		xpath.push(' and not(contains(concat(@alt, " ", @title, " ", @src, " ", text()), "');
-		xpath.push(matchingPatterns.replace(/\|/g, '") or contains(concat(@alt, " ", @title, " ", @src, " ", text()), "'));
-		xpath.push('"))');
-	}
-
-
-	xpath.push(']');
-	xpath = xpath.join('');
-
-	links = rewindforwardGetLinksFromXPath(xpath, winWrapper.document, kREWINDFORWARD_LINK_LABELED, kREWINDFORWARD_LINK_TYPE_LABELED);
-
-	var i, j;
-	for (i = 0; i < links.length; i++)
+	getLabeledLinks : function(aType, aWindow) 
 	{
-		links[i].level--;
-		for (j = 0; j < positivePatterns.length; j++)
-		{
-			if (links[i].label.indexOf(positivePatterns[j]) > -1)
-				links[i].level++;
+		var w = aWindow || document.commandDispatcher.focusedWindow;
+		if (!w || w.top != gBrowser.contentWindow)
+			w = gBrowser.contentWindow;
+
+		var d = w.document;
+		var lastCount = d.getElementsByTagName('*').length;
+
+		// use cache
+		var lastResult = d.documentElement.getAttribute(this.kLABELED_PREFIX + aType);
+		if (lastResult &&
+			d.documentElement.getAttribute(this.kLABELED_PREFIX + aType+'LastCount') == lastCount) {
+			lastResult = eval(lastResult);
+			return lastResult;
 		}
-	}
 
-	if (!('__rewindforward__foundLabeledLinks' in w))
-		w.__rewindforward__foundLabeledLinks = {};
+		const rel = aType;
 
-	w.__rewindforward__foundLabeledLinks[aType] = links;
-	w.__rewindforward__foundLabeledLinks[aType+'LastCount'] = lastCount;
+		var links = [];
 
-	return links;
-}
- 
-function rewindforwardGetLinksFromXPath(aXPath, aXMLDocument, aLevel, aType) 
-{
-	const XHTMLNS = 'http://www.w3.org/1999/xhtml';
-	const XLinkNS = 'http://www.w3.org/1999/xlink';
+		var xpath;
+		xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT")'];
 
-	var nodes = [];
+		var positivePatterns = [];
 
-	// http://www.hawk.34sp.com/stdpls/xml/
-	// http://www.hawk.34sp.com/stdpls/xml/dom_xpath.html
-	// http://www.homoon.jp/users/www/doc/CR-css3-selectors-20011113.shtml
-	const xmlDoc  = aXMLDocument;
-	var docWrapper = new XPCNativeWrapper(xmlDoc,
-			'documentElement',
-			'createNSResolver()',
-			'createExpression()',
-			'location'
-		);
-	const context = docWrapper.documentElement;
-//	const type    = XPathResult.FIRST_ORDERED_NODE_TYPE;
-	const type    = XPathResult.ORDERED_NODE_ITERATOR_TYPE;
-//	const resolver  = xmlDoc.createNSResolver(xmlDoc.documentElement);
-	const resolver = {
-		lookupNamespaceURI : function(aPrefix)
+		var matchingPatterns = document.getElementById(rel == 'next' ? 'Browser:Fastforward' : 'Browser:Rewind' ).getAttribute('patterns');
+		if (matchingPatterns) {
+			positivePatterns = matchingPatterns.split('|');
+			xpath.push(' and contains(concat(@alt, " ", @title, " ", @src, " ", text()), "');
+			xpath.push(matchingPatterns.replace(/\|/g, '") or contains(concat(@alt, " ", @title, " ", @src, " ", text()), "'));
+			xpath.push('")');
+		}
+
+		matchingPatterns = document.getElementById(rel == 'next' ? 'Browser:Fastforward' : 'Browser:Rewind' ).getAttribute('patterns-blacklist');
+		if (matchingPatterns) {
+			xpath.push(' and not(contains(concat(@alt, " ", @title, " ", @src, " ", text()), "');
+			xpath.push(matchingPatterns.replace(/\|/g, '") or contains(concat(@alt, " ", @title, " ", @src, " ", text()), "'));
+			xpath.push('"))');
+		}
+
+
+		xpath.push(']');
+		xpath = xpath.join('');
+
+		links = this.getLinksFromXPath(xpath, d, this.kLINK_LABELED, this.kLINK_TYPE_LABELED);
+
+		var i, j;
+		for (i = 0; i < links.length; i++)
 		{
-			switch (aPrefix)
+			links[i].level--;
+			for (j = 0; j < positivePatterns.length; j++)
 			{
-				case 'xhtml':
-					return XHTMLNS;
-				default:
-					return '';
+				if (links[i].label.indexOf(positivePatterns[j]) > -1)
+					links[i].level++;
 			}
 		}
-	};
 
-	try {
-		var expression = docWrapper.createExpression(aXPath, resolver);
-		var result = expression.evaluate(context, type, null);
-	}
-	catch(e) {
-		dump('rewindforwardGetLinksFromXPath >>>>>> ERROR <<<<<<<\n'+e+'\n');
-		return nodes;
-	}
+		d.documentElement.setAttribute(this.kLABELED_PREFIX + aType, links.toSource());
+		d.documentElement.setAttribute(this.kLABELED_PREFIX + aType+'LastCount', lastCount);
 
+		return links;
+	},
+ 
+	getLinksFromXPath : function(aXPath, aXMLDocument, aLevel, aType) 
+	{
+		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
+		const XLinkNS = 'http://www.w3.org/1999/xlink';
 
-	var link;
-	var node;
-	var nodeWrapper;
-	do {
-		try {
-			node = result.iterateNext();
-		}
-		catch(e) {
-			node = null;
-		}
-		if (!node) break;
+		var links = [];
 
-		nodeWrapper = new XPCNativeWrapper(node,
-				'nodeType',
-				'parentNode',
-				'localName'
-			);
-
-		if (nodeWrapper.nodeType != Node.ELEMENT_NODE)
-			node = nodeWrapper.parentNode;
-		while (
-			node &&
-			(nodeWrapper = new XPCNativeWrapper(node,
-					'nodeType',
-					'parentNode',
-					'localName'
-				)) &&
-			!/^(a|area|link)$/.test((nodeWrapper.localName || '').toLowerCase()) &&
-			nodeWrapper.parentNode
-			)
-			node = nodeWrapper.parentNode;
-
-		if (nodeWrapper.nodeType != Node.ELEMENT_NODE)
-			continue;
-
-		nodeWrapper = new XPCNativeWrapper(node,
-				'getAttributeNS()',
-				'getAttribute()',
-				'textContent'
-			);
-
-		link = {
-				level : aLevel,
-				label : (
-						rewindforwardGetNativeProperty(node, 'title') ||
-						nodeWrapper.getAttributeNS(XLinkNS, 'title') ||
-						nodeWrapper.getAttributeNS(XHTMLNS, 'title') ||
-						nodeWrapper.getAttribute('title') ||
-						nodeWrapper.textContent
-						),
-				href : (
-						rewindforwardGetNativeProperty(node, 'href') ||
-						nodeWrapper.getAttributeNS(XLinkNS, 'href') ||
-						nodeWrapper.getAttributeNS(XHTMLNS, 'href') ||
-						nodeWrapper.getAttribute('href')
-						),
-				referrer : Components.classes['@mozilla.org/network/io-service;1']
-				                     .getService(Components.interfaces.nsIIOService)
-				                     .newURI(docWrapper.location, null, null),
-				view : rewindforwardGetDocShellFromDocument(xmlDoc)
-						.QueryInterface(Components.interfaces.nsIWebNavigation)
-						.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-						.getInterface(Components.interfaces.nsIDOMWindow),
-				type : (aType || 0)
-			};
-
-		if (link.href) nodes.push(link);
-
-	} while(true);
-
-	return nodes;
-}
-  
-function rewindforwardGetVirtualLink(aType, aWindow) 
-{
-	if (!rf_shouldUseVirtualLinks()) return null;
-
-	var w = aWindow || document.commandDispatcher.focusedWindow;
-	if (!w || Components.lookupMethod(w, 'top').call(w) != gBrowser.contentWindow)
-		w = gBrowser.contentWindow;
-
-	var winWrapper = new XPCNativeWrapper(w,
-			'document',
-			'QueryInterface()'
-		);
-	var docWrapper = new XPCNativeWrapper(winWrapper.document,
-			'getElementsByTagName()'
-		);
-
-	var lastCount = docWrapper.getElementsByTagName('*').length;
-
-	// use cache
-	if ('__rewindforward__foundVirtualLink' in w &&
-		w.__rewindforward__foundVirtualLink[aType] &&
-		w.__rewindforward__foundVirtualLink[aType+'LastCount'] == lastCount) {
-		return w.__rewindforward__foundVirtualLink[aType].href ? w.__rewindforward__foundVirtualLink[aType] : null ;
-	}
-
-	var link = {
-			level   : kREWINDFORWARD_LINK_INCREMENTED,
-			href    : rewindforwardIncrementPageURI(
-				aType == 'next' ? 1 : -1 ,
-				(new XPCNativeWrapper((new XPCNativeWrapper(w, 'location')).location, 'href')).href
-			),
-			virtual : true,
-			view    : w,
-			type    : kREWINDFORWARD_LINK_TYPE_VIRTUAL
+		// http://www.hawk.34sp.com/stdpls/xml/
+		// http://www.hawk.34sp.com/stdpls/xml/dom_xpath.html
+		// http://www.homoon.jp/users/www/doc/CR-css3-selectors-20011113.shtml
+		const xmlDoc  = aXMLDocument;
+		const context = xmlDoc.documentElement;
+	//	const type    = XPathResult.FIRST_ORDERED_NODE_TYPE;
+		const type    = XPathResult.ORDERED_NODE_ITERATOR_TYPE;
+	//	const resolver  = xmlDoc.createNSResolver(xmlDoc.documentElement);
+		const resolver = {
+			lookupNamespaceURI : function(aPrefix)
+			{
+				switch (aPrefix)
+				{
+					case 'xhtml':
+						return XHTMLNS;
+					default:
+						return '';
+				}
+			}
 		};
 
-	if (!('__rewindforward__foundVirtualLink' in w))
-		w.__rewindforward__foundVirtualLink = {};
+		try {
+			var expression = xmlDoc.createExpression(aXPath, resolver);
+			var result = expression.evaluate(context, type, null);
+		}
+		catch(e) {
+			dump('this.getLinksFromXPath >>>>>> ERROR <<<<<<<\n'+e+'\n');
+			return links;
+		}
 
-	w.__rewindforward__foundVirtualLink[aType] = link;
-	w.__rewindforward__foundVirtualLink[aType+'LastCount'] = lastCount;
 
-	return link.href ? link : null ;
-}
-	
-function rewindforwardIncrementPageURI(aCount, aURI) 
-{
-	var res = aURI.match(/^\w+:\/\/[^\/]+\/([^0-9]*|.+[0-9]+[^0-9]+)([0-9]+)[^0-9]*$/);
-	if (!res || !res[2]) return null;
+		var link;
+		var node;
+		do {
+			try {
+				node = result.iterateNext();
+			}
+			catch(e) {
+				node = null;
+			}
+			if (!node) break;
 
-	var prefix = res[1];
-	var num    = res[2];
+			if (node.nodeType != Node.ELEMENT_NODE)
+				node = node.parentNode;
+			while (
+				node &&
+				!/^(a|area|link)$/.test((node.localName || '').toLowerCase()) &&
+				node.parentNode
+				)
+				node = node.parentNode;
 
-	var newNum = String(Number(num.replace(/^0+/, ''))+aCount);
-	while (newNum.length < num.length)
-		newNum = '0' + newNum;
+			if (node.nodeType != Node.ELEMENT_NODE)
+				continue;
 
-	var newURI = [
-			aURI.substring(0, aURI.lastIndexOf(prefix)+prefix.length),
-			newNum,
-			aURI.substring(aURI.lastIndexOf(prefix)+prefix.length+num.length, aURI.length)
-		].join('');
+			link = {
+					level : aLevel,
+					label : (
+							node.title ||
+							node.getAttributeNS(XLinkNS, 'title') ||
+							node.getAttributeNS(XHTMLNS, 'title') ||
+							node.getAttribute('title') ||
+							node.textContent
+							),
+					href : (
+							node.href ||
+							node.getAttributeNS(XLinkNS, 'href') ||
+							node.getAttributeNS(XHTMLNS, 'href') ||
+							node.getAttribute('href')
+							),
+					type : (aType || 0)
+				};
 
-	return newURI;
-}
-   
-// get the link in the most largest frame, from an array of links 
-function rewindforwardGetLinkInMainFrame(aLinks)
-{
-	if (!aLinks || !aLinks.length) return null;
+			if (link.href) links.push(link);
 
-	var link = null;
-	var lastSize = 0;
-	var newSize;
-	for (var i in aLinks)
+		} while(true);
+
+		return links;
+	},
+ 
+	getVirtualLink : function(aType, aWindow) 
 	{
-		viewWrapper = new XPCNativeWrapper(aLinks[i].view,
-				'innerWidth',
-				'innerHeight'
-			);
-		newSize = viewWrapper.innerWidth * viewWrapper.innerHeight;
-		if (newSize <= lastSize) continue;
+		if (!this.shouldUseVirtualLinks) return null;
 
-		lastSize = newSize;
-		link = aLinks[i];
-	}
+		var w = aWindow || document.commandDispatcher.focusedWindow;
+		if (!w || w.top != gBrowser.contentWindow)
+			w = gBrowser.contentWindow;
 
-	return link;
-}
+		var d = w.document;
+		var lastCount = d.getElementsByTagName('*').length;
+
+		// use cache
+		var lastResult = d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType);
+		if (lastResult &&
+			d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount') == lastCount) {
+			lastResult = eval(lastResult);
+			return lastResult.href ? lastResult : null ;
+		}
+
+		var link = {
+				level   : this.kLINK_INCREMENTED,
+				href    : this.incrementPageURI(
+					aType == 'next' ? 1 : -1 ,
+					w.location.href
+				),
+				virtual : true,
+				type    : this.kLINK_TYPE_VIRTUAL
+			};
+
+		d.documentElement.setAttribute(this.kVIRTUAL_PREFIX + aType, link.toSource());
+		d.documentElement.setAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount', lastCount);
+
+		return link.href ? link : null ;
+	},
+	 
+	incrementPageURI : function(aCount, aURI) 
+	{
+		var res = aURI.match(/^\w+:\/\/[^\/]+\/([^0-9]*|.+[0-9]+[^0-9]+)([0-9]+)[^0-9]*$/);
+		if (!res || !res[2]) return null;
+
+		var prefix = res[1];
+		var num    = res[2];
+
+		var newNum = String(Number(num.replace(/^0+/, ''))+aCount);
+		while (newNum.length < num.length)
+			newNum = '0' + newNum;
+
+		var newURI = [
+				aURI.substring(0, aURI.lastIndexOf(prefix)+prefix.length),
+				newNum,
+				aURI.substring(aURI.lastIndexOf(prefix)+prefix.length+num.length, aURI.length)
+			].join('');
+
+		return newURI;
+	},
+   
+	// get the link in the most largest frame, from an array of links 
+	getLinkInMainFrame : function(aLinks)
+	{
+		if (!aLinks || !aLinks.length) return null;
+
+		var link = null;
+		var lastSize = 0;
+		var newSize;
+		for (var i in aLinks)
+		{
+			newSize = aLinks[i].view.innerWidth * aLinks[i].view.innerHeight;
+			if (newSize <= lastSize) continue;
+
+			lastSize = newSize;
+			link = aLinks[i];
+		}
+
+		return link;
+	},
   
 // update UI 
 	
-function rewindforwardUpdateButtons(aFindLinks) 
-{
-	var frames = Components.lookupMethod(gBrowser.contentWindow, 'frames').call(gBrowser.contentWindow);
-	if (frames.length) {
-		function checkSubFramesAreCompletelyLoaded(aFrames)
-		{
-			var result = true;
-			for (var i = 0; i < aFrames.length; i++)
-			{
-				if (Components.lookupMethod(aFrames[i], 'top').call(aFrames[i]) != gBrowser.contentWindow)
-					return false;
-				if (result)
-					result = checkSubFramesAreCompletelyLoaded(Components.lookupMethod(aFrames[i], 'frames').call(aFrames[i]))
+	updateButtons : function(aFindLinks) 
+	{
+		var frames = gBrowser.contentWindow.frames;
+		if (frames.length) {
+			if (!this.checkSubFramesAreCompletelyLoaded(frames)) {
+				window.setTimeout(this.delayedUpdateButtons, 10, aFindLinks, this);
+				return;
 			}
-			return result;
 		}
-		if (!checkSubFramesAreCompletelyLoaded(frames)) {
-			window.setTimeout(rewindforwardUpdateButtons, 10, aFindLinks);
-			return;
-		}
-	}
+		this.updateRewindButton(aFindLinks);
+		this.updateFastforwardButton(aFindLinks);
+	},
+	 
+	updateRewindButton : function(aFindLinks) 
+	{
+		var nav = gBrowser.webNavigation;
 
-	var nav = gBrowser.webNavigation;
+		var broadcaster, disabled, link;
 
-	var broadcaster, disabled, link;
+		var toEndPoint = this.getPref('rewindforward.goToEndPointOfCurrentDomain');
+		var navigationTooltipAttr = toEndPoint ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation' ;
 
-	var toEndPoint = rewindforwardGetPref('rewindforward.goToEndPointOfCurrentDomain');
-	var navigationTooltipAttr = toEndPoint ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation' ;
+		var rewindButton   = document.getElementById('rewind-button');
+		var rewirdMenuItem = document.getElementById('rewindMenuItem');
+		var prevButton     = document.getElementById('rewind-prev-button');
+		var backButton     = this.shouldOverrideBackButtons ? document.getElementById('back-button') : null ;
 
-	var rewindButton   = document.getElementById('rewind-button');
-	var rewirdMenuItem = document.getElementById('rewindMenuItem');
-	var prevButton     = document.getElementById('rewind-prev-button');
-	var backButton     = rf_shouldOverrideBackButtons() ? document.getElementById('back-button') : null ;
-	if (rewindButton || prevButton || backButton) {
-		link = rewindforwardGetLinkInMainFrame(
-			rewindforwardGetLinksFromAllFrames('prev')
-		);
+		if (!rewindButton && !prevButton && !backButton) return;
+
+		link = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
 		if (backButton && !backButton.getAttribute('rewindforward-original-tooltip')) {
 			backButton.setAttribute('rewindforward-original-tooltip', backButton.getAttribute('tooltiptext'));
 			backButton.setAttribute('rewindforward-original-label',   backButton.getAttribute('label'));
@@ -822,87 +752,95 @@ function rewindforwardUpdateButtons(aFindLinks)
 			}
 		}
 
-		if (rewindButton ||
-			((!rewindButton || !rewindButton.hidden) && backButton && !backButton.hidden)) {
-			if (!aFindLinks || !rf_shouldFindPrevLinks() ||
-				(prevButton && !prevButton.hidden))
-				link = null;
-			else if (!link) {
-				link = rewindforwardGetLinkInMainFrame(
-					rewindforwardGetLinksFromAllFrames('prev')
-				);
-			}
+		if ((!rewindButton || rewindButton.hidden) && (!backButton || backButton.hidden)) return;
 
-			broadcaster = document.getElementById('Browser:Rewind');
-			disabled    = broadcaster.hasAttribute('disabled');
-			if (disabled == Boolean(link) || disabled == nav.canGoBack) {
-				if (disabled || link || nav.canGoBack)
-					broadcaster.removeAttribute('disabled');
-				else
-					broadcaster.setAttribute('disabled', true);
-			}
-			if (!link) {
-				if (rewindButton) {
-					rewindButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-					rewindButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-					rewindButton.setAttribute('mode', 'navigation');
-				}
-				broadcaster.setAttribute('mode', 'navigation');
+		if (!aFindLinks || !this.shouldFindPrevLinks ||
+			(prevButton && !prevButton.hidden)) {
+			link = null;
+		}
+		else if (!link) {
+			link = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
+		}
 
+		broadcaster = document.getElementById('Browser:Rewind');
+		disabled    = broadcaster.hasAttribute('disabled');
+		if (disabled == Boolean(link) || disabled == nav.canGoBack) {
+			if (disabled || link || nav.canGoBack)
+				broadcaster.removeAttribute('disabled');
+			else
+				broadcaster.setAttribute('disabled', true);
+		}
+		if (!link) {
+			if (rewindButton) {
+				rewindButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
+				rewindButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
+				rewindButton.setAttribute('mode', 'navigation');
+			}
+			broadcaster.setAttribute('mode', 'navigation');
+
+			rewirdMenuItem.setAttribute('tooltiptext', rewirdMenuItem.getAttribute(navigationTooltipAttr));
+			rewirdMenuItem = document.getElementById(rewirdMenuItem.id+'-clone');
+			if (rewirdMenuItem)
 				rewirdMenuItem.setAttribute('tooltiptext', rewirdMenuItem.getAttribute(navigationTooltipAttr));
-				rewirdMenuItem = document.getElementById(rewirdMenuItem.id+'-clone');
-				if (rewirdMenuItem)
-					rewirdMenuItem.setAttribute('tooltiptext', rewirdMenuItem.getAttribute(navigationTooltipAttr));
+		}
+		else {
+			if (rewindButton) {
+				rewindButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
+				rewindButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
+				rewindButton.setAttribute('mode', 'link');
+			}
+			broadcaster.setAttribute('mode', 'link');
+		}
+
+		if (!backButton) return;
+
+		backButton.removeAttribute('rewindforward-override');
+		if (
+			(rewindButton && !rewindButton.hidden) ||
+			broadcaster.getAttribute('disabled') == 'true' ||
+			(!link && gBrowser.sessionHistory.index <= 1)
+			) {
+			backButton.setAttribute('label',       backButton.getAttribute('rewindforward-original-label'));
+			backButton.setAttribute('tooltiptext', backButton.getAttribute('rewindforward-original-tooltip'));
+			if (nav.canGoBack)
+				backButton.removeAttribute('disabled');
+			else
+				backButton.setAttribute('disabled', true);
+		}
+		else {
+			if (!link) {
+				backButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
+				backButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
+				backButton.setAttribute('rewindforward-override', 'navigation');
+				backButton.removeAttribute('disabled');
 			}
 			else {
-				if (rewindButton) {
-					rewindButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-					rewindButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-					rewindButton.setAttribute('mode', 'link');
-				}
-				broadcaster.setAttribute('mode', 'link');
-			}
-
-			if (backButton) {
-				backButton.removeAttribute('rewindforward-override');
-				if (
-					(rewindButton && !rewindButton.hidden) ||
-					broadcaster.getAttribute('disabled') == 'true' ||
-					(!link && gBrowser.sessionHistory.index <= 1)
-					) {
-					backButton.setAttribute('label',       backButton.getAttribute('rewindforward-original-label'));
-					backButton.setAttribute('tooltiptext', backButton.getAttribute('rewindforward-original-tooltip'));
-					if (nav.canGoBack)
-						backButton.removeAttribute('disabled');
-					else
-						backButton.setAttribute('disabled', true);
-				}
-				else {
-					if (!link) {
-						backButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-						backButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-						backButton.setAttribute('rewindforward-override', 'navigation');
-						backButton.removeAttribute('disabled');
-					}
-					else {
-						backButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-						backButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-						backButton.setAttribute('rewindforward-override', 'link');
-						backButton.removeAttribute('disabled');
-					}
-				}
+				backButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
+				backButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
+				backButton.setAttribute('rewindforward-override', 'link');
+				backButton.removeAttribute('disabled');
 			}
 		}
-	}
+	},
+ 
+	updateFastforwardButton : function(aFindLinks) 
+	{
+		var nav = gBrowser.webNavigation;
 
+		var broadcaster, disabled, link;
 
-	var fastforwardButton   = document.getElementById('fastforward-button');
-	var fastforwardMenuItem = document.getElementById('fastforwardMenuItem');
-	var nextButton          = document.getElementById('fastforward-next-button');
-	var forwardButton       = rf_shouldOverrideForwardButtons() ? document.getElementById('forward-button') : null ;
-	if (fastforwardButton || nextButton || forwardButton) {
-		link = rewindforwardGetLinkInMainFrame(
-			rewindforwardGetLinksFromAllFrames('next')
+		var toEndPoint = this.getPref('rewindforward.goToEndPointOfCurrentDomain');
+		var navigationTooltipAttr = toEndPoint ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation' ;
+
+		var fastforwardButton   = document.getElementById('fastforward-button');
+		var fastforwardMenuItem = document.getElementById('fastforwardMenuItem');
+		var nextButton          = document.getElementById('fastforward-next-button');
+		var forwardButton       = this.shouldOverrideForwardButtons ? document.getElementById('forward-button') : null ;
+
+		if (!fastforwardButton && !nextButton && !forwardButton) return;
+
+		link = this.getLinkInMainFrame(
+			this.getLinksFromAllFrames('next')
 		);
 		if (forwardButton && !forwardButton.getAttribute('rewindforward-original-tooltip')) {
 			forwardButton.setAttribute('rewindforward-original-tooltip', forwardButton.getAttribute('tooltiptext'));
@@ -926,765 +864,698 @@ function rewindforwardUpdateButtons(aFindLinks)
 			}
 		}
 
-		if (fastforwardButton ||
-			((!fastforwardButton || !fastforwardButton.hidden) && forwardButton && !forwardButton.hidden)) {
-			if (!aFindLinks || !rf_shouldFindNextLinks() ||
-				(nextButton && !nextButton.hidden))
-				link = null;
-			else if (!link) {
-				link = rewindforwardGetLinkInMainFrame(
-					rewindforwardGetLinksFromAllFrames('next')
-				);
-			}
+		if ((!fastforwardButton || fastforwardButton.hidden) && (!forwardButton || forwardButton.hidden)) return;
 
-			broadcaster = document.getElementById('Browser:Fastforward');
-			disabled    = broadcaster.hasAttribute('disabled');
-			if (disabled == Boolean(link) || disabled == nav.canGoForward) {
-				if (disabled || link || nav.canGoForward)
-					broadcaster.removeAttribute('disabled');
-				else
-					broadcaster.setAttribute('disabled', true);
-			}
-			if (!link) {
-				if (fastforwardButton) {
-					fastforwardButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-					fastforwardButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-					fastforwardButton.setAttribute('mode', 'navigation');
-				}
-				broadcaster.setAttribute('mode', 'navigation');
-
-				fastforwardMenuItem.setAttribute('tooltiptext', fastforwardMenuItem.getAttribute(navigationTooltipAttr));
-				fastforwardMenuItem = document.getElementById(fastforwardMenuItem.id+'-clone');
-				if (fastforwardMenuItem)
-					fastforwardMenuItem.setAttribute('tooltiptext', fastforwardMenuItem.getAttribute(navigationTooltipAttr));
-			}
-			else {
-				if (fastforwardButton) {
-					fastforwardButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-					fastforwardButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-					fastforwardButton.setAttribute('mode', 'link');
-				}
-				broadcaster.setAttribute('mode', 'link');
-			}
-
-			if (forwardButton) {
-				forwardButton.removeAttribute('rewindforward-override');
-				if (
-					(fastforwardButton && !fastforwardButton.hidden) ||
-					broadcaster.getAttribute('disabled') == 'true' ||
-					(!link && gBrowser.sessionHistory.index >= gBrowser.sessionHistory.count-2)
-					) {
-					forwardButton.setAttribute('label',       forwardButton.getAttribute('rewindforward-original-label'));
-					forwardButton.setAttribute('tooltiptext', forwardButton.getAttribute('rewindforward-original-tooltip'));
-					if (nav.canGoForward)
-						forwardButton.removeAttribute('disabled');
-					else
-						forwardButton.setAttribute('disabled', true);
-				}
-				else {
-					if (!link) {
-						forwardButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-						forwardButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-						forwardButton.setAttribute('rewindforward-override', 'navigation');
-						forwardButton.removeAttribute('disabled');
-					}
-					else {
-						forwardButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-						forwardButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-						forwardButton.setAttribute('rewindforward-override', 'link');
-						forwardButton.removeAttribute('disabled');
-					}
-				}
-			}
+		if (!aFindLinks || !this.shouldFindNextLinks ||
+			(nextButton && !nextButton.hidden)) {
+			link = null;
 		}
-	}
-}
- 
-function rewindforwardFillPopupMenu(aEvent) 
-{
-	var popup = aEvent.target;
-	var node  = document.getElementById(popup.getAttribute('ref-command'));
-	return rewindforwardFillPopupMenuInternal(aEvent, node);
-}
-function rewindforwardFillPopupMenuInternal(aEvent, aCommandNode, aShowBackForwardCommand)
-{
-	var popup = aEvent.target;
-	var node = aCommandNode;
-
-	var showMenu = false;
-
-	rewindforwardUpdateBackForwardPopup(popup, node);
-
-	var isBackForwardMenu = (popup.firstChild.getAttribute('rewindforward-menuitem-backforward') == 'true');
-
-
-	// fill up history items
-	if (!isBackForwardMenu && !rf_shouldFillHistoryMenu()) {
-		if (popup.lastChild.localName != 'menuseparator' && 'deleteHistoryItems' in window)
-			deleteHistoryItems(popup);
-	}
-	else {
-		showMenu = (node.id == 'Browser:Rewind') ?
-				__rewindforward__BrowserBackMenu(aEvent) :
-				__rewindforward__BrowserForwardMenu(aEvent) ;
-
-		if (showMenu && (!isBackForwardMenu || aShowBackForwardCommand)) {
-			var current,
-				prev;
-			for (var i = popup.childNodes.length-1; i > /*-1*/2; i--)
-			{
-				if (!popup.childNodes[i].getAttribute('index')) break;
-
-				current = prev;
-				prev = rewindforwardGetHistoryEntryAt(parseInt(popup.childNodes[i-1].getAttribute('index')));
-				if (!current) continue;
-
-				if (
-					(!current.URI.host && prev.URI.host) ||
-					(current.URI.host && !prev.URI.host) ||
-					(current.URI.host != prev.URI.host)
-					)
-					popup.insertBefore(document.createElement('menuseparator'), popup.childNodes[i]).setAttribute('index', -1);
-			}
+		else if (!link) {
+			link = this.getLinkInMainFrame(
+				this.getLinksFromAllFrames('next')
+			);
 		}
-	}
 
-	var nav = gBrowser.webNavigation;
-
-	if (isBackForwardMenu) {
-		if (aShowBackForwardCommand) {
-			popup.childNodes[0].removeAttribute('hidden');
-			popup.childNodes[1].removeAttribute('hidden');
-			if (node.id == 'Browser:Rewind' ? !nav.canGoBack : !nav.canGoForward )
-				popup.childNodes[0].setAttribute('disabled', true);
+		broadcaster = document.getElementById('Browser:Fastforward');
+		disabled    = broadcaster.hasAttribute('disabled');
+		if (disabled == Boolean(link) || disabled == nav.canGoForward) {
+			if (disabled || link || nav.canGoForward)
+				broadcaster.removeAttribute('disabled');
 			else
-				popup.childNodes[0].removeAttribute('disabled');
+				broadcaster.setAttribute('disabled', true);
+		}
+		if (!link) {
+			if (fastforwardButton) {
+				fastforwardButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
+				fastforwardButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
+				fastforwardButton.setAttribute('mode', 'navigation');
+			}
+			broadcaster.setAttribute('mode', 'navigation');
+
+			fastforwardMenuItem.setAttribute('tooltiptext', fastforwardMenuItem.getAttribute(navigationTooltipAttr));
+			fastforwardMenuItem = document.getElementById(fastforwardMenuItem.id+'-clone');
+			if (fastforwardMenuItem)
+				fastforwardMenuItem.setAttribute('tooltiptext', fastforwardMenuItem.getAttribute(navigationTooltipAttr));
 		}
 		else {
-			popup.childNodes[0].setAttribute('hidden', true);
-			popup.childNodes[1].setAttribute('hidden', true);
+			if (fastforwardButton) {
+				fastforwardButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
+				fastforwardButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
+				fastforwardButton.setAttribute('mode', 'link');
+			}
+			broadcaster.setAttribute('mode', 'link');
 		}
-	}
-	var offset = isBackForwardMenu ? 2 : 0 ;
 
-	var linkButton = document.getElementById(node.id == 'Browser:Rewind' ? 'rewind-prev-button' : 'fastforward-next-button' );
-	if (linkButton || node.getAttribute('mode') == 'navigation') {
-		popup.childNodes[0+offset].setAttribute('hidden', true);
-		popup.childNodes[1+offset].setAttribute('hidden', true);
-	}
-	else {
-		popup.childNodes[0+offset].removeAttribute('hidden');
-		if (!popup.childNodes[1+offset].nextSibling)
+		if (!forwardButton) return;
+
+		forwardButton.removeAttribute('rewindforward-override');
+		if (
+			(fastforwardButton && !fastforwardButton.hidden) ||
+			broadcaster.getAttribute('disabled') == 'true' ||
+			(!link && gBrowser.sessionHistory.index >= gBrowser.sessionHistory.count-2)
+			) {
+			forwardButton.setAttribute('label',       forwardButton.getAttribute('rewindforward-original-label'));
+			forwardButton.setAttribute('tooltiptext', forwardButton.getAttribute('rewindforward-original-tooltip'));
+			if (nav.canGoForward)
+				forwardButton.removeAttribute('disabled');
+			else
+				forwardButton.setAttribute('disabled', true);
+		}
+		else {
+			if (!link) {
+				forwardButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
+				forwardButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
+				forwardButton.setAttribute('rewindforward-override', 'navigation');
+				forwardButton.removeAttribute('disabled');
+			}
+			else {
+				forwardButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
+				forwardButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
+				forwardButton.setAttribute('rewindforward-override', 'link');
+				forwardButton.removeAttribute('disabled');
+			}
+		}
+	},
+ 
+	checkSubFramesAreCompletelyLoaded : function(aFrames) 
+	{
+		var result = true;
+		for (var i = 0; i < aFrames.length; i++)
+		{
+			if (aFrames[i].top != gBrowser.contentWindow)
+				return false;
+			if (result)
+				result = this.checkSubFramesAreCompletelyLoaded(aFrames[i].frames);
+		}
+		return result;
+	},
+ 
+	delayedUpdateButtons : function(aFindLinks, aSelf) 
+	{
+		aSelf.updateButtons(aFindLinks);
+	},
+  
+	fillPopupMenu : function(aEvent) 
+	{
+		var popup = aEvent.target;
+		var node  = document.getElementById(popup.getAttribute('ref-command'));
+		return this.fillPopupMenuInternal(aEvent, node);
+	},
+	 
+	fillPopupMenuInternal : function(aEvent, aCommandNode, aShowBackForwardCommand) 
+	{
+		var popup = aEvent.target;
+		var node = aCommandNode;
+
+		var showMenu = false;
+
+		this.updateBackForwardPopup(popup, node);
+
+		var isBackForwardMenu = (popup.firstChild.getAttribute('rewindforward-menuitem-backforward') == 'true');
+
+
+		// fill up history items
+		if (!isBackForwardMenu && !this.shouldFillHistoryMenu) {
+			if (popup.lastChild.localName != 'menuseparator' && 'deleteHistoryItems' in window)
+				deleteHistoryItems(popup);
+		}
+		else {
+			showMenu = (node.id == 'Browser:Rewind') ?
+					window.__rewindforward__BrowserBackMenu(aEvent) :
+					window.__rewindforward__BrowserForwardMenu(aEvent) ;
+
+			if (showMenu && (!isBackForwardMenu || aShowBackForwardCommand)) {
+				var current,
+					prev;
+				for (var i = popup.childNodes.length-1; i > /*-1*/2; i--)
+				{
+					if (!popup.childNodes[i].getAttribute('index')) break;
+
+					current = prev;
+					prev = this.getHistoryEntryAt(parseInt(popup.childNodes[i-1].getAttribute('index')));
+					if (!current) continue;
+
+					if (
+						(!current.URI.host && prev.URI.host) ||
+						(current.URI.host && !prev.URI.host) ||
+						(current.URI.host != prev.URI.host)
+						)
+						popup.insertBefore(document.createElement('menuseparator'), popup.childNodes[i]).setAttribute('index', -1);
+				}
+			}
+		}
+
+		var nav = gBrowser.webNavigation;
+
+		if (isBackForwardMenu) {
+			if (aShowBackForwardCommand) {
+				popup.childNodes[0].removeAttribute('hidden');
+				popup.childNodes[1].removeAttribute('hidden');
+				if (node.id == 'Browser:Rewind' ? !nav.canGoBack : !nav.canGoForward )
+					popup.childNodes[0].setAttribute('disabled', true);
+				else
+					popup.childNodes[0].removeAttribute('disabled');
+			}
+			else {
+				popup.childNodes[0].setAttribute('hidden', true);
+				popup.childNodes[1].setAttribute('hidden', true);
+			}
+		}
+		var offset = isBackForwardMenu ? 2 : 0 ;
+
+		var linkButton = document.getElementById(node.id == 'Browser:Rewind' ? 'rewind-prev-button' : 'fastforward-next-button' );
+		if (linkButton || node.getAttribute('mode') == 'navigation') {
+			popup.childNodes[0+offset].setAttribute('hidden', true);
 			popup.childNodes[1+offset].setAttribute('hidden', true);
-		else
-			popup.childNodes[1+offset].removeAttribute('hidden');
+		}
+		else {
+			popup.childNodes[0+offset].removeAttribute('hidden');
+			if (!popup.childNodes[1+offset].nextSibling)
+				popup.childNodes[1+offset].setAttribute('hidden', true);
+			else
+				popup.childNodes[1+offset].removeAttribute('hidden');
+
+			if (
+				node.hasAttribute('disabled') ||
+				(node.id == 'Browser:Rewind' ? !nav.canGoBack : !nav.canGoForward )
+				)
+				popup.childNodes[0+offset].setAttribute('disabled', true);
+			else
+				popup.childNodes[0+offset].removeAttribute('disabled');
+
+			showMenu = true;
+		}
+
+		return showMenu;
+	},
+ 
+	updateBackForwardPopup : function(aPopup, aCommandNode) 
+	{
+		if (!aPopup.hasChildNodes() ||
+			(aPopup.childNodes[0].getAttribute('rewindforward-menuitem') != 'true')) {
+
+			aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
+			var id   = aCommandNode.id == 'Browser:Rewind' ? 'rewindMenuItem' : 'fastforwardMenuItem';
+			var item = document.getElementById(id).cloneNode(true);
+			item.setAttribute('id', id+'-clone');
+			aPopup.insertBefore(item, aPopup.firstChild);
+
+			aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
+			aPopup.insertBefore(document.createElement('menuitem'), aPopup.firstChild);
+			aPopup.firstChild.setAttribute('label', document.getElementById(aCommandNode.id == 'Browser:Rewind' ? 'back-button' : 'forward-button').getAttribute('rewindforward-original-label'));
+			aPopup.firstChild.setAttribute('rewindforward-menuitem', true);
+			aPopup.firstChild.setAttribute('rewindforward-menuitem-backforward', true);
+			aPopup.firstChild.setAttribute('class', 'menuitem-iconic');
+			aPopup.firstChild.setAttribute('oncommand', '__rewindforward__Browser'+(aCommandNode.id == 'Browser:Rewind' ? 'Back' : 'Forward' )+'(event); event.stopPropagation(); this.parentNode.hidePopup();');
+			aPopup.firstChild.setAttribute('onclick', 'if ("checkForMiddleClick" in window) { checkForMiddleClick(this, event); }; event.stopPropagation();');
+		}
+	},
+  
+	newBrowserBackMenu : function(aEvent) 
+	{
+		var button = document.getElementById('back-button');
+		return RewindForwardService.fillPopupMenuInternal(aEvent, document.getElementById('Browser:Rewind'),
+			button.getAttribute('rewindforward-override') ? true : false );
+	},
+	newBrowserForwardMenu : function(aEvent)
+	{
+		var button = document.getElementById('forward-button');
+		return RewindForwardService.fillPopupMenuInternal(aEvent, document.getElementById('Browser:Fastforward'),
+			button.getAttribute('rewindforward-override') ? true : false );
+	},
+  
+	// handle events 
+	
+	handleEvent : function(aEvent) 
+	{
+		switch (aEvent.type)
+		{
+			case 'keypress':
+				this.onKeyPress(aEvent);
+				return;
+
+			case 'load':
+				this.init();
+				return;
+
+			case 'unload':
+				if (aEvent.originalTarget == document)
+					this.destroy();
+				else
+					this.onDocumentUnload(aEvent);
+				return;
+
+			case 'DOMAttrModified':
+			case 'DOMSubtreeModified':
+			case 'DOMNodeInserted':
+			case 'DOMNodeInsertedIntoDocument':
+				this.onDocumentModified(aEvent);
+				return;
+		}
+	},
+	 
+	onDocumentModified : function(aEvent) 
+	{
+		if (!this.shouldFindPrevLinks && !this.shouldFindNextLinks) return;
+
+		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
+		const XLinkNS = 'http://www.w3.org/1999/xlink';
+
+		var node;
+		try {
+			node = aEvent.originalTarget || aEvent.target;
+		}
+		catch(e) {
+			node = aEvent.target;
+		}
 
 		if (
-			node.hasAttribute('disabled') ||
-			(node.id == 'Browser:Rewind' ? !nav.canGoBack : !nav.canGoForward )
+			node.nodeType == Node.ELEMENT_NODE &&
+			node.namespaceURI == 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
 			)
-			popup.childNodes[0+offset].setAttribute('disabled', true);
-		else
-			popup.childNodes[0+offset].removeAttribute('disabled');
+			return;
 
-		showMenu = true;
-	}
+		var rel = node.getAttributeNS(XLinkNS, 'rel') ||
+				node.getAttributeNS(XHTMLNS, 'rel') ||
+				node.getAttribute('rel') ||
+				'';
+		var rev = node.getAttributeNS(XLinkNS, 'rev') ||
+				node.getAttributeNS(XHTMLNS, 'rev') ||
+				node.getAttribute('rev') ||
+				'';
+		if (!rel && !rev) return;
 
-	return showMenu;
-}
-function rewindforwardUpdateBackForwardPopup(aPopup, aCommandNode)
-{
-	if (!aPopup.hasChildNodes() ||
-		(aPopup.childNodes[0].getAttribute('rewindforward-menuitem') != 'true')) {
+		if (rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
+			this.updateButtons(true);
+	},
+ 
+	onDocumentUnload : function(aEvent) 
+	{
+		if (!aEvent.target) return;
 
-		aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
-		var id   = aCommandNode.id == 'Browser:Rewind' ? 'rewindMenuItem' : 'fastforwardMenuItem';
-		var item = document.getElementById(id).cloneNode(true);
-		item.setAttribute('id', id+'-clone');
-		aPopup.insertBefore(item, aPopup.firstChild);
+		var doc = aEvent.target;
+		var w   = 'document' in doc ? doc :
+				this.getDocShellFromDocument(doc.ownerDocument || doc)
+				.QueryInterface(Components.interfaces.nsIWebNavigation)
+				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+				.getInterface(Components.interfaces.nsIDOMWindow);
 
-		aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
-		aPopup.insertBefore(document.createElement('menuitem'), aPopup.firstChild);
-		aPopup.firstChild.setAttribute('label', document.getElementById(aCommandNode.id == 'Browser:Rewind' ? 'back-button' : 'forward-button').getAttribute('rewindforward-original-label'));
-		aPopup.firstChild.setAttribute('rewindforward-menuitem', true);
-		aPopup.firstChild.setAttribute('rewindforward-menuitem-backforward', true);
-		aPopup.firstChild.setAttribute('class', 'menuitem-iconic');
-		aPopup.firstChild.setAttribute('oncommand', '__rewindforward__Browser'+(aCommandNode.id == 'Browser:Rewind' ? 'Back' : 'Forward' )+'(event); event.stopPropagation(); this.parentNode.hidePopup();');
-		aPopup.firstChild.setAttribute('onclick', 'if ("checkForMiddleClick" in window) { checkForMiddleClick(this, event); }; event.stopPropagation();');
-	}
-}
-function rewindforwardNewBrowserBackMenu(aEvent)
-{
-	var button = document.getElementById('back-button');
-	return rewindforwardFillPopupMenuInternal(aEvent, document.getElementById('Browser:Rewind'),
-		button.getAttribute('rewindforward-override') ? true : false );
-}
-function rewindforwardNewBrowserForwardMenu(aEvent)
-{
-	var button = document.getElementById('forward-button');
-	return rewindforwardFillPopupMenuInternal(aEvent, document.getElementById('Browser:Fastforward'),
-		button.getAttribute('rewindforward-override') ? true : false );
-}
+		if (!w) return;
+
+		document.getElementById('Browser:RewindPrev').setAttribute('disabled', true);
+		document.getElementById('Browser:Rewind').setAttribute('disabled', true);
+		document.getElementById('Browser:FastforwardNext').setAttribute('disabled', true);
+		document.getElementById('Browser:Fastforward').setAttribute('disabled', true);
+
+		w.removeEventListener('DOMAttrModified', this, true);
+		w.removeEventListener('DOMSubtreeModified', this, true);
+		w.removeEventListener('DOMNodeInserted', this, true);
+		w.removeEventListener('DOMNodeInsertedIntoDocument', this, true);
+
+		w.removeEventListener('unload', this, false);
+	},
+ 
+	onKeyPress : function(aEvent) 
+	{
+		const node = aEvent.originalTarget || aEvent.target;
+		if (!node || !this.getPref('rewindforward.gonextprev.enabled', true)) return;
+
+		// ignore events from chrome windows
+		var docShell = this.getDocShellFromDocument(node.ownerDocument);
+		if (docShell.itemType &&
+			docShell.itemType != Components.interfaces.nsIDocShellTreeItem.typeContent)
+			return;
+
+		// ignore events sent from input fields
+		if (node.nodeType != Node.ELEMENT_NODE) node= node.parentNode;
+		if (
+			!aEvent.ctrlKey &&
+			!aEvent.altKey &&
+			!aEvent.metaKey &&
+			(
+				/textbox|input|textarea|menulist|select/.test(node.localName.toLowerCase()) ||
+				node.ownerDocument.designMode == 'on'
+			)
+			)
+			return;
+
+		var win = docShell
+				.QueryInterface(Components.interfaces.nsIWebNavigation)
+				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+				.getInterface(Components.interfaces.nsIDOMWindow);
+
+		const Y    = win.scrollY; // pageYOffset
+		const maxY = win.scrollMaxY;
+
+		// if we're not on top or bottom, do nothing
+		if (Y > 5 && Y < maxY-5) return;
+
+
+		// detect what key-combination is pressesd
+		var keys = {
+				next : this.getPref('rewindforward.gonextprev.next.keys', ' |VK_PAGE_DOWN'), // "next" links take precedence over "previous".
+				prev : this.getPref('rewindforward.gonextprev.prev.keys', ' ,shift|VK_PAGE_UP')
+			},
+			keyPressed = false,
+			modifierst,
+			target,
+			mainKey,
+			i;
+		for (target in keys)
+		{
+			keys[target] = (keys[target] || '').split('|');
+			for (i in keys[target])
+			{
+				if (!keys[target][i]) continue;
+
+				mainKey = keys[target][i].split(',')[0].toUpperCase();
+				if (mainKey.length == 1) { // charCode
+					if (
+						(!aEvent.charCode && aEvent.keyCode) ||
+						(String.fromCharCode(aEvent.charCode).toUpperCase() != mainKey)
+						)
+						continue;
+				}
+				else if (mainKey.indexOf('VK_') == 0) { // keyCode
+					if (
+						(aEvent.charCode && !aEvent.keyCode) ||
+						(aEvent.keyCode != aEvent['DOM_'+mainKey])
+						)
+						continue;
+				}
+				else
+					continue;
+
+				modifiers = (keys[target][i] || '').toLowerCase();
+				if (
+					(/shift/.test(modifiers)   != aEvent.shiftKey) ||
+					(/control/.test(modifiers) != aEvent.ctrlKey) ||
+					(/alt/.test(modifiers)     != aEvent.altKey) ||
+					(/meta/.test(modifiers)    != aEvent.metaKey)
+					)
+					continue;
+
+				keyPressed = true;
+				break;
+			}
+			if (keyPressed) break;
+		}
+		if (!keyPressed) return;
+
+
+		if ((Y > 5 && target == 'prev') || (Y < maxY-5 && target == 'next'))
+			return;
+
+		var direction = (target == 'prev') ? -1 : 1 ;
+
+		target = this.getFirstLink(target);
+		if (!target) return;
+
+		const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
+		var referrer = ioService.newURI(win.location.href, null, null);
+		this.loadLink(target.href, referrer, win, direction);
+	},
   
-// event listeners 
-	
-var gRewindforwardOnLoadObserver = { 
-		observe : function(aSubject, aTopic, aData)
+		observe : function(aSubject, aTopic, aData) 
 		{
 			if (aTopic != 'EndDocumentLoad' &&
 				aTopic != 'FailDocumentLoad')
 				return;
 
 			if (
-				(rf_shouldFindPrevLinks() || rf_shouldFindNextLinks()) &&
+				(this.shouldFindPrevLinks || this.shouldFindNextLinks) &&
 				aSubject &&
-				!('__rewindforward__event_handled' in aSubject)
+				!aSubject.document.documentElement.getAttribute('__rewindforward__event_handled')
 				) {
-				aSubject.__rewindforward__event_handled = true;
+				aSubject.document.documentElement.setAttribute('__rewindforward__event_handled', true);
 
-				aSubject.addEventListener('DOMAttrModified', rewindforwardMutationEventListener, true);
-				aSubject.addEventListener('DOMSubtreeModified', rewindforwardMutationEventListener, true);
-				aSubject.addEventListener('DOMNodeInserted', rewindforwardMutationEventListener, true);
-				aSubject.addEventListener('DOMNodeInsertedIntoDocument', rewindforwardMutationEventListener, true);
+				aSubject.addEventListener('DOMAttrModified', this, true);
+				aSubject.addEventListener('DOMSubtreeModified', this, true);
+				aSubject.addEventListener('DOMNodeInserted', this, true);
+				aSubject.addEventListener('DOMNodeInsertedIntoDocument', this, true);
 
-				aSubject.addEventListener('unload', rewindforwardUnloadEventListener, false);
+				aSubject.addEventListener('unload', this, false);
 			}
 
-			rewindforwardUpdateButtons(true);
-		}
-	};
- 
-function rewindforwardMutationEventListener(aEvent) 
-{
-	if (!rf_shouldFindPrevLinks() && !rf_shouldFindNextLinks()) return;
-
-	const XHTMLNS = 'http://www.w3.org/1999/xhtml';
-	const XLinkNS = 'http://www.w3.org/1999/xlink';
-
-	var node;
-	try {
-		node = aEvent.originalTarget || aEvent.target;
-	}
-	catch(e) {
-		node = aEvent.target;
-	}
-
-	var nodeWrapper = new XPCNativeWrapper(node,
-			'nodeType',
-			'getAttributeNS()',
-			'getAttribute()'
-		);
-
-	if (
-		nodeWrapper.nodeType == Node.ELEMENT_NODE &&
-		rewindforwardGetNativeProperty(node, 'namespaceURI') == 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
-		)
-		return;
-
-	var rel = nodeWrapper.getAttributeNS(XLinkNS, 'rel') ||
-			nodeWrapper.getAttributeNS(XHTMLNS, 'rel') ||
-			nodeWrapper.getAttribute('rel') ||
-			'';
-	var rev = nodeWrapper.getAttributeNS(XLinkNS, 'rev') ||
-			nodeWrapper.getAttributeNS(XHTMLNS, 'rev') ||
-			nodeWrapper.getAttribute('rev') ||
-			'';
-	if (!rel && !rev) return;
-
-	if (rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
-		rewindforwardUpdateButtons(true);
-}
- 
-function rewindforwardUnloadEventListener(aEvent) 
-{
-	if (!aEvent.target) return;
-
-	var doc = aEvent.target;
-	var w   = 'document' in doc ? doc :
-			rewindforwardGetDocShellFromDocument(rewindforwardGetNativeProperty(doc, 'ownerDocument') || doc)
-			.QueryInterface(Components.interfaces.nsIWebNavigation)
-			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-			.getInterface(Components.interfaces.nsIDOMWindow);
-
-	if (!w) return;
-
-	document.getElementById('Browser:RewindPrev').setAttribute('disabled', true);
-	document.getElementById('Browser:Rewind').setAttribute('disabled', true);
-	document.getElementById('Browser:FastforwardNext').setAttribute('disabled', true);
-	document.getElementById('Browser:Fastforward').setAttribute('disabled', true);
-
-	w.removeEventListener('DOMAttrModified', w.rewindforwardMutationEventListener, true);
-	w.removeEventListener('DOMSubtreeModified', w.rewindforwardMutationEventListener, true);
-	w.removeEventListener('DOMNodeInserted', w.rewindforwardMutationEventListener, true);
-	w.removeEventListener('DOMNodeInsertedIntoDocument', w.rewindforwardMutationEventListener, true);
-
-	w.removeEventListener('unload', w.rewindforwardUnloadEventListener, false);
-}
- 
-function rewindforwardOnKeyPressEventHandler(aEvent) 
-{
-	const node = aEvent.originalTarget || aEvent.target;
-	if (!node || !isAvailableAutoGoNextPrevForRewindforward()) return;
-
-	// ignore events from chrome windows
-	var docShell = rewindforwardGetDocShellFromDocument(rewindforwardGetNativeProperty(node, 'ownerDocument'));
-	if (docShell.itemType &&
-		docShell.itemType != Components.interfaces.nsIDocShellTreeItem.typeContent)
-		return;
-
-	var nodeWrapper = new XPCNativeWrapper(node,
-			'nodeType',
-			'localName'
-		);
-
-	// ignore events sent from input fields
-	if (nodeWrapper.nodeType != Node.ELEMENT_NODE) node= node.parentNode;
-	if (
-		!aEvent.ctrlKey &&
-		!aEvent.altKey &&
-		!aEvent.metaKey &&
-		(
-			/textbox|input|textarea|menulist|select/.test(nodeWrapper.localName.toLowerCase()) ||
-			rewindforwardGetNativeProperty(rewindforwardGetNativeProperty(node, 'ownerDocument'), 'designMode') == 'on'
-		)
-		)
-		return;
-
-	var win = docShell
-			.QueryInterface(Components.interfaces.nsIWebNavigation)
-			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-			.getInterface(Components.interfaces.nsIDOMWindow);
-
-	const Y    = Components.lookupMethod(win, 'scrollY').call(win); // pageYOffset
-	const maxY = Components.lookupMethod(win, 'scrollMaxY').call(win);
-
-	// if we're not on top or bottom, do nothing
-	if (Y > 5 && Y < maxY-5) return;
-
-
-	// detect what key-combination is pressesd
-	var keys = {
-			next : getNextPageKeysForRewindforward(), // "next" links take precedence over "previous".
-			prev : getPrevPageKeysForRewindforward()
+			this.updateButtons(true);
 		},
-		keyPressed = false,
-		modifierst,
-		target,
-		mainKey,
-		i;
-	for (target in keys)
-	{
-		keys[target] = (keys[target] || '').split('|');
-		for (i in keys[target])
-		{
-			if (!keys[target][i]) continue;
-
-			mainKey = keys[target][i].split(',')[0].toUpperCase();
-			if (mainKey.length == 1) { // charCode
-				if (
-					(!aEvent.charCode && aEvent.keyCode) ||
-					(String.fromCharCode(aEvent.charCode).toUpperCase() != mainKey)
-					)
-					continue;
-			}
-			else if (mainKey.indexOf('VK_') == 0) { // keyCode
-				if (
-					(aEvent.charCode && !aEvent.keyCode) ||
-					(aEvent.keyCode != aEvent['DOM_'+mainKey])
-					)
-					continue;
-			}
-			else
-				continue;
-
-			modifiers = (keys[target][i] || '').toLowerCase();
-			if (
-				(/shift/.test(modifiers)   != aEvent.shiftKey) ||
-				(/control/.test(modifiers) != aEvent.ctrlKey) ||
-				(/alt/.test(modifiers)     != aEvent.altKey) ||
-				(/meta/.test(modifiers)    != aEvent.metaKey)
-				)
-				continue;
-
-			keyPressed = true;
-			break;
-		}
-		if (keyPressed) break;
-	}
-	if (!keyPressed) return;
-
-
-	if ((Y > 5 && target == 'prev') || (Y < maxY-5 && target == 'next'))
-		return;
-
-	var direction = (target == 'prev') ? -1 : 1 ;
-
-	target = rewindforwardGetFirstLink(target);
-	if (!target) return;
-
-	const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
-	var href = (new XPCNativeWrapper(win, 'location')).location.href;
-	var referrer = ioService.newURI( href, null, null);
-	rewindforwardLoadLink(target.href, referrer, win, direction);
-}
- 
-/* function rewindforwardOnFocusEventHandler(aEvent) 
-{
-	const target = aEvent.originalTarget || aEvent.target;
-	if (!target) return;
-
-	var win = 'document' in target ? win.document : null ;
-	if (!win) {
-		docShell = rewindforwardGetDocShellFromDocument(target.ownerDocument || target);
-		win      = docShell
-				.QueryInterface(Components.interfaces.nsIWebNavigation)
-				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-				.getInterface(Components.interfaces.nsIDOMWindow);
-	}
-
-	// ignore events from chrome windows
-	var docShell = docShell ||
-			win
-				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-				.getInterface(Components.interfaces.nsIWebNavigation)
-				.QueryInterface(Components.interfaces.nsIDocShellTreeItem);
-	if (  (
-		docshell.itemType &&
-		docShell.itemType != Components.interfaces.nsIDocShellTreeItem.typeContent
-		)||
-		win.location.href == gLastFocusedPage
-		)
-		return;
-
-	gLastFocusedPage = win.location.href;
-
-	rewindforwardUpdateButtons(true);
-}
-
-var gLastFocusedPage = null;
-*/
- 
-function rewindforwardGetDocShellFromDocument(aDocument, aRootDocShell) 
-{
-	var doc = aDocument;
-	if (!doc) return null;
-
-	doc = new XPCNativeWrapper(doc,
-			'QueryInterface()',
-			'defaultView'
-		);
-
-	const kDSTreeNode = Components.interfaces.nsIDocShellTreeNode;
-	const kDSTreeItem = Components.interfaces.nsIDocShellTreeItem;
-	const kWebNav     = Components.interfaces.nsIWebNavigation;
-
-	if (doc.defaultView)
-		return (new XPCNativeWrapper(doc.defaultView, 'QueryInterface()'))
-				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-				.getInterface(kWebNav)
-				.QueryInterface(Components.interfaces.nsIDocShell);
-
-	var aRootDocShell = aRootDocShell
-			.QueryInterface(kDSTreeNode)
-			.QueryInterface(kDSTreeItem)
-			.QueryInterface(kWebNav);
-	var docShell = aRootDocShell;
-	traceDocShellTree:
-	do {
-		if (docShell.document == aDocument)
-			return docShell;
-
-		if (docShell.childCount) {
-			docShell = docShell.getChildAt(0);
-			docShell = docShell
-				.QueryInterface(kDSTreeNode)
-				.QueryInterface(kWebNav);
-		}
-		else {
-			parentDocShell = docShell.parent.QueryInterface(kDSTreeNode);
-			while (docShell.childOffset == parentDocShell.childCount-1)
-			{
-				docShell = parentDocShell;
-				if (docShell == aRootDocShell || !docShell.parent)
-					break traceDocShellTree;
-				parentDocShell = docShell.parent.QueryInterface(kDSTreeNode);
-			}
-			docShell = parentDocShell.getChildAt(docShell.childOffset+1)
-				.QueryInterface(kDSTreeNode)
-				.QueryInterface(kWebNav);
-		}
-	} while (docShell != aRootDocShell);
-
-	return null;
-}
- 
-function rewindforwardGetNativeProperty(aNode, aPropName) 
-{
-	try {
-		var wrapper = new XPCNativeWrapper(aNode, aPropName);
-		return wrapper[aPropName];
-	}
-	catch(e) {
-	}
-	return void(0);
-}
   
-// prefs 
-	
-function rewindforwardLoadDefaultPrefs() 
-{
-	const ioService = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
-	const uri = ioService.newURI('chrome://rewindforward/content/default.js', null, null);
-	var content;
-	try {
-		var channel = ioService.newChannelFromURI(uri);
-		var stream  = channel.open();
-
-		var scriptableStream = Components.classes['@mozilla.org/scriptableinputstream;1'].createInstance(Components.interfaces.nsIScriptableInputStream);
-		scriptableStream.init(stream);
-
-		content = scriptableStream.read(scriptableStream.available());
-
-		scriptableStream.close();
-		stream.close();
-	}
-	catch(e) {
-	}
-
-	if (!content) return;
-
-
-	const DEFPrefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefService).getDefaultBranch(null);
-	function pref(aPrefstring, aValue)
+	// prefs 
+	 
+	getPref : function(aPrefstring, aDefault, aPrefBranch) 
 	{
-		rewindforwardSetPref(aPrefstring, aValue, DEFPrefs);
-	}
-	var user_pref = pref; // alias
+		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
 
-	eval(content);
-}
+		const knsISupportsString = ('nsISupportsWString' in Components.interfaces) ? Components.interfaces.nsISupportsWString : Components.interfaces.nsISupportsString;
+		try {
+			switch (branch.getPrefType(aPrefstring))
+			{
+				case branch.PREF_STRING:
+					return branch.getComplexValue(aPrefstring, knsISupportsString).data;
+					break;
+				case branch.PREF_INT:
+					return branch.getIntPref(aPrefstring);
+					break;
+				default:
+					return branch.getBoolPref(aPrefstring);
+					break;
+			}
+		}
+		catch(e) {
+		}
+
+		return (aDefault === void(0)) ? null : aDefault ;
+	},
  
-function rewindforwardGetPref(aPrefstring, aDefault, aPrefBranch) 
-{
-	const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
+	setPref : function(aPrefstring, aValue, aPrefBranch) 
+	{
+		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
 
-	const knsISupportsString = ('nsISupportsWString' in Components.interfaces) ? Components.interfaces.nsISupportsWString : Components.interfaces.nsISupportsString;
-	try {
-		switch (branch.getPrefType(aPrefstring))
+		switch (typeof aValue)
 		{
-			case branch.PREF_STRING:
-				return branch.getComplexValue(aPrefstring, knsISupportsString).data;
+			case 'string':
+				const knsISupportsString = ('nsISupportsWString' in Components.interfaces) ? Components.interfaces.nsISupportsWString : Components.interfaces.nsISupportsString;
+				var string = ('@mozilla.org/supports-wstring;1' in Components.classes) ?
+						Components.classes['@mozilla.org/supports-wstring;1'].createInstance(this.knsISupportsString) :
+						Components.classes['@mozilla.org/supports-string;1'].createInstance(knsISupportsString) ;
+				string.data = aValue;
+				branch.setComplexValue(aPrefstring, knsISupportsString, string);
 				break;
-			case branch.PREF_INT:
-				return branch.getIntPref(aPrefstring);
+			case 'number':
+				branch.setIntPref(aPrefstring, parseInt(aValue));
 				break;
 			default:
-				return branch.getBoolPref(aPrefstring);
+				branch.setBoolPref(aPrefstring, aValue);
 				break;
 		}
-	}
-	catch(e) {
-	}
-
-	return (aDefault === void(0)) ? null : aDefault ;
-}
+	},
  
-function rewindforwardSetPref(aPrefstring, aValue, aPrefBranch) 
-{
-	const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-
-	switch (typeof aValue)
+	get shouldFindNextLinks() 
 	{
-		case 'string':
-			const knsISupportsString = ('nsISupportsWString' in Components.interfaces) ? Components.interfaces.nsISupportsWString : Components.interfaces.nsISupportsString;
-			var string = ('@mozilla.org/supports-wstring;1' in Components.classes) ?
-					Components.classes['@mozilla.org/supports-wstring;1'].createInstance(this.knsISupportsString) :
-					Components.classes['@mozilla.org/supports-string;1'].createInstance(knsISupportsString) ;
-			string.data = aValue;
-			branch.setComplexValue(aPrefstring, knsISupportsString, string);
-			break;
-		case 'number':
-			branch.setIntPref(aPrefstring, parseInt(aValue));
-			break;
-		default:
-			branch.setBoolPref(aPrefstring, aValue);
-			break;
-	}
-}
- 
-function rf_shouldFindNextLinks() 
-{
-	return rewindforwardGetPref('rewindforward.find_next_links', true);
-};
-
-function rf_shouldFindPrevLinks()
-{
-	return rewindforwardGetPref('rewindforward.find_prev_links', false);
-};
-
-function rf_shouldUseVirtualLinks()
-{
-	return rewindforwardGetPref('rewindforward.virtual_link.enabled', true);
-};
-
-function rf_shouldFillHistoryMenu()
-{
-	return rewindforwardGetPref('rewindforward.fill_history_menu', true);
-};
-
-function rf_shouldOverrideBackButtons()
-{
-	return rewindforwardGetPref('rewindforward.override_button.back', true);
-};
-function rf_shouldOverrideForwardButtons()
-{
-	return rewindforwardGetPref('rewindforward.override_button.forward', true);
-};
-
-
-
-function getNextPageKeysForRewindforward()
-{
-	return rewindforwardGetPref('rewindforward.gonextprev.next.keys', ' |VK_PAGE_DOWN');
-};
-
-function getPrevPageKeysForRewindforward()
-{
-	return rewindforwardGetPref('rewindforward.gonextprev.prev.keys', ' ,shift|VK_PAGE_UP');
-};
-
-function isAvailableAutoGoNextPrevForRewindforward()
-{
-	return rewindforwardGetPref('rewindforward.gonextprev.enabled', true);
-};
+		return this.getPref('rewindforward.find_next_links', true);
+	},
+	get shouldFindPrevLinks()
+	{
+		return this.getPref('rewindforward.find_prev_links', false);
+	},
+	get shouldUseVirtualLinks()
+	{
+		return this.getPref('rewindforward.virtual_link.enabled', true);
+	},
+	get shouldFillHistoryMenu()
+	{
+		return this.getPref('rewindforward.fill_history_menu', true);
+	},
+	get shouldOverrideBackButtons()
+	{
+		return this.getPref('rewindforward.override_button.back', true);
+	},
+	get shouldOverrideForwardButtons()
+	{
+		return this.getPref('rewindforward.override_button.forward', true);
+	},
   
-// initialize 
-var gRewindforwardInitialized = false;
-	
-function rewindforwardInit() 
-{
-	if (gRewindforwardInitialized) return;
-	gRewindforwardInitialized = true;
-
-	rewindforwardLoadDefaultPrefs();
-
-	window.__rewindforward__UpdateBackForwardButtons = window.UpdateBackForwardButtons;
-	window.UpdateBackForwardButtons = function()
+	init : function() 
 	{
-		__rewindforward__UpdateBackForwardButtons();
-		rewindforwardUpdateButtons(
-			(
-				document.getElementById('Browser:Stop') ||
-				document.getElementById('canStop') || // for Mozilla Suite
-				document.getElementById('menuitem-stop') // for Mozilla Suite
-			).hasAttribute('disabled')
+		if (this.initialized) return;
+		this.initialized = true;
+
+		window.removeEventListener('load', this, false);
+
+		eval('window.UpdateBackForwardButtons = '+
+			window.UpdateBackForwardButtons.toSource().replace(
+				/\}\)$/,
+				<><![CDATA[
+					RewindForwardService.updateButtons(document.getElementById('Browser:Stop').hasAttribute('disabled'));
+				})]]></>
+			)
 		);
-	};
 
-	window.__rewindforward__BrowserBack = window.BrowserBack;
-	window.BrowserBack = window.rewindforwardNewBrowserBack;
-	window.__rewindforward__BrowserForward = window.BrowserForward;
-	window.BrowserForward = window.rewindforwardNewBrowserForward;
+		eval('window.BrowserBack = '+
+			window.BrowserBack.toSource().replace(
+				'{',
+				<><![CDATA[
+				{
+					if ((function(aEvent) {
+							var button = document.getElementById('back-button');
+							if (aEvent && aEvent.target.id == 'back-button') {
+								if (button.getAttribute('rewindforward-prev') == 'true') {
+									BrowserRewindPrev(aEvent);
+									return true;
+								}
+								else if (button.getAttribute('rewindforward-override') == 'navigation') {
+									BrowserRewind(true, aEvent);
+									return true;
+								}
+							}
+							return false;
+						})(arguments.length ? arguments[0] : null ))
+						return;
+				]]></>
+			)
+		);
+		eval('window.BrowserForward = '+
+			window.BrowserForward.toSource().replace(
+				'{',
+				<><![CDATA[
+				{
+					if ((function(aEvent) {
+							var button = document.getElementById('forward-button');
+							if (aEvent && aEvent.target.id == 'forward-button') {
+								if (button.getAttribute('rewindforward-next') == 'true') {
+									BrowserFastforwardNext(aEvent);
+									return true;
+								}
+								else if (button.getAttribute('rewindforward-override') == 'navigation') {
+									BrowserFastforward(true, aEvent);
+									return true;
+								}
+							}
+							return false;
+						})(arguments.length ? arguments[0] : null ))
+						return;
+				]]></>
+			)
+		);
 
-	window.__rewindforward__BrowserBackMenu = window.BrowserBackMenu;
-	window.BrowserBackMenu = window.rewindforwardNewBrowserBackMenu;
-	window.__rewindforward__BrowserForwardMenu = window.BrowserForwardMenu;
-	window.BrowserForwardMenu = window.rewindforwardNewBrowserForwardMenu;
+		window.__rewindforward__BrowserBackMenu = window.BrowserBackMenu;
+		window.BrowserBackMenu = this.newBrowserBackMenu;
+		window.__rewindforward__BrowserForwardMenu = window.BrowserForwardMenu;
+		window.BrowserForwardMenu = this.newBrowserForwardMenu;
 
+		const observerService = Components.classes['@mozilla.org/observer-service;1']
+							.getService(Components.interfaces.nsIObserverService);
+		observerService.addObserver(this, 'EndDocumentLoad', false);
+		observerService.addObserver(this, 'FailDocumentLoad', false);
 
+		window.addEventListener('keypress', this, true);
+		window.addEventListener('unload', this, false);
 
-	const observerService = Components.classes['@mozilla.org/observer-service;1']
-						.getService(Components.interfaces.nsIObserverService);
-	observerService.addObserver(gRewindforwardOnLoadObserver, 'EndDocumentLoad', false);
-	observerService.addObserver(gRewindforwardOnLoadObserver, 'FailDocumentLoad', false);
+		if (this.getPref('rewindforward.use_another_icons'))
+			document.documentElement.setAttribute('rewindforward-anothericon', true);
+		else
+			document.documentElement.removeAttribute('rewindforward-anothericon');
 
-	window.addEventListener('keypress', rewindforwardOnKeyPressEventHandler, true);
-
-	window.addEventListener('unload', rewindforwardDestruct, false);
-
-//	gBrowser.addEventListener('focus', rewindforwardOnFocusEventHandler, true);
-
-	if (rewindforwardGetPref('rewindforward.use_another_icons'))
-		document.documentElement.setAttribute('rewindforward-anothericon', true);
-	else
-		document.documentElement.removeAttribute('rewindforward-anothericon');
-
-	rewindforwardInitialShow();
-}
+		this.initialShow();
+	},
 	
-function rewindforwardInitialShow() 
-{
-	// show custom buttons only in the initial startup
-	const PREFROOT = 'extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}';
-	var bar = document.getElementById('nav-bar');
-	if (bar && bar.currentSet) {
+	initialShow : function() 
+	{
+		// show custom buttons only in the initial startup
+		const PREFROOT = 'extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}';
+		var bar = document.getElementById('nav-bar');
+		if (bar && bar.currentSet) {
 
-		var STRBUNDLE = Components.classes['@mozilla.org/intl/stringbundle;1'].getService(Components.interfaces.nsIStringBundleService);
-		var msg = STRBUNDLE.createBundle('chrome://rewindforward/locale/rewindforward.properties');
+			var STRBUNDLE = Components.classes['@mozilla.org/intl/stringbundle;1'].getService(Components.interfaces.nsIStringBundleService);
+			var msg = STRBUNDLE.createBundle('chrome://rewindforward/locale/rewindforward.properties');
 
-		var PromptService = Components.classes['@mozilla.org/embedcomp/prompt-service;1'].getService(Components.interfaces.nsIPromptService);
+			var PromptService = Components.classes['@mozilla.org/embedcomp/prompt-service;1'].getService(Components.interfaces.nsIPromptService);
 
 
-		var currentset = bar.currentSet;
-		var buttons = currentset.replace(/__empty/, '').split(',');
+			var currentset = bar.currentSet;
+			var buttons = currentset.replace(/__empty/, '').split(',');
 
-		if (!rewindforwardGetPref(PREFROOT+'.initialshow.rewind-button')) {
-			if (currentset.indexOf('rewind-button') < 0) {
-				if (currentset.indexOf('back-button') < 0)
-					buttons.push('rewind-button');
-				else {
-					currentset = currentset.replace(/back-button/, 'rewind-button,back-button');
-					buttons = currentset.split(',');
+			if (!this.getPref(PREFROOT+'.initialshow.rewind-button')) {
+				if (currentset.indexOf('rewind-button') < 0) {
+					if (currentset.indexOf('back-button') < 0)
+						buttons.push('rewind-button');
+					else {
+						currentset = currentset.replace(/back-button/, 'rewind-button,back-button');
+						buttons = currentset.split(',');
+					}
 				}
+				this.setPref(PREFROOT+'.initialshow.rewind-button', true);
 			}
-			rewindforwardSetPref(PREFROOT+'.initialshow.rewind-button', true);
-		}
-		if (!rewindforwardGetPref(PREFROOT+'.initialshow.fastforward-button')) {
-			if (currentset.indexOf('fastforward-button') < 0) {
-				if (currentset.indexOf('back-button') < 0)
-					buttons.push('fastforward-button');
-				else {
-					currentset = currentset.replace(/forward-button/, 'forward-button,fastforward-button');
-					buttons = currentset.split(',');
+			if (!this.getPref(PREFROOT+'.initialshow.fastforward-button')) {
+				if (currentset.indexOf('fastforward-button') < 0) {
+					if (currentset.indexOf('back-button') < 0)
+						buttons.push('fastforward-button');
+					else {
+						currentset = currentset.replace(/forward-button/, 'forward-button,fastforward-button');
+						buttons = currentset.split(',');
+					}
 				}
+				this.setPref(PREFROOT+'.initialshow.fastforward-button', true);
 			}
-			rewindforwardSetPref(PREFROOT+'.initialshow.fastforward-button', true);
+			currentset = bar.currentSet.replace(/__empty/, '');
+			var newset = buttons.join(',');
+			if (currentset != newset &&
+				PromptService.confirmEx(
+					window,
+					msg.GetStringFromName('initialshow_confirm_title'),
+					msg.GetStringFromName('initialshow_confirm_text'),
+					(PromptService.BUTTON_TITLE_YES * PromptService.BUTTON_POS_0) +
+					(PromptService.BUTTON_TITLE_NO  * PromptService.BUTTON_POS_1),
+					null, null, null, null, {}
+				) == 0) {
+				bar.currentSet = newset;
+				bar.setAttribute('currentset', newset);
+					document.persist(bar.id, 'currentset');
+			}
+			if ('BrowserToolboxCustomizeDone' in window)
+				window.setTimeout('BrowserToolboxCustomizeDone(true);', 0);
 		}
-		currentset = bar.currentSet.replace(/__empty/, '');
-		var newset = buttons.join(',');
-		if (currentset != newset &&
-			PromptService.confirmEx(
-				window,
-				msg.GetStringFromName('initialshow_confirm_title'),
-				msg.GetStringFromName('initialshow_confirm_text'),
-				(PromptService.BUTTON_TITLE_YES * PromptService.BUTTON_POS_0) +
-				(PromptService.BUTTON_TITLE_NO  * PromptService.BUTTON_POS_1),
-				null, null, null, null, {}
-			) == 0) {
-			bar.currentSet = newset;
-			bar.setAttribute('currentset', newset);
-				document.persist(bar.id, 'currentset');
-		}
-		if ('BrowserToolboxCustomizeDone' in window)
-			window.setTimeout('BrowserToolboxCustomizeDone(true);', 0);
-	}
-}
+	},
   
-function rewindforwardDestruct() 
+	destroy : function() 
+	{
+		const observerService = Components.classes['@mozilla.org/observer-service;1']
+							.getService(Components.interfaces.nsIObserverService);
+		observerService.removeObserver(this, 'EndDocumentLoad', false);
+		observerService.removeObserver(this, 'FailDocumentLoad', false);
+
+		window.removeEventListener('keypress', this, true);
+		window.removeEventListener('unload', this, false);
+	}
+ 
+}; 
+window.addEventListener('load', RewindForwardService, false);
+  
+function BrowserRewind(aForceToRewind, aEvent) 
 {
-	const observerService = Components.classes['@mozilla.org/observer-service;1']
-						.getService(Components.interfaces.nsIObserverService);
-	observerService.removeObserver(gRewindforwardOnLoadObserver, 'EndDocumentLoad', false);
-	observerService.removeObserver(gRewindforwardOnLoadObserver, 'FailDocumentLoad', false);
+	RewindForwardService.goRewind(aForceToRewind, aEvent);
+}
+function BrowserRewindPrev(aEvent)
+{
+	RewindForwardService.goPrevious(aEvent);
+}
 
-	window.removeEventListener('keypress', rewindforwardOnKeyPressEventHandler, true);
-
-//	gBrowser.removeEventListener('focus', rewindforwardOnFocusEventHandler, true);
-
-	window.removeEventListener('load', rewindforwardInit, false);
-//	window.removeEventListener('unload', rewindforwardDestruct, false);
+function BrowserFastforward(aForceToFastforward, aEvent)
+{
+	RewindForwardService.goFastforward(aForceToFastforward, aEvent);
+}
+function BrowserFastforwardNext(aEvent)
+{
+	RewindForwardService.goNext(aEvent);
 }
  
-window.addEventListener('load', rewindforwardInit, false); 
-window.addEventListener('load', rewindforwardInit, false); // failsafe
-  
+// backward compatibility
+function rewindforwardGetLinksFromAllFrames(aType)
+{
+	return RewindForwardService.getLinksFromAllFrames(aType);
+}
+function rewindforwardGetLinkInMainFrame(aLinks)
+{
+	return RewindForwardService.getLinkInMainFrame(aLinks);
+}
+ 

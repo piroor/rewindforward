@@ -1,0 +1,15 @@
+content	rewindforward	jar:chrome/rewindforward.jar!/content/rewindforward/
+
+overlay	chrome://browser/content/browser.xul	chrome://rewindforward/content/browserOverlay.xul
+overlay	chrome://browser/content/browser.xul	chrome://rewindforward/content/buttonsOverlay.xul
+overlay	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/content/buttonsOverlay.xul
+
+locale	rewindforward	en-US	jar:chrome/rewindforward.jar!/locale/en-US/rewindforward/
+locale	rewindforward	ja-JP	jar:chrome/rewindforward.jar!/locale/ja-JP/rewindforward/
+
+skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
+skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
+skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
+
+style	chrome://browser/content/browser.xul	chrome://rewindforward/skin/rewindforward.css
+style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/skin/rewindforward.css

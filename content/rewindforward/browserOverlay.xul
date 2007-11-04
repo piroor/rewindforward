@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
+<?xml-stylesheet href="chrome://rewindforward/skin/" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://rewindforward/locale/">
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:rewindforward="http://white.sakura.ne.jp/~piro/rdf#">
-
-<script type="application/x-javascript" src="chrome://global/content/XPCNativeWrapper.js"/>
-<script type="application/x-javascript" src="chrome://rewindforward/content/pXPCNativeWrapper.js"/>
 
 <script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
 

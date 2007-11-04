@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://rewindforward/skin/pref.css" type="text/css"?>
+<!DOCTYPE prefwindow [
+<!ENTITY % rewindforwardDTD SYSTEM "chrome://rewindforward/locale/">
+%rewindforwardDTD;
+]>
+
+<prefwindow xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		title="&rewindforward.about.title;"
+		orient="vertical"
+		onload="sizeToContent();">
+
+<prefpane id="prefpane-general" label="&rewindforward.general.tab;">
+	<preferences>
+		<preference id="rewindforward.override_button.back"
+			name="rewindforward.override_button.back"
+			type="bool"/>
+		<preference id="rewindforward.override_button.forward"
+			name="rewindforward.override_button.forward"
+			type="bool"/>
+		<preference id="rewindforward.goToEndPointOfCurrentDomain"
+			name="rewindforward.goToEndPointOfCurrentDomain"
+			type="bool"/>
+		<preference id="rewindforward.fill_history_menu"
+			name="rewindforward.fill_history_menu"
+			type="bool"/>
+	</preferences>
+
+	<groupbox orient="vertical">
+		<caption label="&rewindforward.override_button.caption;"/>
+		<checkbox id="override_button.back"
+			label="&rewindforward.override_button.back;"
+			preference="rewindforward.override_button.back"/>
+		<checkbox id="override_button.forward"
+			label="&rewindforward.override_button.forward;"
+			preference="rewindforward.override_button.forward"/>
+	</groupbox>
+
+	<groupbox orient="vertical">
+		<caption label="&rewindforward.history.caption;"/>
+		<radiogroup orient="vertical" id="goToEndPointOfCurrentDomain"
+			preference="rewindforward.goToEndPointOfCurrentDomain">
+			<radio label="&rewindforward.history.goToEndPointOfCurrentDomain.disabled;"
+				value="false" class="image"
+				align="center"
+				src="chrome://rewindforward/content/toStartPoint.png"/>
+			<radio label="&rewindforward.history.goToEndPointOfCurrentDomain.enabled;"
+				value="true" class="image"
+				align="center"
+				src="chrome://rewindforward/content/toEndPoint.png"/>
+		</radiogroup>
+		<checkbox id="fill_history_menu"
+			label="&rewindforward.history.fill_history_menu;"
+			preference="rewindforward.fill_history_menu"/>
+	</groupbox>
+</prefpane>
+
+<prefpane id="prefpane-related" label="&rewindforward.related.tab;">
+	<preferences>
+		<preference id="rewindforward.find_prev_links"
+			name="rewindforward.find_prev_links"
+			type="bool"/>
+		<preference id="rewindforward.find_next_links"
+			name="rewindforward.find_next_links"
+			type="bool"/>
+		<preference id="rewindforward.virtual_link.enabled"
+			name="rewindforward.virtual_link.enabled"
+			type="bool"/>
+		<preference id="rewindforward.gonextprev.enabled"
+			name="rewindforward.gonextprev.enabled"
+			type="bool"/>
+		<preference id="rewindforward.use_another_icons"
+			name="rewindforward.use_another_icons"
+			type="bool"/>
+	</preferences>
+
+	<groupbox orient="vertical">
+		<caption label="&rewindforward.related.caption;"/>
+		<checkbox id="find_prev_links"
+			label="&rewindforward.related.find_prev_links;"
+			preference="rewindforward.find_prev_links"/>
+		<checkbox id="find_next_links"
+			label="&rewindforward.related.find_next_links;"
+			preference="rewindforward.find_next_links"/>
+		<separator/>
+		<checkbox id="virtual_link_enabled"
+			label="&rewindforward.related.virtual_link.enabled;"
+			preference="rewindforward.virtual_link.enabled"
+			flex="1"/>
+		<checkbox id="gonextprev_enabled"
+			label="&rewindforward.related.gonextprev.enabled;"
+			preference="rewindforward.gonextprev.enabled"/>
+		<hbox>
+			<spacer flex="1"/>
+			<button label="&rewindforward.related.customizeRules.button;"
+				oncommand="window.openDialog('chrome://rewindforward/content/customizeRules.xul', '', 'chrome,resizable,modal');"/>
+		</hbox>
+	</groupbox>
+	<groupbox orient="vertical" id="useAnotherIconsGroup">
+		<caption label="&rewindforward.icon.caption;"/>
+		<radiogroup id="useAnotherIcons"
+			orient="horizontal"
+			preference="rewindforward.use_another_icons">
+			<radio label="&rewindforward.icon.normal;"  value="false" class="image"
+				align="center"/>
+			<radio label="&rewindforward.icon.another;" value="true" class="image"
+				align="center"/>
+		</radiogroup>
+	</groupbox>
+</prefpane>
+
+</prefwindow>
