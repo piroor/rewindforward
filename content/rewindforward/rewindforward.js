@@ -120,15 +120,13 @@ var RewindForwardService = {
 	getLinkProperty : function(aNode, aProp) 
 	{
 		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
-		var value = aNode[aProp];
-		if (value) return value;
-		try {
-			value = aNode.getAttributeNS(XLinkNS, aProp);
-			if (value) return value;
-		}
-		catch(e) {
-		}
-		return aNode.getAttribute(aProp) || '';
+		if (aNode.nodeType != Node.ELEMENT_NODE)
+			aNode = aNode.parentNode;
+
+		return aNode[aProp] ||
+				aNode.getAttributeNS(XLinkNS, aProp) ||
+				aNode.getAttribute(aProp) ||
+				'';
 	},
  	
 	getHistoryEntryAt : function(aIndex) 
