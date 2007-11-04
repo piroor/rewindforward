@@ -363,6 +363,8 @@ var RewindForwardService = {
 			w = gBrowser.contentWindow;
 
 		var d = w.document;
+		if (!d.documentElement) return null;
+
 		var lastCount = d.getElementsByTagName('*').length;
 		var referrer = Components.classes['@mozilla.org/network/io-service;1']
 						.getService(Components.interfaces.nsIIOService)
