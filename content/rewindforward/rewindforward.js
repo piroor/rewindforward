@@ -541,6 +541,7 @@ var RewindForwardService = {
 		var matchingResult;
 		var pos;
 		var regexp = new RegExp();
+		var rule;
 		for (var i in this.siteInfo)
 		{
 			if (!this.siteInfo[i].urlsRule)
@@ -553,8 +554,11 @@ var RewindForwardService = {
 			{
 				if (!regexp.compile(j).test(aURI))
 					continue;
-				result.rule = this.siteInfo[i].rules[j].nextLink;
-				result.rate = this.kLINK_RELATED_CUSTOM;
+				rule = this.siteInfo[i].rules[j][rel+'Link'];
+				if (rule) {
+					result.rule = rule;
+					result.rate = this.kLINK_RELATED_CUSTOM;
+				}
 				break;
 			}
 
