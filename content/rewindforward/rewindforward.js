@@ -576,8 +576,8 @@ var RewindForwardService = {
 				if (rule) {
 					result.rule = rule;
 					result.rate = this.kLINK_RELATED_CUSTOM;
+					break findRule;
 				}
-				break findRule;
 			}
 
 /*
@@ -1418,10 +1418,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		eval('window.UpdateBackForwardButtons = '+
 			window.UpdateBackForwardButtons.toSource().replace(
-				/\}\)$/,
+				/(\}\)?)$/,
 				<><![CDATA[
 					RewindForwardService.updateButtons(document.getElementById('Browser:Stop').hasAttribute('disabled'));
-				})]]></>
+				$1]]></>
 			)
 		);
 
