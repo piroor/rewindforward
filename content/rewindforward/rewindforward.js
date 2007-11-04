@@ -450,15 +450,12 @@ var RewindForwardService = {
 
 		var customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
 		if (!customRule.rule) customRule = this.getCustomRule(w.location.href, rel);
-		if (customRule.rule) {
-			rate = customRule.rate;
-			customRule = customRule.rule;
-		}
 
 		// find "next" or "prev" link with XPath
 		var xpath;
-		if (customRule) {
-			xpath = customRule;
+		if (customRule && customRule.rule) {
+			xpath = customRule.rule;
+			rate = customRule.rate;
 		}
 		else {
 			xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rel, " "), " ', rel, ' ")]'].join('');
