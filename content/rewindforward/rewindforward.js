@@ -310,6 +310,9 @@ var RewindForwardService = {
 
 		var d = w.document;
 		var lastCount = d.getElementsByTagName('*').length;
+		var referrer = Components.classes['@mozilla.org/network/io-service;1']
+						.getService(Components.interfaces.nsIIOService)
+						.newURI(w.location.href, null, null);
 
 		var lastResult = d.documentElement.getAttribute(this.kFOUND_PREFIX + aType);
 		if (lastResult &&
@@ -329,9 +332,6 @@ var RewindForwardService = {
 				[this.getVirtualLink(aType, aWindow)]
 			);
 
-		var referrer = Components.classes['@mozilla.org/network/io-service;1']
-						.getService(Components.interfaces.nsIIOService)
-						.newURI(w.location.href, null, null);
 		links = links.filter(function(aLink) {
 			return aLink ? true : false ;
 		});
@@ -342,18 +342,17 @@ var RewindForwardService = {
 			if (links[i].href == w.location.href) continue;
 
 			uri = links[i].href;
-			if (uri in result) continue;
-
-			result[uri] = links[i];
-			links[i].index = resultArray.length-1;
-			if (this.domainRegExp.test(uri) && RegExp.$1 == domain)
-				result[uri].level = (result[uri].level || 0) + this.kLINK_SAME_DOMAIN;
-			resultArray.push(result[uri]);
-
-//			else if (!(result[uri].type & links[i].type)) {
-//				result[uri].level = (result[uri].level || 0) + links[i].level;
-//				result[uri].type  = (result[uri].type || 0)  + links[i].type;
-//			}
+			if (!(uri in result)) {
+				result[uri] = links[i];
+				links[i].index = resultArray.length-1;
+				if (this.domainRegExp.test(uri) && RegExp.$1 == domain)
+					result[uri].level = (result[uri].level || 0) + this.kLINK_SAME_DOMAIN;
+				resultArray.push(result[uri]);
+			}
+			else if (!(result[uri].type & links[i].type)) {
+				result[uri].level = (result[uri].level || 0) + links[i].level;
+				result[uri].type  = (result[uri].type || 0)  + links[i].type;
+			}
 		}
 
 		resultArray.sort(function(aA, aB) {
@@ -498,7 +497,7 @@ var RewindForwardService = {
 
 		var positivePatterns = [];
 
-		var matchingPatterns = document.getElementById(rel == 'next' ? 'Browser:Fastforward' : 'Browser:Rewind' ).getAttribute('patterns');
+		var matchingPatterns = this.getPref('rewindforward.matchingPatterns.'+rel);
 		if (matchingPatterns) {
 			positivePatterns = matchingPatterns.split('|');
 			xpath.push(' and contains(concat(@alt, " ", @title, " ", @src, " ", text()), "');
@@ -506,7 +505,7 @@ var RewindForwardService = {
 			xpath.push('")');
 		}
 
-		matchingPatterns = document.getElementById(rel == 'next' ? 'Browser:Fastforward' : 'Browser:Rewind' ).getAttribute('patterns-blacklist');
+		matchingPatterns = this.getPref('rewindforward.matchingPatterns.'+rel+'.blacklist');
 		if (matchingPatterns) {
 			xpath.push(' and not(contains(concat(@alt, " ", @title, " ", @src, " ", text()), "');
 			xpath.push(matchingPatterns.replace(/\|/g, '") or contains(concat(@alt, " ", @title, " ", @src, " ", text()), "'));
@@ -1178,7 +1177,7 @@ var RewindForwardService = {
 	onKeyPress : function(aEvent) 
 	{
 		const node = aEvent.originalTarget || aEvent.target;
-		if (!node || !this.getPref('rewindforward.gonextprev.enabled', true)) return;
+		if (!node || !this.getPref('rewindforward.gonextprev.enabled')) return;
 
 		// ignore events from chrome windows
 		var docShell = this.getDocShellFromDocument(node.ownerDocument);
@@ -1213,8 +1212,8 @@ var RewindForwardService = {
 
 		// detect what key-combination is pressesd
 		var keys = {
-				next : this.getPref('rewindforward.gonextprev.next.keys', ' |VK_PAGE_DOWN'), // "next" links take precedence over "previous".
-				prev : this.getPref('rewindforward.gonextprev.prev.keys', ' ,shift|VK_PAGE_UP')
+				next : this.getPref('rewindforward.gonextprev.next.keys'), // "next" links take precedence over "previous".
+				prev : this.getPref('rewindforward.gonextprev.prev.keys')
 			},
 			keyPressed = false,
 			modifierst,
@@ -1302,16 +1301,14 @@ var RewindForwardService = {
   
 	// prefs 
 	 
-	getPref : function(aPrefstring, aDefault, aPrefBranch) 
+	getPref : function(aPrefstring, aPrefBranch) 
 	{
 		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-
-		const knsISupportsString = ('nsISupportsWString' in Components.interfaces) ? Components.interfaces.nsISupportsWString : Components.interfaces.nsISupportsString;
 		try {
 			switch (branch.getPrefType(aPrefstring))
 			{
 				case branch.PREF_STRING:
-					return branch.getComplexValue(aPrefstring, knsISupportsString).data;
+					return decodeURIComponent(escape(branch.getCharPref(aPrefstring)));
 					break;
 				case branch.PREF_INT:
 					return branch.getIntPref(aPrefstring);
@@ -1324,22 +1321,16 @@ var RewindForwardService = {
 		catch(e) {
 		}
 
-		return (aDefault === void(0)) ? null : aDefault ;
+		return null;
 	},
  
 	setPref : function(aPrefstring, aValue, aPrefBranch) 
 	{
 		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-
 		switch (typeof aValue)
 		{
 			case 'string':
-				const knsISupportsString = ('nsISupportsWString' in Components.interfaces) ? Components.interfaces.nsISupportsWString : Components.interfaces.nsISupportsString;
-				var string = ('@mozilla.org/supports-wstring;1' in Components.classes) ?
-						Components.classes['@mozilla.org/supports-wstring;1'].createInstance(this.knsISupportsString) :
-						Components.classes['@mozilla.org/supports-string;1'].createInstance(knsISupportsString) ;
-				string.data = aValue;
-				branch.setComplexValue(aPrefstring, knsISupportsString, string);
+				branch.setCharPref(aPrefstring, unescape(encodeURIComponent(aValue)));
 				break;
 			case 'number':
 				branch.setIntPref(aPrefstring, parseInt(aValue));
@@ -1352,27 +1343,27 @@ var RewindForwardService = {
  
 	get shouldFindNextLinks() 
 	{
-		return this.getPref('rewindforward.find_next_links', true);
+		return this.getPref('rewindforward.find_next_links');
 	},
 	get shouldFindPrevLinks()
 	{
-		return this.getPref('rewindforward.find_prev_links', false);
+		return this.getPref('rewindforward.find_prev_links');
 	},
 	get shouldUseVirtualLinks()
 	{
-		return this.getPref('rewindforward.virtual_link.enabled', true);
+		return this.getPref('rewindforward.virtual_link.enabled');
 	},
 	get shouldFillHistoryMenu()
 	{
-		return this.getPref('rewindforward.fill_history_menu', true);
+		return this.getPref('rewindforward.fill_history_menu');
 	},
 	get shouldOverrideBackButtons()
 	{
-		return this.getPref('rewindforward.override_button.back', true);
+		return this.getPref('rewindforward.override_button.back');
 	},
 	get shouldOverrideForwardButtons()
 	{
-		return this.getPref('rewindforward.override_button.forward', true);
+		return this.getPref('rewindforward.override_button.forward');
 	},
   
 	init : function() 

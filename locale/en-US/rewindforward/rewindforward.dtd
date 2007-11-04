@@ -11,12 +11,6 @@
 <!ENTITY nextButton.tooltip        "Next page (&#37;s)">
 <!ENTITY nextButton.tooltip.blank  "No Next page">
 
-<!ENTITY matchingPatterns.next     "next|forward|after|ahead|Next|Forward|After|Ahead|NEXT|FORWARD|AFTER|AHEAD|&gt;&gt;|-&gt;|=&gt;">
-<!ENTITY matchingPatterns.prev     "prev|previous|back|return|before|Prev|Previous|Back|Return|Before|PREV|PREVIOUS|BACK|RETURN|BEFORE|&lt;&lt;|&lt;-|&lt;=">
-<!ENTITY matchingPatterns.next.blacklist "">
-<!ENTITY matchingPatterns.prev.blacklist "trackback|Trackback|TrackBack">
-
-
 <!ENTITY rewindforward.general.tab             "General">
 
 <!ENTITY rewindforward.override_button.caption "Back/Forward">
@@ -67,15 +61,5 @@
 <!ENTITY delete.label           "Delete">
 <!ENTITY delete.accesskey       "D">
 
-
-
-<!ENTITY rewindforward.about.button      "About">
-
-<!ENTITY rewindforward.about.title       "About Rewind/Fastforward Buttons">
-<!ENTITY rewindforward.about.caption     "Version Info">
-<!ENTITY rewindforward.about.name_before "Rewind/Fastforward Buttons Ver.">
-<!ENTITY rewindforward.about.name_after  "">
-<!ENTITY rewindforward.about.destributed "http://piro.sakura.ne.jp/">
-<!ENTITY rewindforward.about.uninstall   "Uninstall">
 
 <!ENTITY rewindforward.OK                "OK">

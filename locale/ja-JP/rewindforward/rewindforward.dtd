@@ -11,12 +11,6 @@
 <!ENTITY nextButton.tooltip        "次のページ（&#37;s）">
 <!ENTITY nextButton.tooltip.blank  "次のページはありません">
 
-<!ENTITY matchingPatterns.next     "次|進|先|ツギ|つぎへ|next|forward|after|ahead|Next|Forward|After|Ahead|NEXT|FORWARD|AFTER|AHEAD|&gt;&gt;|-&gt;|=&gt;|→|＞">
-<!ENTITY matchingPatterns.prev     "前|戻|モドル|もどる|まえへ|prev|previous|back|return|before|Prev|Previous|Back|Return|Before|PREV|PREVIOUS|BACK|RETURN|BEFORE|&lt;&lt;|&lt;-|&lt;=|←|＜">
-<!ENTITY matchingPatterns.next.blacklist "目次">
-<!ENTITY matchingPatterns.prev.blacklist "トラックバック|trackback|Trackback|TrackBack">
-
-
 <!ENTITY rewindforward.general.tab             "全般">
 
 <!ENTITY rewindforward.override_button.caption "戻る/進む">
