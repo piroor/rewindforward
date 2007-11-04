@@ -43,7 +43,7 @@ var RewindForwardService = {
 	kLINK_SAME_DOMAIN    : 1,
   
 	// utils 
-	
+	 
 	evaluateXPath : function(aExpression, aContext, aType) 
 	{
 		if (!aType) aType = XPathResult.ORDERED_NODE_SNAPSHOT_TYPE;
@@ -117,6 +117,20 @@ var RewindForwardService = {
 		return null;
 	},
  
+	getLinkProperty : function(aNode, aProp) 
+	{
+		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
+		var value = aNode[aProp];
+		if (value) return value;
+		try {
+			value = aNode.getAttributeNS(XLinkNS, aProp);
+			if (value) return value;
+		}
+		catch(e) {
+		}
+		return aNode.getAttribute(aProp) || '';
+	},
+ 	
 	getHistoryEntryAt : function(aIndex) 
 	{
 		var entry  = gBrowser.sessionHistory.getEntryAtIndex(aIndex, false);
@@ -542,24 +556,28 @@ var RewindForwardService = {
 		var pos;
 		var regexp = new RegExp();
 		var rule;
+
+		findRule:
 		for (var i in this.siteInfo)
 		{
 			if (!this.siteInfo[i].urlsRule)
-				this.siteInfo[i].urlsRule = new RegExp('^('+this.siteInfo[i].urls.join(')|^(')+')');
+				this.siteInfo[i].urlsRule = new RegExp('^('+(this.siteInfo[i].urls.join(')|^(') || '[^\s\w]')+')');
 
-			if (!(matchingResult = (aURI || '').match(this.siteInfo[i].urlsRule)))
+			if (!this.siteInfo[i].urlsRule.test(aURI || ''))
 				continue;
 
-			for (var j in this.siteInfo[i].rules)
+			// we have to find rule from last because the last rule of duplicated rules should be applied.
+			for (var j = this.siteInfo[i].urls.length-1; j > -1; j--)
 			{
-				if (!regexp.compile(j).test(aURI))
+				if (!regexp.compile(this.siteInfo[i].urls[j]).test(aURI))
 					continue;
-				rule = this.siteInfo[i].rules[j][rel+'Link'];
+
+				rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
 				if (rule) {
 					result.rule = rule;
 					result.rate = this.kLINK_RELATED_CUSTOM;
+					break findRule;
 				}
-				break;
 			}
 
 /*
@@ -647,52 +665,22 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
  
 	getLinksFromXPath : function(aXPath, aXMLDocument, aLevel, aType) 
 	{
-		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
-		const XLinkNS = 'http://www.w3.org/1999/xlink';
 
 		var links = [];
-
-		// http://www.hawk.34sp.com/stdpls/xml/
-		// http://www.hawk.34sp.com/stdpls/xml/dom_xpath.html
-		// http://www.homoon.jp/users/www/doc/CR-css3-selectors-20011113.shtml
-		const xmlDoc  = aXMLDocument;
-		const context = xmlDoc.documentElement;
-	//	const type    = XPathResult.FIRST_ORDERED_NODE_TYPE;
-		const type    = XPathResult.ORDERED_NODE_ITERATOR_TYPE;
-	//	const resolver  = xmlDoc.createNSResolver(xmlDoc.documentElement);
-		const resolver = {
-			lookupNamespaceURI : function(aPrefix)
-			{
-				switch (aPrefix)
-				{
-					case 'xhtml':
-						return XHTMLNS;
-					default:
-						return '';
-				}
-			}
-		};
-
+		var result;
 		try {
-			var expression = xmlDoc.createExpression(aXPath, resolver);
-			var result = expression.evaluate(context, type, null);
+			result = this.evaluateXPath(aXPath, aXMLDocument);
 		}
 		catch(e) {
 			dump('this.getLinksFromXPath >>>>>> ERROR <<<<<<<\n'+e+'\n');
 			return links;
 		}
 
-
 		var link;
 		var node;
-		do {
-			try {
-				node = result.iterateNext();
-			}
-			catch(e) {
-				node = null;
-			}
-			if (!node) break;
+		for (var i = 0, maxi = result.snapshotLength; i < maxi; i++)
+		{
+			node = result.snapshotItem(i);
 
 			if (node.nodeType != Node.ELEMENT_NODE)
 				node = node.parentNode;
@@ -708,25 +696,13 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 			link = {
 					level : aLevel,
-					label : (
-							node.title ||
-							node.getAttributeNS(XLinkNS, 'title') ||
-							node.getAttributeNS(XHTMLNS, 'title') ||
-							node.getAttribute('title') ||
-							node.textContent
-							),
-					href : (
-							node.href ||
-							node.getAttributeNS(XLinkNS, 'href') ||
-							node.getAttributeNS(XHTMLNS, 'href') ||
-							node.getAttribute('href')
-							),
-					type : (aType || 0)
+					label : (this.getLinkProperty(node, 'title') || node.textContent),
+					href  : this.getLinkProperty(node, 'href'),
+					type  : (aType || 0)
 				};
 
 			if (link.href) links.push(link);
-
-		} while(true);
+		}
 
 		return links;
 	},
@@ -1244,14 +1220,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			)
 			return;
 
-		var rel = node.getAttributeNS(XLinkNS, 'rel') ||
-				node.getAttributeNS(XHTMLNS, 'rel') ||
-				node.getAttribute('rel') ||
-				'';
-		var rev = node.getAttributeNS(XLinkNS, 'rev') ||
-				node.getAttributeNS(XHTMLNS, 'rev') ||
-				node.getAttribute('rev') ||
-				'';
+		var rel = this.getLinkProperty(node, 'rel');
+		var rev = this.getLinkProperty(node, 'rev');
 		if (!rel && !rev) return;
 
 		if (rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
@@ -1448,10 +1418,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		eval('window.UpdateBackForwardButtons = '+
 			window.UpdateBackForwardButtons.toSource().replace(
-				/\}\)$/,
+				/(\}\)?)$/,
 				<><![CDATA[
 					RewindForwardService.updateButtons(document.getElementById('Browser:Stop').hasAttribute('disabled'));
-				})]]></>
+				$1]]></>
 			)
 		);
 
