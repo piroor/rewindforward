@@ -43,7 +43,7 @@ var RewindForwardService = {
 	kLINK_SAME_DOMAIN    : 1,
   
 	// utils 
-	
+	 
 	evaluateXPath : function(aExpression, aContext, aType) 
 	{
 		if (!aType) aType = XPathResult.ORDERED_NODE_SNAPSHOT_TYPE;
@@ -117,6 +117,19 @@ var RewindForwardService = {
 		return null;
 	},
  
+	getLinkProperty : function(aNode, aProp) 
+	{
+		var value = aNode[aProp];
+		if (value) return value;
+		try {
+			value = aNode.getAttributeNS(XLinkNS, aProp);
+			if (value) return value;
+		}
+		catch(e) {
+		}
+		return aNode.getAttribute(aProp) || '';
+	},
+ 	
 	getHistoryEntryAt : function(aIndex) 
 	{
 		var entry  = gBrowser.sessionHistory.getEntryAtIndex(aIndex, false);
@@ -708,20 +721,9 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 			link = {
 					level : aLevel,
-					label : (
-							node.title ||
-							node.getAttributeNS(XLinkNS, 'title') ||
-							node.getAttributeNS(XHTMLNS, 'title') ||
-							node.getAttribute('title') ||
-							node.textContent
-							),
-					href : (
-							node.href ||
-							node.getAttributeNS(XLinkNS, 'href') ||
-							node.getAttributeNS(XHTMLNS, 'href') ||
-							node.getAttribute('href')
-							),
-					type : (aType || 0)
+					label : (this.getLinkProperty(node, 'title') || node.textContent);
+					href  : this.getLinkProperty(node, 'href'),
+					type  : (aType || 0)
 				};
 
 			if (link.href) links.push(link);
@@ -1244,14 +1246,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			)
 			return;
 
-		var rel = node.getAttributeNS(XLinkNS, 'rel') ||
-				node.getAttributeNS(XHTMLNS, 'rel') ||
-				node.getAttribute('rel') ||
-				'';
-		var rev = node.getAttributeNS(XLinkNS, 'rev') ||
-				node.getAttributeNS(XHTMLNS, 'rev') ||
-				node.getAttribute('rev') ||
-				'';
+		var rel = this.getLinkProperty(node, 'rel');
+		var rev = this.getLinkProperty(node, 'rev');
 		if (!rel && !rev) return;
 
 		if (rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
