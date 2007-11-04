@@ -23,7 +23,7 @@
                        em:description="Adds &quot;Rewind&quot; and &quot;Fastforward&quot; buttons for the toolbar."/>
     </em:localized>
     <em:localized>
-      <RDF:Description em:locale="ja-JP"
+      <RDF:Description em:locale="ja"
                        em:name="巻き戻し/早送りボタン"
                        em:description="ツールバーに「巻き戻し」と「早送り」のボタンを加えます。"/>
     </em:localized>

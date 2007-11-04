@@ -17,7 +17,8 @@ pref("rewindforward.matchingPatterns.prev",
 pref("rewindforward.matchingPatterns.prev.blacklist",
 	"\u623b\u308b/\u9032\u3080|\u300c\u623b\u308b\u300d|\"Back\"|\u30c8\u30e9\u30c3\u30af\u30d0\u30c3\u30af|"+
 	"backup|Backup|BackUp|back up|Back up|Back Up|"+
-	"trackback|Trackback|TrackBack|writeback|Writeback|WriteBack");
+	"trackback|Trackback|TrackBack|writeback|Writeback|WriteBack|"+
+	"wayback|Wayback|WayBack");
 pref("rewindforward.matchingPatterns.next",
 	"\u6b21|\u9032|\u5148|\u30c4\u30ae|\u3064\u304e\u3078|"+
 	"next|forward|after|ahead|Next|Forward|After|Ahead|"+
@@ -27,7 +28,9 @@ pref("rewindforward.matchingPatterns.next.blacklist",
 	"\u623b\u308b/\u9032\u3080|\u300c\u9032\u3080\u300d|\"Forward\"|Fastforward|FASTFORWARD|"+
 	"\u76ee\u6b21");
 
-pref("rewindforward.rule.importFrom", 'http://swdyh.infogami.com/autopagerize|http://userjs.oh.land.to/pagerization/convert.php?file=siteinfo.v5');
+pref("rewindforward.siteinfo.importFrom", 'http://swdyh.infogami.com/autopagerize|http://userjs.oh.land.to/pagerization/convert.php?file=siteinfo.v5');
+pref("rewindforward.siteinfo.lastUpdate", 0);
+pref("rewindforward.siteinfo.cache", "");
 
 pref("extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}.name", "chrome://rewindforward/locale/rewindforward.properties");
 pref("extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}.description", "chrome://rewindforward/locale/rewindforward.properties");
