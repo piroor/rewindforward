@@ -6,7 +6,8 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:rewindforward="http://white.sakura.ne.jp/~piro/rdf#">
 
-<script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
+<script type="application/x-javascript" src="rewindforward.js"/>
+<script type="application/x-javascript" src="siteInfoLoader.js"/>
 
 <commandset id="mainCommandSet">
 	<command id="Browser:Rewind"

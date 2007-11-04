@@ -11,6 +11,24 @@ var RewindForwardService = {
 	kGENERATED_ID_PREFIX : 'rewindforward-found-link-',
 
 	domainRegExp : /^\w+:\/\/([^:\/]+)(\/|$)/,
+
+	NSResolver : {
+		lookupNamespaceURI : function(aPrefix)
+		{
+			switch (aPrefix)
+			{
+				case 'xul':
+					return 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
+				case 'html':
+				case 'xhtml':
+					return 'http://www.w3.org/1999/xhtml';
+				case 'xlink':
+					return 'http://www.w3.org/1999/xlink';
+				default:
+					return '';
+			}
+		}
+	},
  
 	// type 
 	kLINK_TYPE_RELATED : 1,
@@ -26,6 +44,30 @@ var RewindForwardService = {
   
 	// utils 
 	
+	evaluateXPath : function(aExpression, aContext, aType) 
+	{
+		if (!aType) aType = XPathResult.ORDERED_NODE_SNAPSHOT_TYPE;
+		try {
+			var xpathResult = (aContext ? (aContext.ownerDocument || aContext) : document).evaluate(
+					aExpression,
+					aContext,
+					this.NSResolver,
+					aType,
+					null
+				);
+		}
+		catch(e) {
+			return {
+				singleNodeValue : null,
+				snapshotLength  : 0,
+				snapshotItem    : function() {
+					return null
+				}
+			};
+		}
+		return xpathResult;
+	},
+ 
 	getDocShellFromDocument : function(aDocument, aRootDocShell) 
 	{
 		var doc = aDocument;
@@ -135,7 +177,7 @@ var RewindForwardService = {
 	},
   
 	// do rewind/fastforward 
-	 
+	
 	goRewind : function(aForceToRewind, aEvent) 
 	{
 		this.rewindOrFastforward('rewind', aForceToRewind, aEvent);
@@ -262,7 +304,7 @@ var RewindForwardService = {
 		else
 			gBrowser.webNavigation.gotoIndex((aType == 'rewind') ? 0 : SH.count-1 );
 	},
-  	
+  
 	// get next/prev link 
 	
 	// collect "next" and "previous" links from all frames 
@@ -394,57 +436,12 @@ var RewindForwardService = {
 
 		var rate = this.kLINK_RELATED;
 
-		// get rules to find links
-		var customRule;
-		var domain = this.domainRegExp.test(w.location.href) ? RegExp.$1 : null ;
-		if (domain) {
-			const pref = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPref);
-			const branch = pref.getBranch('rewindforward.rule.'+rel+'.');
-
-			var count   = { value : 0 };
-			const list  = branch.getChildList('', count);
-
-			var regexp  = new RegExp('', 'g');
-			var matchingResult = domain.match(
-					regexp.compile([
-						'(',
-						list.join('\n')
-							.replace(/^\*\n|\n\*$/g,'')
-							.replace(/\n\*\n/g,'\n')
-							.replace(/\./g, '\\.')
-							.replace(/\?/g, '.')
-							.replace(/\*/g, '.+')
-							.replace(/\n/g,')|('),
-						')'
-					].join(''))
-				);
-			if (matchingResult) {
-				// String.match() returns the found word as a first element of the result, so we have to remove it from the list.
-				matchingResult.shift();
-				// Replace other results to single letters for the next step.
-				matchingResult = ['[', matchingResult.join(']['), ']'].join('')
-									.replace(/\[(undefined)?\]/g, '/')
-									.replace(/\[|\]/g, '');
-	//dump('result: '+matchingResult+'\n')
-				// Which rule matched? We can know it with this step.
-				const pos = matchingResult.indexOf(domain);
-	//dump('found at '+pos+'\n');
-				if (pos > -1) {
-					// "list[pos]" is the rule. But if there is "*" rule, list[0] is "*" and the rule is "list[pos+1]".
-					const offset = this.getPref('rewindforward.rule.'+rel+'.*') ? 1 : 0 ;
-					const customRuleEntry = list[pos+offset];
-	//dump('found entry: '+customRuleEntry+'\n');
-					customRule = this.getPref('rewindforward.rule.'+rel+'.'+customRuleEntry);
-				}
-			}
-			if (!customRule) {
-				customRule = this.getPref('rewindforward.rule.'+rel+'.*');
-			}
-			else {
-				rate = this.kLINK_RELATED_CUSTOM;
-			}
+		var customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
+		if (!customRule.rule) customRule = this.getCustomRule(w.location.href, rel);
+		if (customRule.rule) {
+			rate = customRule.rate;
+			customRule = customRule.rule;
 		}
-
 
 		// find "next" or "prev" link with XPath
 		var xpath;
@@ -469,6 +466,115 @@ var RewindForwardService = {
 		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType+'LastCount', lastCount);
 
 		return links;
+	},
+	getCustomRule : function(aURI, aRelation)
+	{
+		var customRule;
+		var rel = aRelation;
+		var result = {
+				rule : '',
+				rate : 0
+			};
+		var domain = this.domainRegExp.test(aURI) ? RegExp.$1 : null ;
+		if (!domain) return result;
+
+		const pref = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPref);
+		const branch = pref.getBranch('rewindforward.rule.'+rel+'.');
+
+		var count   = { value : 0 };
+		const list  = branch.getChildList('', count);
+
+		var regexp  = new RegExp('', 'g');
+		var matchingResult = domain.match(
+				regexp.compile([
+					'(',
+					list.join('\n')
+						.replace(/^\*\n|\n\*$/g,'')
+						.replace(/\n\*\n/g,'\n')
+						.replace(/\./g, '\\.')
+						.replace(/\?/g, '.')
+						.replace(/\*/g, '.+')
+						.replace(/\n/g,')|('),
+					')'
+				].join(''))
+			);
+		if (matchingResult) {
+			// String.match() returns the found word as a first element of the result, so we have to remove it from the list.
+			matchingResult.shift();
+			// Replace other results to single letters for the next step.
+			matchingResult = ['[', matchingResult.join(']['), ']'].join('')
+								.replace(/\[(undefined)?\]/g, '/')
+								.replace(/\[|\]/g, '');
+//dump('result: '+matchingResult+'\n')
+			// Which rule matched? We can know it with this step.
+			const pos = matchingResult.indexOf(domain);
+//dump('found at '+pos+'\n');
+			if (pos > -1) {
+				// "list[pos]" is the rule. But if there is "*" rule, list[0] is "*" and the rule is "list[pos+1]".
+				const offset = this.getPref('rewindforward.rule.'+rel+'.*') ? 1 : 0 ;
+				const customRuleEntry = list[pos+offset];
+//dump('found entry: '+customRuleEntry+'\n');
+				customRule = this.getPref('rewindforward.rule.'+rel+'.'+customRuleEntry);
+			}
+		}
+		if (!customRule) {
+			customRule = this.getPref('rewindforward.rule.'+rel+'.*');
+			result.rate = this.kLINK_RELATED;
+		}
+		else {
+			result.rate = this.kLINK_RELATED_CUSTOM;
+		}
+
+		result.rule = customRule;
+		return result;
+	},
+	getCustomRuleFromSiteInfo : function(aURI, aRelation)
+	{
+		var rel = aRelation;
+		var result = {
+				rule : '',
+				rate : 0
+			};
+
+		if (rel != 'next') return result;
+
+		var matchingResult;
+		var pos;
+		var regexp = new RegExp();
+		for (var i in this.siteInfo)
+		{
+			if (!this.siteInfo[i].urlsRule)
+				this.siteInfo[i].urlsRule = new RegExp('^('+this.siteInfo[i].urls.join(')|^(')+')');
+
+			if (!(matchingResult = (aURI || '').match(this.siteInfo[i].urlsRule)))
+				continue;
+
+			for (var j in this.siteInfo[i].rules)
+			{
+				if (!regexp.compile(j).test(aURI))
+					continue;
+				result.rule = this.siteInfo[i].rules[j].nextLink;
+				result.rate = this.kLINK_RELATED_CUSTOM;
+				break;
+			}
+
+/*
+			matchingResult.shift();
+			matchingResult = ['[', matchingResult.join(']['), ']'].join('')
+								.replace(/\[(undefined)?\]/g, '/')
+								.replace(/\[|\]/g, '');
+dump('result: '+matchingResult+'\n')
+			pos = matchingResult.indexOf(aURI);
+dump('found at '+pos+'\n');
+			if (pos > -1) {
+dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
+				result.rule = this.siteInfo[i].rules[this.siteInfo[i].urls[pos]].nextLink;
+				result.rate = this.kLINK_RELATED_CUSTOM;
+				break;
+			}
+*/
+		}
+		return result;
 	},
  
 	getLabeledLinks : function(aType, aWindow) 
@@ -1299,73 +1405,36 @@ var RewindForwardService = {
 			this.updateButtons(true);
 		},
   
-	// prefs 
+	// siteinfo 
 	 
-	getPref : function(aPrefstring, aPrefBranch) 
-	{
-		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-		try {
-			switch (branch.getPrefType(aPrefstring))
-			{
-				case branch.PREF_STRING:
-					return decodeURIComponent(escape(branch.getCharPref(aPrefstring)));
-					break;
-				case branch.PREF_INT:
-					return branch.getIntPref(aPrefstring);
-					break;
-				default:
-					return branch.getBoolPref(aPrefstring);
-					break;
-			}
-		}
-		catch(e) {
-		}
-
-		return null;
-	},
+	siteInfo : {}, 
  
-	setPref : function(aPrefstring, aValue, aPrefBranch) 
+	initSiteInfo : function() 
 	{
-		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-		switch (typeof aValue)
+		var uris = this.getPref('rewindforward.siteinfo.importFrom').split('|');
+		var expire = this.getPref('rewindforward.siteinfo.expire');
+		var now = Date.now();
+		var cache;
+		var lastUpdate;
+		for (var i in uris)
 		{
-			case 'string':
-				branch.setCharPref(aPrefstring, unescape(encodeURIComponent(aValue)));
-				break;
-			case 'number':
-				branch.setIntPref(aPrefstring, parseInt(aValue));
-				break;
-			default:
-				branch.setBoolPref(aPrefstring, aValue);
-				break;
+			cache = this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.cache');
+			lastUpdate = (this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.lastUpdate') || 0);
+			if (!cache || now >= expire + lastUpdate) {
+				new RewindForwardSiteInfoLoader(uris[i]);
+			}
+			else {
+				this.siteInfo[uris[i]] = eval(cache);
+			}
+			window.setTimeout(
+				'new RewindForwardSiteInfoLoader("'+uris[i]+'")',
+				now - lastUpdate + expire
+			);
 		}
-	},
- 
-	get shouldFindNextLinks() 
-	{
-		return this.getPref('rewindforward.find_next_links');
-	},
-	get shouldFindPrevLinks()
-	{
-		return this.getPref('rewindforward.find_prev_links');
-	},
-	get shouldUseVirtualLinks()
-	{
-		return this.getPref('rewindforward.virtual_link.enabled');
-	},
-	get shouldFillHistoryMenu()
-	{
-		return this.getPref('rewindforward.fill_history_menu');
-	},
-	get shouldOverrideBackButtons()
-	{
-		return this.getPref('rewindforward.override_button.back');
-	},
-	get shouldOverrideForwardButtons()
-	{
-		return this.getPref('rewindforward.override_button.forward');
 	},
   
+	// initialize 
+	 
 	init : function() 
 	{
 		if (this.initialized) return;
@@ -1447,6 +1516,8 @@ var RewindForwardService = {
 		else
 			document.documentElement.removeAttribute('rewindforward-anothericon');
 
+		this.initSiteInfo();
+
 		this.initialShow();
 	},
 	
@@ -1517,8 +1588,75 @@ var RewindForwardService = {
 
 		window.removeEventListener('keypress', this, true);
 		window.removeEventListener('unload', this, false);
-	}
+	},
+  
+	// prefs 
+	
+	getPref : function(aPrefstring, aPrefBranch) 
+	{
+		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
+		try {
+			switch (branch.getPrefType(aPrefstring))
+			{
+				case branch.PREF_STRING:
+					return decodeURIComponent(escape(branch.getCharPref(aPrefstring)));
+					break;
+				case branch.PREF_INT:
+					return branch.getIntPref(aPrefstring);
+					break;
+				default:
+					return branch.getBoolPref(aPrefstring);
+					break;
+			}
+		}
+		catch(e) {
+		}
+
+		return null;
+	},
  
+	setPref : function(aPrefstring, aValue, aPrefBranch) 
+	{
+		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
+		switch (typeof aValue)
+		{
+			case 'string':
+				branch.setCharPref(aPrefstring, unescape(encodeURIComponent(aValue)));
+				break;
+			case 'number':
+				branch.setIntPref(aPrefstring, parseInt(aValue));
+				break;
+			default:
+				branch.setBoolPref(aPrefstring, aValue);
+				break;
+		}
+	},
+ 
+	get shouldFindNextLinks() 
+	{
+		return this.getPref('rewindforward.find_next_links');
+	},
+	get shouldFindPrevLinks()
+	{
+		return this.getPref('rewindforward.find_prev_links');
+	},
+	get shouldUseVirtualLinks()
+	{
+		return this.getPref('rewindforward.virtual_link.enabled');
+	},
+	get shouldFillHistoryMenu()
+	{
+		return this.getPref('rewindforward.fill_history_menu');
+	},
+	get shouldOverrideBackButtons()
+	{
+		return this.getPref('rewindforward.override_button.back');
+	},
+	get shouldOverrideForwardButtons()
+	{
+		return this.getPref('rewindforward.override_button.forward');
+	}
+  
 }; 
 window.addEventListener('load', RewindForwardService, false);
   
@@ -1540,7 +1678,7 @@ function BrowserFastforwardNext(aEvent)
 	RewindForwardService.goNext(aEvent);
 }
  
-// backward compatibility
+// backward compatibility 
 function rewindforwardGetLinksFromAllFrames(aType)
 {
 	return RewindForwardService.getLinksFromAllFrames(aType);
