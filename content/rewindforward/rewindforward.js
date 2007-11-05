@@ -858,7 +858,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		if (!aInfo.navigation && !aInfo.base)
 			return;
 
-		if (!aInfo.findLinks) link = null;
+		if (!aInfo.findLinks || aInfo.link) link = null;
 
 		disabled = aInfo.navigationBroadcaster.hasAttribute('disabled');
 		if (disabled == Boolean(link) || disabled == aInfo.canMove) {
