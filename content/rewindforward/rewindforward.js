@@ -706,7 +706,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
  
 	getVirtualLink : function(aType, aWindow) 
 	{
-		if (!this.shouldUseVirtualLinks) return null;
+		if (!this.getPref('rewindforward.virtual_link.enabled')) return null;
 
 		var w = aWindow || document.commandDispatcher.focusedWindow;
 		if (!w || w.top != gBrowser.contentWindow)
@@ -791,230 +791,158 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				return;
 			}
 		}
-		this.updateRewindButton(aFindLinks);
-		this.updateFastforwardButton(aFindLinks);
+
+		this.updateButton({
+			base        : (this.getPref('rewindforward.override_button.back') ?
+							document.getElementById('back-button') : null ),
+			navigation  : document.getElementById('rewind-button'),
+			link        : document.getElementById('rewind-prev-button'),
+			menuItem    : document.getElementById('rewindMenuItem'),
+			linkBroadcaster : document.getElementById('Browser:RewindPrev'),
+			navigationBroadcaster : document.getElementById('Browser:Rewind'),
+			type        : 'prev',
+			canMove     : gBrowser.webNavigation.canGoBack,
+			findLinks   : aFindLinks
+		});
+		this.updateButton({
+			base        : (this.getPref('rewindforward.override_button.forward') ?
+							document.getElementById('forward-button') : null ),
+			navigation  : document.getElementById('fastforward-button'),
+			link        : document.getElementById('fastforward-next-button'),
+			menuItem    : document.getElementById('fastforwardMenuItem'),
+			linkBroadcaster : document.getElementById('Browser:FastforwardNext'),
+			navigationBroadcaster : document.getElementById('Browser:Fastforward'),
+			type        : 'next',
+			canMove     : gBrowser.webNavigation.canGoForward,
+			findLinks   : aFindLinks
+		});
 	},
 	 
-	updateRewindButton : function(aFindLinks) 
+	updateButton : function(aInfo) 
 	{
-		var nav = gBrowser.webNavigation;
-
-		var broadcaster, disabled, link;
-
+		var disabled;
 		var toEndPoint = this.getPref('rewindforward.goToEndPointOfCurrentDomain');
 		var navigationTooltipAttr = toEndPoint ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation' ;
 
-		var rewindButton   = document.getElementById('rewind-button');
-		var rewirdMenuItem = document.getElementById('rewindMenuItem');
-		var prevButton     = document.getElementById('rewind-prev-button');
-		var backButton     = this.shouldOverrideBackButtons ? document.getElementById('back-button') : null ;
+		if (!aInfo.navigation && !aInfo.link && !aInfo.base) return;
 
-		if (!rewindButton && !prevButton && !backButton) return;
-
-		link = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
-		if (backButton && !backButton.getAttribute('rewindforward-original-tooltip')) {
-			backButton.setAttribute('rewindforward-original-tooltip', backButton.getAttribute('tooltiptext'));
-			backButton.setAttribute('rewindforward-original-label',   backButton.getAttribute('label'));
+		var link = this.getLinkInMainFrame(this.getLinksFromAllFrames(aInfo.type));
+		if (aInfo.base &&
+			!aInfo.base.getAttribute('rewindforward-original-tooltip')) {
+			aInfo.base.setAttribute('rewindforward-original-tooltip',
+				aInfo.base.getAttribute('tooltiptext'));
+			aInfo.base.setAttribute('rewindforward-original-label',
+				aInfo.base.getAttribute('label'));
 		}
 
-		if (prevButton && !prevButton.hidden) {
-			broadcaster = document.getElementById('Browser:RewindPrev');
-			disabled    = broadcaster.hasAttribute('disabled');
+		if (aInfo.link && !aInfo.link.hidden) {
+			disabled = aInfo.linkBroadcaster.hasAttribute('disabled');
 			if (disabled == Boolean(link)) {
 				if (disabled || link)
-					broadcaster.removeAttribute('disabled');
+					aInfo.linkBroadcaster.removeAttribute('disabled');
 				else
-					broadcaster.setAttribute('disabled', true);
+					aInfo.linkBroadcaster.setAttribute('disabled', true);
 			}
 			if (!link) {
-				prevButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link-blank'));
+				aInfo.link.setAttribute('tooltiptext',
+					aInfo.linkBroadcaster.getAttribute('tooltiptext-link-blank'));
 			}
 			else {
-				prevButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
+				aInfo.link.setAttribute('tooltiptext',
+					aInfo.linkBroadcaster.getAttribute('tooltiptext-link')
+						.replace(/%s/gi, (link.label || link.href)
+						.replace(/\s+/g, ' ')));
 			}
 		}
 
-		if ((!rewindButton || rewindButton.hidden) && (!backButton || backButton.hidden)) return;
+		if ((!aInfo.navigation || aInfo.navigation.hidden) &&
+			(!aInfo.base || aInfo.base.hidden))
+			return;
 
-		if (!aFindLinks || !this.shouldFindPrevLinks ||
-			(prevButton && !prevButton.hidden)) {
+		if (!aInfo.findLinks || !this.shouldFindPrevLinks ||
+			(aInfo.link && !aInfo.link.hidden)) {
 			link = null;
 		}
 		else if (!link) {
-			link = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
+			link = this.getLinkInMainFrame(this.getLinksFromAllFrames(aInfo.type));
 		}
 
-		broadcaster = document.getElementById('Browser:Rewind');
-		disabled    = broadcaster.hasAttribute('disabled');
-		if (disabled == Boolean(link) || disabled == nav.canGoBack) {
-			if (disabled || link || nav.canGoBack)
-				broadcaster.removeAttribute('disabled');
+		disabled = aInfo.navigationBroadcaster.hasAttribute('disabled');
+		if (disabled == Boolean(link) || disabled == aInfo.canMove) {
+			if (disabled || link || aInfo.canMove)
+				aInfo.navigationBroadcaster.removeAttribute('disabled');
 			else
-				broadcaster.setAttribute('disabled', true);
+				aInfo.navigationBroadcaster.setAttribute('disabled', true);
 		}
 		if (!link) {
-			if (rewindButton) {
-				rewindButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-				rewindButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-				rewindButton.setAttribute('mode', 'navigation');
+			if (aInfo.navigation) {
+				aInfo.navigation.setAttribute('label',
+					aInfo.navigationBroadcaster.getAttribute('label-navigation'));
+				aInfo.navigation.setAttribute('tooltiptext',
+					aInfo.navigationBroadcaster.getAttribute(navigationTooltipAttr));
+				aInfo.navigation.setAttribute('mode',
+					'navigation');
 			}
-			broadcaster.setAttribute('mode', 'navigation');
+			aInfo.navigationBroadcaster.setAttribute('mode', 'navigation');
 
-			rewirdMenuItem.setAttribute('tooltiptext', rewirdMenuItem.getAttribute(navigationTooltipAttr));
-			rewirdMenuItem = document.getElementById(rewirdMenuItem.id+'-clone');
-			if (rewirdMenuItem)
-				rewirdMenuItem.setAttribute('tooltiptext', rewirdMenuItem.getAttribute(navigationTooltipAttr));
+			aInfo.menuItem.setAttribute('tooltiptext',
+				aInfo.menuItem.getAttribute(navigationTooltipAttr));
+			aInfo.menuItem = document.getElementById(aInfo.menuItem.id+'-clone');
+			if (aInfo.menuItem)
+				aInfo.menuItem.setAttribute('tooltiptext',
+					aInfo.menuItem.getAttribute(navigationTooltipAttr));
 		}
 		else {
-			if (rewindButton) {
-				rewindButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-				rewindButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-				rewindButton.setAttribute('mode', 'link');
+			if (aInfo.navigation) {
+				aInfo.navigation.setAttribute('label',
+					aInfo.navigationBroadcaster.getAttribute('label-link'));
+				aInfo.navigation.setAttribute('tooltiptext',
+					aInfo.navigationBroadcaster.getAttribute('tooltiptext-link')
+						.replace(/%s/gi, (link.label || link.href)
+						.replace(/\s+/g, ' ')));
+				aInfo.navigation.setAttribute('mode',
+					'link');
 			}
-			broadcaster.setAttribute('mode', 'link');
+			aInfo.navigationBroadcaster.setAttribute('mode', 'link');
 		}
 
-		if (!backButton) return;
+		if (!aInfo.base) return;
 
-		backButton.removeAttribute('rewindforward-override');
+		aInfo.base.removeAttribute('rewindforward-override');
 		if (
-			(rewindButton && !rewindButton.hidden) ||
-			broadcaster.getAttribute('disabled') == 'true' ||
+			(aInfo.navigation && !aInfo.navigation.hidden) ||
+			aInfo.navigationBroadcaster.getAttribute('disabled') == 'true' ||
 			(!link && gBrowser.sessionHistory.index <= 1)
 			) {
-			backButton.setAttribute('label',       backButton.getAttribute('rewindforward-original-label'));
-			backButton.setAttribute('tooltiptext', backButton.getAttribute('rewindforward-original-tooltip'));
-			if (nav.canGoBack)
-				backButton.removeAttribute('disabled');
+			aInfo.base.setAttribute('label',
+				aInfo.base.getAttribute('rewindforward-original-label'));
+			aInfo.base.setAttribute('tooltiptext',
+				aInfo.base.getAttribute('rewindforward-original-tooltip'));
+			if (aInfo.canMove)
+				aInfo.base.removeAttribute('disabled');
 			else
-				backButton.setAttribute('disabled', true);
+				aInfo.base.setAttribute('disabled', true);
 		}
 		else {
 			if (!link) {
-				backButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-				backButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-				backButton.setAttribute('rewindforward-override', 'navigation');
-				backButton.removeAttribute('disabled');
+				aInfo.base.setAttribute('label',
+					aInfo.navigationBroadcaster.getAttribute('label-navigation'));
+				aInfo.base.setAttribute('tooltiptext',
+					aInfo.navigationBroadcaster.getAttribute(navigationTooltipAttr));
+				aInfo.base.setAttribute('rewindforward-override',
+					'navigation');
+				aInfo.base.removeAttribute('disabled');
 			}
 			else {
-				backButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-				backButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-				backButton.setAttribute('rewindforward-override', 'link');
-				backButton.removeAttribute('disabled');
-			}
-		}
-	},
- 
-	updateFastforwardButton : function(aFindLinks) 
-	{
-		var nav = gBrowser.webNavigation;
-
-		var broadcaster, disabled, link;
-
-		var toEndPoint = this.getPref('rewindforward.goToEndPointOfCurrentDomain');
-		var navigationTooltipAttr = toEndPoint ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation' ;
-
-		var fastforwardButton   = document.getElementById('fastforward-button');
-		var fastforwardMenuItem = document.getElementById('fastforwardMenuItem');
-		var nextButton          = document.getElementById('fastforward-next-button');
-		var forwardButton       = this.shouldOverrideForwardButtons ? document.getElementById('forward-button') : null ;
-
-		if (!fastforwardButton && !nextButton && !forwardButton) return;
-
-		link = this.getLinkInMainFrame(
-			this.getLinksFromAllFrames('next')
-		);
-		if (forwardButton && !forwardButton.getAttribute('rewindforward-original-tooltip')) {
-			forwardButton.setAttribute('rewindforward-original-tooltip', forwardButton.getAttribute('tooltiptext'));
-			forwardButton.setAttribute('rewindforward-original-label',   forwardButton.getAttribute('label'));
-		}
-
-		if (nextButton && !nextButton.hidden) {
-			broadcaster = document.getElementById('Browser:FastforwardNext');
-			disabled    = broadcaster.hasAttribute('disabled');
-			if (disabled == Boolean(link)) {
-				if (disabled || link)
-					broadcaster.removeAttribute('disabled');
-				else
-					broadcaster.setAttribute('disabled', true);
-			}
-			if (!link) {
-				nextButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link-blank'));
-			}
-			else {
-				nextButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-			}
-		}
-
-		if ((!fastforwardButton || fastforwardButton.hidden) && (!forwardButton || forwardButton.hidden)) return;
-
-		if (!aFindLinks || !this.shouldFindNextLinks ||
-			(nextButton && !nextButton.hidden)) {
-			link = null;
-		}
-		else if (!link) {
-			link = this.getLinkInMainFrame(
-				this.getLinksFromAllFrames('next')
-			);
-		}
-
-		broadcaster = document.getElementById('Browser:Fastforward');
-		disabled    = broadcaster.hasAttribute('disabled');
-		if (disabled == Boolean(link) || disabled == nav.canGoForward) {
-			if (disabled || link || nav.canGoForward)
-				broadcaster.removeAttribute('disabled');
-			else
-				broadcaster.setAttribute('disabled', true);
-		}
-		if (!link) {
-			if (fastforwardButton) {
-				fastforwardButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-				fastforwardButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-				fastforwardButton.setAttribute('mode', 'navigation');
-			}
-			broadcaster.setAttribute('mode', 'navigation');
-
-			fastforwardMenuItem.setAttribute('tooltiptext', fastforwardMenuItem.getAttribute(navigationTooltipAttr));
-			fastforwardMenuItem = document.getElementById(fastforwardMenuItem.id+'-clone');
-			if (fastforwardMenuItem)
-				fastforwardMenuItem.setAttribute('tooltiptext', fastforwardMenuItem.getAttribute(navigationTooltipAttr));
-		}
-		else {
-			if (fastforwardButton) {
-				fastforwardButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-				fastforwardButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-				fastforwardButton.setAttribute('mode', 'link');
-			}
-			broadcaster.setAttribute('mode', 'link');
-		}
-
-		if (!forwardButton) return;
-
-		forwardButton.removeAttribute('rewindforward-override');
-		if (
-			(fastforwardButton && !fastforwardButton.hidden) ||
-			broadcaster.getAttribute('disabled') == 'true' ||
-			(!link && gBrowser.sessionHistory.index >= gBrowser.sessionHistory.count-2)
-			) {
-			forwardButton.setAttribute('label',       forwardButton.getAttribute('rewindforward-original-label'));
-			forwardButton.setAttribute('tooltiptext', forwardButton.getAttribute('rewindforward-original-tooltip'));
-			if (nav.canGoForward)
-				forwardButton.removeAttribute('disabled');
-			else
-				forwardButton.setAttribute('disabled', true);
-		}
-		else {
-			if (!link) {
-				forwardButton.setAttribute('label',       broadcaster.getAttribute('label-navigation'));
-				forwardButton.setAttribute('tooltiptext', broadcaster.getAttribute(navigationTooltipAttr));
-				forwardButton.setAttribute('rewindforward-override', 'navigation');
-				forwardButton.removeAttribute('disabled');
-			}
-			else {
-				forwardButton.setAttribute('label',       broadcaster.getAttribute('label-link'));
-				forwardButton.setAttribute('tooltiptext', broadcaster.getAttribute('tooltiptext-link').replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
-				forwardButton.setAttribute('rewindforward-override', 'link');
-				forwardButton.removeAttribute('disabled');
+				aInfo.base.setAttribute('label',
+					aInfo.navigationBroadcaster.getAttribute('label-link'));
+				aInfo.base.setAttribute('tooltiptext',
+					aInfo.navigationBroadcaster.getAttribute('tooltiptext-link')
+						.replace(/%s/gi, (link.label || link.href)
+						.replace(/\s+/g, ' ')));
+				aInfo.base.setAttribute('rewindforward-override',
+					'link');
+				aInfo.base.removeAttribute('disabled');
 			}
 		}
 	},
@@ -1057,7 +985,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 
 		// fill up history items
-		if (!isBackForwardMenu && !this.shouldFillHistoryMenu) {
+		if (!isBackForwardMenu && !this.getPref('rewindforward.fill_history_menu')) {
 			if (popup.lastChild.localName != 'menuseparator' && 'deleteHistoryItems' in window)
 				deleteHistoryItems(popup);
 		}
@@ -1610,22 +1538,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	get shouldFindPrevLinks()
 	{
 		return this.getPref('rewindforward.find_prev_links');
-	},
-	get shouldUseVirtualLinks()
-	{
-		return this.getPref('rewindforward.virtual_link.enabled');
-	},
-	get shouldFillHistoryMenu()
-	{
-		return this.getPref('rewindforward.fill_history_menu');
-	},
-	get shouldOverrideBackButtons()
-	{
-		return this.getPref('rewindforward.override_button.back');
-	},
-	get shouldOverrideForwardButtons()
-	{
-		return this.getPref('rewindforward.override_button.forward');
 	}
   
 }; 
