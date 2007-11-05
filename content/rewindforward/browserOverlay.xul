@@ -77,8 +77,8 @@
 
 
 <toolbarpalette id="BrowserToolbarPalette">
-	<toolbarbutton id="rewind-button"/>
 	<toolbarbutton id="rewind-prev-button"/>
+	<toolbarbutton id="rewind-button"/>
 	<toolbarbutton id="fastforward-button"/>
 	<toolbarbutton id="fastforward-next-button"/>
 </toolbarpalette>
