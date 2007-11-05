@@ -974,6 +974,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				aInfo.navigationBroadcaster.getAttribute(this.getPref('rewindforward.goToEndPointOfCurrentDomain') ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation'));
 			aInfo.navigation.setAttribute('mode',
 				'navigation');
+			aInfo.navigationBroadcaster.setAttribute('mode',
+				'navigation');
 		}
 	},
  
@@ -1310,29 +1312,29 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		this.loadLink(target.href, referrer, win, direction);
 	},
   
-		observe : function(aSubject, aTopic, aData) 
-		{
-			if (aTopic != 'EndDocumentLoad' &&
-				aTopic != 'FailDocumentLoad')
-				return;
+	observe : function(aSubject, aTopic, aData) 
+	{
+		if (aTopic != 'EndDocumentLoad' &&
+			aTopic != 'FailDocumentLoad')
+			return;
 
-			if (
-				(this.shouldFindPrevLinks || this.shouldFindNextLinks) &&
-				aSubject &&
-				!aSubject.document.documentElement.getAttribute('__rewindforward__event_handled')
-				) {
-				aSubject.document.documentElement.setAttribute('__rewindforward__event_handled', true);
+		if (
+			(this.shouldFindPrevLinks || this.shouldFindNextLinks) &&
+			aSubject &&
+			!aSubject.document.documentElement.getAttribute('__rewindforward__event_handled')
+			) {
+			aSubject.document.documentElement.setAttribute('__rewindforward__event_handled', true);
 
-				aSubject.addEventListener('DOMAttrModified', this, true);
-				aSubject.addEventListener('DOMSubtreeModified', this, true);
-				aSubject.addEventListener('DOMNodeInserted', this, true);
-				aSubject.addEventListener('DOMNodeInsertedIntoDocument', this, true);
+			aSubject.addEventListener('DOMAttrModified', this, true);
+			aSubject.addEventListener('DOMSubtreeModified', this, true);
+			aSubject.addEventListener('DOMNodeInserted', this, true);
+			aSubject.addEventListener('DOMNodeInsertedIntoDocument', this, true);
 
-				aSubject.addEventListener('unload', this, false);
-			}
+			aSubject.addEventListener('unload', this, false);
+		}
 
-			this.updateButtons(true);
-		},
+		this.updateButtons(true);
+	},
   
 	// siteinfo 
 	 
