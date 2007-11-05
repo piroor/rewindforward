@@ -952,12 +952,14 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		this.readyToCustomizeButton({
 			base : (this.getPref('rewindforward.override_button.back') ?
 							document.getElementById('back-button') : null ),
-			navigation  : document.getElementById('rewind-button')
+			navigation  : document.getElementById('rewind-button'),
+			navigationBroadcaster : document.getElementById('Browser:Rewind')
 		});
 		this.readyToCustomizeButton({
 			base : (this.getPref('rewindforward.override_button.forward') ?
 							document.getElementById('forward-button') : null ),
-			navigation  : document.getElementById('fastforward-button')
+			navigation  : document.getElementById('fastforward-button'),
+			navigationBroadcaster : document.getElementById('Browser:Fastforward')
 		});
 	},
 	readyToCustomizeButton : function(aInfo)

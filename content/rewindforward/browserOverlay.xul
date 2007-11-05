@@ -46,7 +46,7 @@
 <popupset id="mainPopupSet">
 	<popup id="rewindMenu"
 		ref-command="Browser:Rewind"
-		onpopupshowing="return rewindforwardFillPopupMenu(event);"
+		onpopupshowing="return RewindForwardService.fillPopupMenu(event);"
 		oncommand="gotoHistoryIndex(event);">
 		<menuitem id="rewindMenuItem"
 			rewindforward-menuitem="true"
@@ -60,7 +60,7 @@
 	</popup>
 	<popup id="fastforwardMenu"
 		ref-command="Browser:Fastforward"
-		onpopupshowing="return rewindforwardFillPopupMenu(event);"
+		onpopupshowing="return RewindForwardService.fillPopupMenu(event);"
 		oncommand="gotoHistoryIndex(event);">
 		<menuitem id="fastforwardMenuItem"
 			rewindforward-menuitem="true"
