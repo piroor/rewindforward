@@ -802,7 +802,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			navigationBroadcaster : document.getElementById('Browser:Rewind'),
 			type        : 'prev',
 			canMove     : gBrowser.webNavigation.canGoBack,
-			findLinks   : aFindLinks
+			findLinks   : aFindLinks && this.shouldFindPrevLinks
 		});
 		this.updateButton({
 			base        : (this.getPref('rewindforward.override_button.forward') ?
@@ -814,7 +814,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			navigationBroadcaster : document.getElementById('Browser:Fastforward'),
 			type        : 'next',
 			canMove     : gBrowser.webNavigation.canGoForward,
-			findLinks   : aFindLinks
+			findLinks   : aFindLinks && this.shouldFindNextLinks
 		});
 	},
 	 
@@ -826,7 +826,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		if (!aInfo.navigation && !aInfo.link && !aInfo.base) return;
 
-		var link = this.getLinkInMainFrame(this.getLinksFromAllFrames(aInfo.type));
 		if (aInfo.base &&
 			!aInfo.base.getAttribute('rewindforward-original-tooltip')) {
 			aInfo.base.setAttribute('rewindforward-original-tooltip',
@@ -835,7 +834,9 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				aInfo.base.getAttribute('label'));
 		}
 
-		if (aInfo.link && !aInfo.link.hidden) {
+		var link = this.getLinkInMainFrame(this.getLinksFromAllFrames(aInfo.type));
+
+		if (aInfo.link) {
 			disabled = aInfo.linkBroadcaster.hasAttribute('disabled');
 			if (disabled == Boolean(link)) {
 				if (disabled || link)
@@ -843,29 +844,21 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				else
 					aInfo.linkBroadcaster.setAttribute('disabled', true);
 			}
-			if (!link) {
+			if (link) {
 				aInfo.link.setAttribute('tooltiptext',
-					aInfo.linkBroadcaster.getAttribute('tooltiptext-link-blank'));
+					aInfo.linkBroadcaster.getAttribute('tooltiptext-link')
+						.replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
 			}
 			else {
 				aInfo.link.setAttribute('tooltiptext',
-					aInfo.linkBroadcaster.getAttribute('tooltiptext-link')
-						.replace(/%s/gi, (link.label || link.href)
-						.replace(/\s+/g, ' ')));
+					aInfo.linkBroadcaster.getAttribute('tooltiptext-link-blank'));
 			}
 		}
 
-		if ((!aInfo.navigation || aInfo.navigation.hidden) &&
-			(!aInfo.base || aInfo.base.hidden))
+		if (!aInfo.navigation && !aInfo.base)
 			return;
 
-		if (!aInfo.findLinks || !this.shouldFindPrevLinks ||
-			(aInfo.link && !aInfo.link.hidden)) {
-			link = null;
-		}
-		else if (!link) {
-			link = this.getLinkInMainFrame(this.getLinksFromAllFrames(aInfo.type));
-		}
+		if (!aInfo.findLinks) link = null;
 
 		disabled = aInfo.navigationBroadcaster.hasAttribute('disabled');
 		if (disabled == Boolean(link) || disabled == aInfo.canMove) {
@@ -910,7 +903,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		aInfo.base.removeAttribute('rewindforward-override');
 		if (
-			(aInfo.navigation && !aInfo.navigation.hidden) ||
+			!aInfo.navigation ||
 			aInfo.navigationBroadcaster.getAttribute('disabled') == 'true' ||
 			(!link && gBrowser.sessionHistory.index <= 1)
 			) {
