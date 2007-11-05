@@ -947,6 +947,41 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		}
 	},
  
+	readyToCustomize : function()
+	{
+		this.readyToCustomizeButton({
+			base : (this.getPref('rewindforward.override_button.back') ?
+							document.getElementById('back-button') : null ),
+			navigation  : document.getElementById('rewind-button')
+		});
+		this.readyToCustomizeButton({
+			base : (this.getPref('rewindforward.override_button.forward') ?
+							document.getElementById('forward-button') : null ),
+			navigation  : document.getElementById('fastforward-button')
+		});
+	},
+	readyToCustomizeButton : function(aInfo)
+	{
+		if (aInfo.base) {
+			aInfo.base.removeAttribute('rewindforward-override');
+			if (aInfo.base.hasAttribute('rewindforward-original-label')) {
+				aInfo.base.setAttribute('label',
+					aInfo.base.getAttribute('rewindforward-original-label'));
+				aInfo.base.setAttribute('tooltiptext',
+					aInfo.base.getAttribute('rewindforward-original-tooltip'));
+			}
+		}
+
+		if (aInfo.navigation) {
+			aInfo.navigation.setAttribute('label',
+				aInfo.navigationBroadcaster.getAttribute('label-navigation'));
+			aInfo.navigation.setAttribute('tooltiptext',
+				aInfo.navigationBroadcaster.getAttribute(this.getPref('rewindforward.goToEndPointOfCurrentDomain') ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation'));
+			aInfo.navigation.setAttribute('mode',
+				'navigation');
+		}
+	},
+ 
 	checkSubFramesAreCompletelyLoaded : function(aFrames) 
 	{
 		var result = true;
@@ -1401,6 +1436,30 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		window.BrowserBackMenu = this.newBrowserBackMenu;
 		window.__rewindforward__BrowserForwardMenu = window.BrowserForwardMenu;
 		window.BrowserForwardMenu = this.newBrowserForwardMenu;
+
+		if ('BrowserCustomizeToolbar' in window) {
+			eval('window.BrowserCustomizeToolbar = '+
+				window.BrowserCustomizeToolbar.toSource().replace(
+					'{',
+					'{ RewindForwardService.readyToCustomize(); '
+				)
+			);
+		}
+		var toolbox = document.getElementById('navigator-toolbox');
+		if (toolbox.customizeDone) {
+			toolbox.__rewindforward__customizeDone = toolbox.customizeDone;
+			toolbox.customizeDone = function(aChanged) {
+				this.__rewindforward__customizeDone(aChanged);
+				window.UpdateBackForwardButtons();
+			};
+		}
+		if ('BrowserToolboxCustomizeDone' in window) {
+			window.__rewindforward__BrowserToolboxCustomizeDone = window.BrowserToolboxCustomizeDone;
+			window.BrowserToolboxCustomizeDone = function(aChanged) {
+				window.__rewindforward__BrowserToolboxCustomizeDone.apply(window, arguments);
+				window.UpdateBackForwardButtons();
+			};
+		}
 
 		const observerService = Components.classes['@mozilla.org/observer-service;1']
 							.getService(Components.interfaces.nsIObserverService);
