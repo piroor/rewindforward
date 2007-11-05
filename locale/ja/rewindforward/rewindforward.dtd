@@ -11,6 +11,11 @@
 <!ENTITY nextButton.tooltip        "次のページ（&#37;s）">
 <!ENTITY nextButton.tooltip.blank  "次のページはありません">
 
+
+
+<!ENTITY rewindforward.config.title       "早送り/巻き戻しボタンの設定">
+
+
 <!ENTITY rewindforward.general.tab             "全般">
 
 <!ENTITY rewindforward.override_button.caption "戻る/進む">
@@ -61,15 +66,5 @@
 <!ENTITY delete.label           "削除">
 <!ENTITY delete.accesskey       "D">
 
-
-
-<!ENTITY rewindforward.about.button      "設定">
-
-<!ENTITY rewindforward.about.title       "早送り/巻き戻しボタンについて">
-<!ENTITY rewindforward.about.caption     "バージョン情報">
-<!ENTITY rewindforward.about.name_before "早送り/巻き戻しボタン Ver.">
-<!ENTITY rewindforward.about.name_after  "">
-<!ENTITY rewindforward.about.destributed "http://piro.sakura.ne.jp/">
-<!ENTITY rewindforward.about.uninstall   "アンインストール">
 
 <!ENTITY rewindforward.OK                "OK">

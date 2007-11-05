@@ -7,7 +7,7 @@
 ]>
 
 <prefwindow xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-		title="&rewindforward.about.title;"
+		title="&rewindforward.config.title;"
 		orient="vertical"
 		onload="sizeToContent();">
 

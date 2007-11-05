@@ -11,6 +11,9 @@
 <!ENTITY nextButton.tooltip        "Next page (&#37;s)">
 <!ENTITY nextButton.tooltip.blank  "No Next page">
 
+
+<!ENTITY rewindforward.config.title       "Rewind/Fastforward Buttons Configuration">
+
 <!ENTITY rewindforward.general.tab             "General">
 
 <!ENTITY rewindforward.override_button.caption "Back/Forward">
