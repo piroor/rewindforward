@@ -793,8 +793,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		}
 
 		this.updateButton({
-			base        : (this.getPref('rewindforward.override_button.back') ?
-							document.getElementById('back-button') : null ),
+			base        : document.getElementById('back-button'),
 			navigation  : document.getElementById('rewind-button'),
 			link        : document.getElementById('rewind-prev-button'),
 			menuItem    : document.getElementById('rewindMenuItem'),
@@ -802,11 +801,12 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			navigationBroadcaster : document.getElementById('Browser:Rewind'),
 			type        : 'prev',
 			canMove     : gBrowser.webNavigation.canGoBack,
+			canSkip     : gBrowser.sessionHistory.index > 1,
+			canOverride : this.getPref('rewindforward.override_button.back'),
 			findLinks   : aFindLinks && this.shouldFindPrevLinks
 		});
 		this.updateButton({
-			base        : (this.getPref('rewindforward.override_button.forward') ?
-							document.getElementById('forward-button') : null ),
+			base        : document.getElementById('forward-button'),
 			navigation  : document.getElementById('fastforward-button'),
 			link        : document.getElementById('fastforward-next-button'),
 			menuItem    : document.getElementById('fastforwardMenuItem'),
@@ -814,6 +814,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			navigationBroadcaster : document.getElementById('Browser:Fastforward'),
 			type        : 'next',
 			canMove     : gBrowser.webNavigation.canGoForward,
+			canSkip     : gBrowser.sessionHistory.count - gBrowser.sessionHistory.index > 2,
+			canOverride : this.getPref('rewindforward.override_button.forward'),
 			findLinks   : aFindLinks && this.shouldFindNextLinks
 		});
 	},
@@ -897,15 +899,15 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					'link');
 			}
 			aInfo.navigationBroadcaster.setAttribute('mode', 'link');
+			link = null;
 		}
 
 		if (!aInfo.base) return;
 
 		aInfo.base.removeAttribute('rewindforward-override');
 		if (
-			!aInfo.navigation ||
-			aInfo.navigationBroadcaster.getAttribute('disabled') == 'true' ||
-			(!link && gBrowser.sessionHistory.index <= 1)
+			!aInfo.canOverride ||
+			(!link && (aInfo.navigation || !aInfo.canSkip))
 			) {
 			aInfo.base.setAttribute('label',
 				aInfo.base.getAttribute('rewindforward-original-label'));
