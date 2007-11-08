@@ -1352,8 +1352,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		for (var i in uris)
 		{
 			cache = this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.cache');
-			lastUpdate = (this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.lastUpdate') || 0);
-			if (!cache || now >= expire + lastUpdate) {
+			last  = parseInt(this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.last') || 0);
+			if (!cache || now >= expire + last) {
 				new RewindForwardSiteInfoLoader(uris[i]);
 			}
 			else {
@@ -1361,7 +1361,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			}
 			window.setTimeout(
 				'new RewindForwardSiteInfoLoader("'+uris[i]+'")',
-				now - lastUpdate + expire
+				last + expire - now
 			);
 		}
 	},

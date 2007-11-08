@@ -61,8 +61,8 @@ RewindForwardSiteInfoLoader.prototype = {
 			'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.cache',
 			info.toSource());
 		RewindForwardService.setPref(
-			'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.lastUpdate',
-			Date.now());
+			'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.last',
+			String(Date.now()));
 
 		delete this.request;
 	},
