@@ -78,6 +78,8 @@
 <!ENTITY rewindforward.exceptions.desc   "ページをスクロールする時、ページの最後で次のページや前のページに自動的に移動しないサイトを指定して下さい。ドメイン名の指定にはワイルドカード（*）も使えます。">
 <!ENTITY newSite.label          "サイトを追加">
 <!ENTITY newSite.accesskey      "A">
+<!ENTITY modifySite.label     "編集">
+<!ENTITY modifySite.accesskey "E">
 <!ENTITY button.newSite.label    "サイトを追加">
 <!ENTITY button.modifySite.label "編集">
 

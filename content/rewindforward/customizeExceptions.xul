@@ -38,6 +38,12 @@ function opener()
 		label="&newSite.label;"
 		accesskey="&newSite.accesskey;"
 		oncommand="NewSite();"/>
+	<menuitem id="modifySite"
+		label="&modifySite.label;"
+		accesskey="&modifySite.accesskey;"
+		oncommand="modifySelected();"
+		observes="functions-for-tree"/>
+	<menuseparator/>
 	<menuitem id="delete"
 		label="&delete.label;"
 		accesskey="&delete.accesskey;"
