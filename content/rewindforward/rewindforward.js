@@ -1110,7 +1110,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			aPopup.firstChild.setAttribute('rewindforward-menuitem', true);
 			aPopup.firstChild.setAttribute('rewindforward-menuitem-backforward', true);
 			aPopup.firstChild.setAttribute('class', 'menuitem-iconic');
-			aPopup.firstChild.setAttribute('oncommand', '__rewindforward__Browser'+(aCommandNode.id == 'Browser:Rewind' ? 'Back' : 'Forward' )+'(event); event.stopPropagation(); this.parentNode.hidePopup();');
+			aPopup.firstChild.setAttribute('oncommand', 'Browser'+(aCommandNode.id == 'Browser:Rewind' ? 'Back' : 'Forward' )+'(event); event.stopPropagation(); this.parentNode.hidePopup();');
 			aPopup.firstChild.setAttribute('onclick', 'if ("checkForMiddleClick" in window) { checkForMiddleClick(this, event); }; event.stopPropagation();');
 		}
 	},
