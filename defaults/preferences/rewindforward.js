@@ -10,6 +10,7 @@ pref("rewindforward.related.use.siteInfo",        true);
 pref("rewindforward.gonextprev.enabled",          true);
 pref("rewindforward.gonextprev.prev.keys",        " ,shift|VK_PAGE_UP");
 pref("rewindforward.gonextprev.next.keys",        " |VK_PAGE_DOWN");
+pref("rewindforward.gonextprev.exceptions",       "docs.google.*|mail.google.*|maps.google.*|www.google.*/calendar/");
 pref("rewindforward.use_another_icons",           false);
 
 pref("rewindforward.matchingPatterns.prev", "\u524d|\u623b|\u30e2\u30c9\u30eb|\u3082\u3069\u308b|\u307e\u3048\u3078|prev|previous|back|return|before|Prev|Previous|Back|Return|Before|PREV|PREVIOUS|BACK|RETURN|BEFORE|<<|<-|<=|\u2190|\uff1c|\u226a|\u00ab");

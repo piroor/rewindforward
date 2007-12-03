@@ -11,6 +11,7 @@ var RewindForwardService = {
 	kGENERATED_ID_PREFIX : 'rewindforward-found-link-',
 
 	domainRegExp : /^\w+:\/\/([^:\/]+)(\/|$)/,
+	gonextprevExceptions : /[^\w\W]/,
 
 	NSResolver : {
 		lookupNamespaceURI : function(aPrefix)
@@ -1218,7 +1219,12 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	onKeyPress : function(aEvent) 
 	{
 		const node = aEvent.originalTarget || aEvent.target;
-		if (!node || !this.getPref('rewindforward.gonextprev.enabled')) return;
+		if (
+			!node ||
+			!this.getPref('rewindforward.gonextprev.enabled') ||
+			this.gonextprevExceptions.test(node.ownerDocument.defaultView.location.href)
+			)
+			return;
 
 		// ignore events from chrome windows
 		var docShell = this.getDocShellFromDocument(node.ownerDocument);
@@ -1318,26 +1324,53 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
   
 	observe : function(aSubject, aTopic, aData) 
 	{
-		if (aTopic != 'EndDocumentLoad' &&
-			aTopic != 'FailDocumentLoad')
-			return;
+		switch (aTopic)
+		{
+			default:
+				return;
 
-		if (
-			(this.shouldFindPrevLinks || this.shouldFindNextLinks) &&
-			aSubject &&
-			!aSubject.document.documentElement.getAttribute('__rewindforward__event_handled')
-			) {
-			aSubject.document.documentElement.setAttribute('__rewindforward__event_handled', true);
+			case 'nsPref:changed':
+				switch (aData)
+				{
+					default:
+						return;
 
-			aSubject.addEventListener('DOMAttrModified', this, true);
-			aSubject.addEventListener('DOMSubtreeModified', this, true);
-			aSubject.addEventListener('DOMNodeInserted', this, true);
-			aSubject.addEventListener('DOMNodeInsertedIntoDocument', this, true);
+					case 'rewindforward.gonextprev.exceptions':
+						this.gonextprevExceptions = this.gonextprevExceptions.compile(
+							'^(' +
+							this.getPref(aData)
+								.split('|')
+								.map(function(aItem) {
+									if (/^\w+:\/\//.test(aItem))
+										aItem = 'https?://'+aItem;
+									return aItem.replace(/\./g, '\\.').replace(/\*/g, '.\\*');
+								})
+								.join('|') +
+							')'
+						);
+						return;
+				}
+				return;
 
-			aSubject.addEventListener('unload', this, false);
+			case 'EndDocumentLoad':
+			case 'FailDocumentLoad':
+				if (
+					(this.shouldFindPrevLinks || this.shouldFindNextLinks) &&
+					aSubject &&
+					!aSubject.document.documentElement.getAttribute('__rewindforward__event_handled')
+					) {
+					aSubject.document.documentElement.setAttribute('__rewindforward__event_handled', true);
+
+					aSubject.addEventListener('DOMAttrModified', this, true);
+					aSubject.addEventListener('DOMSubtreeModified', this, true);
+					aSubject.addEventListener('DOMNodeInserted', this, true);
+					aSubject.addEventListener('DOMNodeInsertedIntoDocument', this, true);
+
+					aSubject.addEventListener('unload', this, false);
+				}
+				this.updateButtons(true);
+				return;
 		}
-
-		this.updateButtons(true);
 	},
   
 	// siteinfo 
@@ -1470,6 +1503,9 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		window.addEventListener('keypress', this, true);
 		window.addEventListener('unload', this, false);
 
+		this.addPrefListener(this);
+		this.observe(null, 'nsPref:changed', 'rewindforward.gonextprev.exceptions');
+
 		if (this.getPref('rewindforward.use_another_icons'))
 			document.documentElement.setAttribute('rewindforward-anothericon', true);
 		else
@@ -1547,6 +1583,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		window.removeEventListener('keypress', this, true);
 		window.removeEventListener('unload', this, false);
+
+		this.removePrefListener(this);
 	},
   
 	// prefs 
@@ -1588,6 +1626,30 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			default:
 				branch.setBoolPref(aPrefstring, aValue);
 				break;
+		}
+	},
+ 
+	addPrefListener : function(aObserver) 
+	{
+		var domains = ('domains' in aObserver) ? aObserver.domains : [aObserver.domain] ;
+		try {
+			var pbi = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch).QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+			for (var i = 0; i < domains.length; i++)
+				pbi.addObserver(domains[i], aObserver, false);
+		}
+		catch(e) {
+		}
+	},
+ 
+	removePrefListener : function(aObserver) 
+	{
+		var domains = ('domains' in aObserver) ? aObserver.domains : [aObserver.domain] ;
+		try {
+			var pbi = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch).QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+			for (var i = 0; i < domains.length; i++)
+				pbi.removeObserver(domains[i], aObserver, false);
+		}
+		catch(e) {
 		}
 	},
  

@@ -30,7 +30,9 @@
 <!ENTITY rewindforward.related.caption           "Related Pages">
 <!ENTITY rewindforward.related.find_next_links   "Use &quot;Next Page&quot; button instead of &quot;Fastforward&quot; button, for related pages">
 <!ENTITY rewindforward.related.find_prev_links   "Use &quot;Previous Page&quot; button instead of &quot;Rewind&quot; button, for related pages">
+
 <!ENTITY rewindforward.related.gonextprev.enabled "Go to next pages when I scroll down on the bottom of pages">
+<!ENTITY rewindforward.related.gonextprev.button "Customize Exceptions">
 
 <!ENTITY rewindforward.related.use.caption         "Auto Suggestion of Next/Previous pages">
 <!ENTITY rewindforward.related.virtual_link.enabled "Visit sequential URLs by &quot;Previous Page&quot; and &quot;Next Page&quot; buttons">
@@ -68,6 +70,14 @@
 <!ENTITY modifyNext.accesskey   "N">
 <!ENTITY delete.label           "Delete">
 <!ENTITY delete.accesskey       "D">
+
+
+<!ENTITY rewindforward.exceptions.title  "Exception sites for auto-loading of scrolling down on the bottom of pages">
+<!ENTITY rewindforward.exceptions.desc   "ページをスクロールする時、ページの最後で次のページや前のページに自動的に移動しないサイトを指定して下さい。ドメイン名の指定にはワイルドカード（*）も使えます。">
+<!ENTITY newSite.label          "Add Site">
+<!ENTITY newSite.accesskey      "A">
+<!ENTITY button.newSite.label    "Add Site">
+<!ENTITY button.modifySite.label "Edit">
 
 
 <!ENTITY rewindforward.OK                "OK">

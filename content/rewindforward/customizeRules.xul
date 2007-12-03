@@ -15,9 +15,6 @@
 		height="400"
 		persist="width height screenX screenY">
 
-<script type="application/x-javascript" src="chrome://global/content/XPCNativeWrapper.js"/>
-<script type="application/x-javascript" src="chrome://rewindforward/content/pXPCNativeWrapper.js"/>
-
 <script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
 <script type="application/x-javascript" src="chrome://rewindforward/content/customizeRules.js"/>
 <script type="application/x-javascript"><![CDATA[
@@ -33,6 +30,8 @@ function opener()
 <stringbundle id="stringBundle" src="chrome://rewindforward/locale/rewindforward.properties"/>
 
 <broadcaster id="functions-for-tree" disabled="true"/>
+
+<hbox><description flex="1">&rewindforward.rules.desc;</description></hbox>
 
 <popup id="rulesContext">
 	<menuitem id="copyDomain"

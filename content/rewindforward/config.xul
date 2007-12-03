@@ -94,9 +94,13 @@
 			label="&rewindforward.related.find_next_links;"
 			preference="rewindforward.find_next_links"/>
 		<separator/>
-		<checkbox id="gonextprev_enabled"
-			label="&rewindforward.related.gonextprev.enabled;"
-			preference="rewindforward.gonextprev.enabled"/>
+		<hbox align="center">
+			<checkbox id="gonextprev_enabled"
+				label="&rewindforward.related.gonextprev.enabled;"
+				preference="rewindforward.gonextprev.enabled"/>
+			<button label="&rewindforward.related.gonextprev.button;"
+				oncommand="window.openDialog('chrome://rewindforward/content/customizeExceptions.xul', '', 'chrome,resizable,modal');"/>
+		</hbox>
 
 		<groupbox orient="vertical">
 			<caption label="&rewindforward.related.use.caption;"/>

@@ -32,7 +32,9 @@
 <!ENTITY rewindforward.related.caption            "関連付けられたページ">
 <!ENTITY rewindforward.related.find_next_links         "関連づけられたページがある時に「早送り」ボタンを「次のページ」ボタンにする">
 <!ENTITY rewindforward.related.find_prev_links         "関連づけられたページがある時に「巻き戻し」ボタンを「前のページ」ボタンにする">
+
 <!ENTITY rewindforward.related.gonextprev.enabled "ページをスクロールする時、ページの最後で次のページに移動する">
+<!ENTITY rewindforward.related.gonextprev.button "除外するサイトの設定">
 
 <!ENTITY rewindforward.related.use.caption         "次のページ・前のページの自動検出">
 <!ENTITY rewindforward.related.virtual_link.enabled "連番のURLを「次のページ」「前のページ」と見なす">
@@ -70,6 +72,14 @@
 <!ENTITY modifyNext.accesskey   "N">
 <!ENTITY delete.label           "削除">
 <!ENTITY delete.accesskey       "D">
+
+
+<!ENTITY rewindforward.exceptions.title  "次のページ・前のページに自動的に移動しないサイトの設定">
+<!ENTITY rewindforward.exceptions.desc   "ページをスクロールする時、ページの最後で次のページや前のページに自動的に移動しないサイトを指定して下さい。ドメイン名の指定にはワイルドカード（*）も使えます。">
+<!ENTITY newSite.label          "サイトを追加">
+<!ENTITY newSite.accesskey      "A">
+<!ENTITY button.newSite.label    "サイトを追加">
+<!ENTITY button.modifySite.label "編集">
 
 
 <!ENTITY rewindforward.OK                "OK">

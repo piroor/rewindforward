@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!-- this bases on "config.xul" in Firefox -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE dialog SYSTEM "chrome://rewindforward/locale/">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		title="&rewindforward.exceptions.title;"
+		orient="vertical"
+		onload="onLoad();"
+		onunload="onUnload();"
+		ondialogaccept="window.close();"
+		buttons="accept"
+		width="550"
+		height="400"
+		persist="width height screenX screenY">
+
+<script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
+<script type="application/x-javascript" src="chrome://rewindforward/content/customizeExceptions.js"/>
+<script type="application/x-javascript"><![CDATA[
+
+const WINMAN = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
+function opener()
+{
+	return WINMAN.getMostRecentWindow('navigator:browser');
+}
+
+]]></script>
+
+<stringbundle id="stringBundle" src="chrome://rewindforward/locale/rewindforward.properties"/>
+
+<broadcaster id="functions-for-tree" disabled="true"/>
+
+<hbox><description flex="1">&rewindforward.exceptions.desc;</description></hbox>
+
+<popup id="rulesContext">
+	<menuitem id="newSite"
+		label="&newSite.label;"
+		accesskey="&newSite.accesskey;"
+		oncommand="NewSite();"/>
+	<menuitem id="delete"
+		label="&delete.label;"
+		accesskey="&delete.accesskey;"
+		oncommand="DeleteSelected();"
+		observes="functions-for-tree"/>
+</popup>
+
+<listbox id="rulesTree"
+	flex="1"
+	class="plain focusring"
+	seltype="single"
+	context="rulesContext"
+	onkeypress="onEnter(event);"
+	onselect="onSelect();"
+	ondblclick="onTreeClick(event);"/>
+
+<spacer style="height:0.5em"/>
+
+<box orient="horizontal" align="center">
+	<button id="deleteButton"
+		label="&button.delete.label;"
+		oncommand="DeleteSelected();"
+		observes="functions-for-tree"/>
+	<spacer flex="1"/>
+	<button id="newSiteButton"
+		label="&button.newSite.label;"
+		oncommand="NewSite();"/>
+	<button id="modifySiteButton"
+		label="&button.modifySite.label;"
+		oncommand="modifySelected();"
+		observes="functions-for-tree"/>
+</box>
+<box orient="horizontal" align="center">
+	<button id="resetButton"
+		label="&button.reset.label;"
+		oncommand="reset();"/>
+	<spacer flex="1"/>
+</box>
+
+
+</dialog>
