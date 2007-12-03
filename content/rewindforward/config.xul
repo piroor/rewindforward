@@ -64,14 +64,24 @@
 		<preference id="rewindforward.find_next_links"
 			name="rewindforward.find_next_links"
 			type="bool"/>
-		<preference id="rewindforward.virtual_link.enabled"
-			name="rewindforward.virtual_link.enabled"
-			type="bool"/>
 		<preference id="rewindforward.gonextprev.enabled"
 			name="rewindforward.gonextprev.enabled"
 			type="bool"/>
 		<preference id="rewindforward.use_another_icons"
 			name="rewindforward.use_another_icons"
+			type="bool"/>
+
+		<preference id="rewindforward.virtual_link.enabled"
+			name="rewindforward.virtual_link.enabled"
+			type="bool"/>
+		<preference id="rewindforward.related.use.label"
+			name="rewindforward.related.use.label"
+			type="bool"/>
+		<preference id="rewindforward.related.use.customRules"
+			name="rewindforward.related.use.customRules"
+			type="bool"/>
+		<preference id="rewindforward.related.use.siteInfo"
+			name="rewindforward.related.use.siteInfo"
 			type="bool"/>
 	</preferences>
 
@@ -84,18 +94,33 @@
 			label="&rewindforward.related.find_next_links;"
 			preference="rewindforward.find_next_links"/>
 		<separator/>
-		<checkbox id="virtual_link_enabled"
-			label="&rewindforward.related.virtual_link.enabled;"
-			preference="rewindforward.virtual_link.enabled"
-			flex="1"/>
 		<checkbox id="gonextprev_enabled"
 			label="&rewindforward.related.gonextprev.enabled;"
 			preference="rewindforward.gonextprev.enabled"/>
-		<hbox>
-			<spacer flex="1"/>
-			<button label="&rewindforward.related.customizeRules.button;"
-				oncommand="window.openDialog('chrome://rewindforward/content/customizeRules.xul', '', 'chrome,resizable,modal');"/>
-		</hbox>
+
+		<groupbox orient="vertical">
+			<caption label="&rewindforward.related.use.caption;"/>
+			<checkbox id="virtual_link_enabled"
+				label="&rewindforward.related.virtual_link.enabled;"
+				preference="rewindforward.virtual_link.enabled"
+				flex="1"/>
+			<checkbox id="rewindforward.related.use.label-check"
+				label="&rewindforward.related.use.label;"
+				preference="rewindforward.related.use.label"
+				flex="1"/>
+			<hbox align="center">
+				<checkbox id="rewindforward.related.use.customRules-check"
+					label="&rewindforward.related.use.customRules;"
+					preference="rewindforward.related.use.customRules"
+					flex="1"/>
+				<button label="&rewindforward.related.customizeRules.button;"
+					oncommand="window.openDialog('chrome://rewindforward/content/customizeRules.xul', '', 'chrome,resizable,modal');"/>
+			</hbox>
+			<checkbox id="rewindforward.related.use.siteInfo-check"
+				label="&rewindforward.related.use.siteInfo;"
+				preference="rewindforward.related.use.siteInfo"
+				flex="1"/>
+		</groupbox>
 	</groupbox>
 	<groupbox orient="vertical" id="useAnotherIconsGroup">
 		<caption label="&rewindforward.icon.caption;"/>

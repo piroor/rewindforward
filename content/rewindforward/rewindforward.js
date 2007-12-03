@@ -382,11 +382,11 @@ var RewindForwardService = {
 		var domain = this.domainRegExp.test(w.location.href) ? RegExp.$1 : null ;
 		var result      = {};
 		var resultArray = [];
-		var links = [].concat(
-				this.getRelatedLinks(aType, aWindow),
-				this.getLabeledLinks(aType, aWindow),
-				[this.getVirtualLink(aType, aWindow)]
-			);
+		var links = this.getRelatedLinks(aType, aWindow);
+		if (this.getPref('rewindforward.related.use.label'))
+			links = links.concat(this.getLabeledLinks(aType, aWindow));
+		if (this.getPref('rewindforward.related.virtual_link.enabled'))
+			links.push(this.getVirtualLink(aType, aWindow));
 
 		links = links.filter(function(aLink) {
 			return aLink ? true : false ;
@@ -450,8 +450,12 @@ var RewindForwardService = {
 
 		var rate = this.kLINK_RELATED;
 
-		var customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
-		if (!customRule.rule) customRule = this.getCustomRule(w.location.href, rel);
+		var customRule;
+		if (this.getPref('rewindforward.related.use.siteInfo'))
+			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
+		if ((!customRule || !customRule.rule) &&
+			this.getPref('rewindforward.related.use.customizeRules'))
+			customRule = this.getCustomRule(w.location.href, rel);
 
 		// find "next" or "prev" link with XPath
 		var xpath;
@@ -706,8 +710,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
  
 	getVirtualLink : function(aType, aWindow) 
 	{
-		if (!this.getPref('rewindforward.virtual_link.enabled')) return null;
-
 		var w = aWindow || document.commandDispatcher.focusedWindow;
 		if (!w || w.top != gBrowser.contentWindow)
 			w = gBrowser.contentWindow;

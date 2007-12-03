@@ -32,8 +32,13 @@
 <!ENTITY rewindforward.related.caption            "関連付けられたページ">
 <!ENTITY rewindforward.related.find_next_links         "関連づけられたページがある時に「早送り」ボタンを「次のページ」ボタンにする">
 <!ENTITY rewindforward.related.find_prev_links         "関連づけられたページがある時に「巻き戻し」ボタンを「前のページ」ボタンにする">
-<!ENTITY rewindforward.related.virtual_link.enabled "連番のURLを「次のページ」「前のページ」と見なす">
 <!ENTITY rewindforward.related.gonextprev.enabled "ページをスクロールする時、ページの最後で次のページに移動する">
+
+<!ENTITY rewindforward.related.use.caption         "次のページ・前のページの自動検出">
+<!ENTITY rewindforward.related.virtual_link.enabled "連番のURLを「次のページ」「前のページ」と見なす">
+<!ENTITY rewindforward.related.use.label           "リンク文字列から自動判別する">
+<!ENTITY rewindforward.related.use.customRules     "組み込みの検索条件を使う">
+<!ENTITY rewindforward.related.use.siteInfo        "AutoPagerize用の検索条件を使う">
 <!ENTITY rewindforward.related.customizeRules.button  "検索条件の詳細設定">
 
 <!ENTITY rewindforward.icon.caption "「次のページ」「前のページ」ボタンのアイコン（次回起動時より有効）">
