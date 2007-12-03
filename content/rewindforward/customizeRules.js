@@ -157,8 +157,8 @@ var gPrefListener = {
 
 		var index = gDomainArray.length;
 		if (
-			!rewindforwardGetPref('rewindforward.rule.prev.'+domainName) &&
-			!rewindforwardGetPref('rewindforward.rule.next.'+domainName) &&
+			!RewindForwardService.getPref('rewindforward.rule.prev.'+domainName) &&
+			!RewindForwardService.getPref('rewindforward.rule.next.'+domainName) &&
 			domainName in gDomainHash
 			) {
 			index = getViewIndexOfDomain(gDomainHash[domainName]);
@@ -219,8 +219,8 @@ function fetchPref(prefName, prefIndex)
 	gDomainHash[prefName] = pref;
 	gDomainArray[prefIndex] = pref;
 
-	pref.prevCol = rewindforwardGetPref('rewindforward.rule.prev.'+prefName, '');
-	pref.nextCol = rewindforwardGetPref('rewindforward.rule.next.'+prefName, '');
+	pref.prevCol = RewindForwardService.getPref('rewindforward.rule.prev.'+prefName, '');
+	pref.nextCol = RewindForwardService.getPref('rewindforward.rule.next.'+prefName, '');
 }
 
 
@@ -238,7 +238,7 @@ function onLoad()
 	var prefName;
 	for (var i = 0; i < domainCount.value; ++i) 
 	{
-		if (!domainArray[i] || !rewindforwardGetPref(domainArray[i])) continue;
+		if (!domainArray[i] || !RewindForwardService.getPref(domainArray[i])) continue;
 		var prefName = domainArray[i].replace(/^rewindforward\.rule\.[^\.]+\./, '');
 		fetchPref(prefName, gDomainArray.length);
 	}
