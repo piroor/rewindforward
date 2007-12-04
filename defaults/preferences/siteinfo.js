@@ -16,7 +16,7 @@ pref("rewindforward.rule.prev.search.www.infoseek.co.jp",
 pref("rewindforward.rule.next.search.goo.ne.jp",
 	"id('paging')/a[last()][child::strong]");
 pref("rewindforward.rule.prev.search.goo.ne.jp",
-	"id('paging')/a[first()][child::strong]");
+	"id('paging')/a[1][child::strong]");
 
 // teoma (by Norbert Wienholz)
 pref("rewindforward.rule.next.*.teoma.com",
@@ -257,19 +257,19 @@ pref("rewindforward.rule.next.userscripts.org",
 pref("rewindforward.rule.next.journal.mycom.co.jp",
 	"//li[@class='nextBtn']/a[last()]");
 pref("rewindforward.rule.prev.journal.mycom.co.jp",
-	"//li[@class='nextBtn']/a[first()]");
+	"//li[@class='nextBtn']/a[1]");
 
 // Vintage Photographs
 pref("rewindforward.rule.next.community.livejournal.com",
 	"id('skiplinks')/li[last()]/a");
 pref("rewindforward.rule.prev.community.livejournal.com",
-	"id('skiplinks')/li[first()]/a");
+	"id('skiplinks')/li[1]/a");
 
 // Twitter(doing)
 pref("rewindforward.rule.next.twitter.com",
 	"//div[@class='pagination']/a[last()]");
 pref("rewindforward.rule.prev.twitter.com",
-	"//div[@class='pagination']/a[first()]");
+	"//div[@class='pagination']/a[1]");
 
 // del.icio.us
 pref("rewindforward.rule.next.del.icio.us",
@@ -285,19 +285,19 @@ pref("rewindforward.rule.prev.search.auctions.shopping.yahoo.com",
 pref("rewindforward.rule.next.search.auction.yahoo.co.jp",
 	"//td[@align='right' and @width='1%']/small/b[last()]/a");
 pref("rewindforward.rule.prev.search.auction.yahoo.co.jp",
-	"//td[@align='right' and @width='1%']/small/b[first()]/a");
+	"//td[@align='right' and @width='1%']/small/b[1]/a");
 
 // Yahoo検索
 pref("rewindforward.rule.next.*.yahoo.*",
 	"id('yschpg')//big[last()]/a | id('yshppg')//big[last()]/a");
 pref("rewindforward.rule.prev.*.yahoo.*",
-	"id('yschpg')//big[first()]/a | id('yshppg')//big[first()]/a");
+	"id('yschpg')//big[1]/a | id('yshppg')//big[1]/a");
 
 // UP板＠おっちゃんねる サムネイル一覧
 pref("rewindforward.rule.next.up.nm78.com",
 	"//p[@class='menu']/a[last()]");
 pref("rewindforward.rule.prev.up.nm78.com",
-	"//p[@class='menu']/a[first()]");
+	"//p[@class='menu']/a[1]");
 
 // はてなカウンター(ログ)
 pref("rewindforward.rule.next.counter.hatena.ne.jp",
@@ -311,7 +311,7 @@ pref("rewindforward.rule.next.anond.hatelabo.jp",
 pref("rewindforward.rule.next.*.reddit.com",
 	"id('main')/p[@class='menu']/a[last()]");
 pref("rewindforward.rule.prev.*.reddit.com",
-	"id('main')/p[@class='menu']/a[first()]");
+	"id('main')/p[@class='menu']/a[1]");
 
 // Amazon.co.jp
 pref("rewindforward.rule.next.www.amazon.co.jp",
@@ -329,7 +329,7 @@ pref("rewindforward.rule.prev.www.amazon.com",
 pref("rewindforward.rule.next.yaplog.jp",
 	"//ul[@class='page s']/li[last()]/a");
 pref("rewindforward.rule.prev.yaplog.jp",
-	"//ul[@class='page s']/li[first()]/a");
+	"//ul[@class='page s']/li[1]/a");
 
 // はてなダイアリー
 pref("rewindforward.rule.next.*.d.hatena.ne.jp",
@@ -337,16 +337,16 @@ pref("rewindforward.rule.next.*.d.hatena.ne.jp",
 pref("rewindforward.rule.next.d.hatena.ne.jp",
 	"//div[@class='calendar']/a[last()]");
 pref("rewindforward.rule.prev.*.d.hatena.ne.jp",
-	"//div[@class='calendar']/a[first()]");
+	"//div[@class='calendar']/a[1]");
 pref("rewindforward.rule.prev.d.hatena.ne.jp",
-	"//div[@class='calendar']/a[first()]");
+	"//div[@class='calendar']/a[1]");
 
 
 // はてなグループ
 pref("rewindforward.rule.next.*.g.hatena.ne.jp",
 	"//div[@class='calendar']/a[contains(@href, '?of=')][last()]");
 pref("rewindforward.rule.prev.*.g.hatena.ne.jp",
-	"//div[@class='calendar']/a[contains(@href, '?of=')][first()]");
+	"//div[@class='calendar']/a[contains(@href, '?of=')][1]");
 
 // Google Scholar
 pref("rewindforward.rule.next.scholar.google.com",
@@ -356,7 +356,7 @@ pref("rewindforward.rule.next.scholar.google.com",
 pref("rewindforward.rule.next.search.cpan.org",
 	"//div[@class='pages']//td//a[last()]");
 pref("rewindforward.rule.prev.search.cpan.org",
-	"//div[@class='pages']//td//a[first()]");
+	"//div[@class='pages']//td//a[1]");
 
 // TTYShare Recent entries
 pref("rewindforward.rule.next.ttyshare.com",
@@ -369,7 +369,7 @@ pref("rewindforward.rule.next.ttyshare.com",
 pref("rewindforward.rule.next.www.nikkeibp.co.jp",
 	"id('p_next') | id('pages')//a[last()] | id('pages')/a[last()] | //img[contains(@src ,'p_next.gif')]/parent::a");
 pref("rewindforward.rule.prev.www.nikkeibp.co.jp",
-	"id('pages')//a[first()] | id('pages')/a[first()]");
+	"id('pages')//a[1] | id('pages')/a[1]");
 
 // oebit
 pref("rewindforward.rule.next.oebit.jp",
@@ -409,7 +409,7 @@ pref("rewindforward.rule.next.esearch.rakuten.co.jp",
 pref("rewindforward.rule.next.teacup.com",
 	"//a[@class='PL_JUMP'][last()]");
 pref("rewindforward.rule.prev.teacup.com",
-	"//a[@class='PL_JUMP'][first()]");
+	"//a[@class='PL_JUMP'][1]");
 
 // thomas mayer
 pref("rewindforward.rule.next.thomasmayerarchive.de",
@@ -437,7 +437,7 @@ pref("rewindforward.rule.next.blog-log.jugem.jp",
 pref("rewindforward.rule.next.scrapture.org",
 	"//div[@class='pages']//a[last()]");
 pref("rewindforward.rule.prev.scrapture.org",
-	"//div[@class='pages']//a[first()]");
+	"//div[@class='pages']//a[1]");
 
 // ALTphotos
 pref("rewindforward.rule.next.www.altphotos.com",
@@ -461,7 +461,7 @@ pref("rewindforward.rule.next.news.google.*",
 pref("rewindforward.rule.next.*.google.*",
 	"id('navbar')/table/tbody/tr/td[last()]/a | //TABLE[@align='center']//*[text()='Next' or text()='\u6b21\u3078']");
 pref("rewindforward.rule.prev.*.google.*",
-	"id('navbar')/table/tbody/tr/td[first()]/a | //TABLE[@align='center']//*[text()='Prev' or text()='\u524d\u3078']");
+	"id('navbar')/table/tbody/tr/td[1]/a | //TABLE[@align='center']//*[text()='Prev' or text()='\u524d\u3078']");
 
 // photobucket
 pref("rewindforward.rule.next.*.photobucket.com",
@@ -511,7 +511,7 @@ pref("rewindforward.rule.prev.business.nikkeibp.co.jp",
 pref("rewindforward.rule.next.arena.nikkeibp.co.jp",
 	"(id('articlecontent')/ul[@class='page']//a)[last()]");
 pref("rewindforward.rule.prev.arena.nikkeibp.co.jp",
-	"(id('articlecontent')/ul[@class='page']//a)[first()]");
+	"(id('articlecontent')/ul[@class='page']//a)[1]");
 
 // [Z]ZAPAブロ～グ2.0
 pref("rewindforward.rule.next.zapanet.info",
@@ -525,7 +525,7 @@ pref("rewindforward.rule.next.uchihara.info",
 pref("rewindforward.rule.next.miezaru.donmai.us",
 	"(id('paginator')/a[@class='arrow'])[last()]");
 pref("rewindforward.rule.prev.miezaru.donmai.us",
-	"(id('paginator')/a[@class='arrow'])[first()]");
+	"(id('paginator')/a[@class='arrow'])[1]");
 
 // @IT
 pref("rewindforward.rule.next.www.atmarkit.co.jp",
@@ -537,7 +537,7 @@ pref("rewindforward.rule.prev.www.atmarkit.co.jp",
 pref("rewindforward.rule.next.search.hatena.ne.jp",
 	"id('hatena-search-pager')/strong[last()]/a");
 pref("rewindforward.rule.prev.search.hatena.ne.jp",
-	"id('hatena-search-pager')/strong[first()]/a");
+	"id('hatena-search-pager')/strong[1]/a");
 
 // LifeHacker (VIEW: Blog)
 pref("rewindforward.rule.next.lifehacker.com",

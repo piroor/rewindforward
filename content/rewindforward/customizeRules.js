@@ -349,8 +349,8 @@ function DeleteSelected()
 		gPrefBranch.clearUserPref('rewindforward.rule.prev.'+entry.domainCol);
 	}
 	catch(e) {
-		rewindforwardSetPref('rewindforward.rule.next.'+entry.domainCol, '');
-		rewindforwardSetPref('rewindforward.rule.prev.'+entry.domainCol, '');
+		RewindForwardService.setPref('rewindforward.rule.next.'+entry.domainCol, '');
+		RewindForwardService.setPref('rewindforward.rule.prev.'+entry.domainCol, '');
 	}
 }
 
@@ -414,7 +414,7 @@ function modifyPrev(entry)
 			dummy))
 		return false;
 
-	rewindforwardSetPref('rewindforward.rule.prev.'+encodeURI(entry.domainCol), result.value);
+	RewindForwardService.setPref('rewindforward.rule.prev.'+encodeURI(entry.domainCol), result.value);
 	return true;
 }
 function modifyNext(entry)
@@ -430,7 +430,7 @@ function modifyNext(entry)
 			dummy))
 		return false;
 
-	rewindforwardSetPref('rewindforward.rule.next.'+encodeURI(entry.domainCol), result.value);
+	RewindForwardService.setPref('rewindforward.rule.next.'+encodeURI(entry.domainCol), result.value);
 	return true;
 }
 

@@ -455,7 +455,7 @@ var RewindForwardService = {
 		if (this.getPref('rewindforward.related.use.siteInfo'))
 			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
 		if ((!customRule || !customRule.rule) &&
-			this.getPref('rewindforward.related.use.customizeRules'))
+			this.getPref('rewindforward.related.use.customRules'))
 			customRule = this.getCustomRule(w.location.href, rel);
 
 		// find "next" or "prev" link with XPath

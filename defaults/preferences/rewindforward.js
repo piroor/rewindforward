@@ -4,7 +4,7 @@ pref("rewindforward.goToEndPointOfCurrentDomain", false);
 pref("rewindforward.find_prev_links",             false);
 pref("rewindforward.find_next_links",             true);
 pref("rewindforward.virtual_link.enabled",        true);
-pref("rewindforward.related.use.label",           false);
+pref("rewindforward.related.use.label",           true);
 pref("rewindforward.related.use.customRules",     true);
 pref("rewindforward.related.use.siteInfo",        true);
 pref("rewindforward.gonextprev.enabled",          true);
