@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="{FA4658DE-935B-4f39-AED3-0B5034DDE225}"
                    em:name="Rewind/Fastforward Buttons"
-                   em:version="2.0.2007110603"
+                   em:version="2.0.2007120601"
                    em:creator="SHIMODA Hiroshi"
                    em:description="Adds &quot;Rewind&quot; and &quot;Fastforward&quot; buttons for the toolbar."
                    em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en"
