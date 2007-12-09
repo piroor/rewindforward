@@ -73,7 +73,7 @@
 
 
 <!ENTITY rewindforward.exceptions.title  "Exception sites for auto-loading of scrolling down on the bottom of pages">
-<!ENTITY rewindforward.exceptions.desc   "ページをスクロールする時、ページの最後で次のページや前のページに自動的に移動しないサイトを指定して下さい。ドメイン名の指定にはワイルドカード（*）も使えます。">
+<!ENTITY rewindforward.exceptions.desc   "Enter domains to prevent auto-loading of scrolling down on the bottom of pages. Wildcard character (*) is available for domain names.">
 <!ENTITY newSite.label          "Add Site">
 <!ENTITY newSite.accesskey      "A">
 <!ENTITY modifySite.label     "Edit">
