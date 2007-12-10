@@ -74,14 +74,10 @@ var RewindForwardService = {
 		var doc = aDocument;
 		if (!doc) return null;
 
-		const kDSTreeNode = Components.interfaces.nsIDocShellTreeNode;
-		const kDSTreeItem = Components.interfaces.nsIDocShellTreeItem;
-		const kWebNav     = Components.interfaces.nsIWebNavigation;
-
 		if (doc.defaultView)
 			return doc.defaultView
 					.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-					.getInterface(kWebNav)
+					.getInterface(Components.interfaces.nsIWebNavigation)
 					.QueryInterface(Components.interfaces.nsIDocShell);
 
 		return null;
