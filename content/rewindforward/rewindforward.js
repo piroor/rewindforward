@@ -69,7 +69,7 @@ var RewindForwardService = {
 		return xpathResult;
 	},
  
-	getDocShellFromDocument : function(aDocument, aRootDocShell) 
+	getDocShellFromDocument : function(aDocument) 
 	{
 		var doc = aDocument;
 		if (!doc) return null;
@@ -83,37 +83,6 @@ var RewindForwardService = {
 					.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 					.getInterface(kWebNav)
 					.QueryInterface(Components.interfaces.nsIDocShell);
-
-		var aRootDocShell = aRootDocShell
-				.QueryInterface(kDSTreeNode)
-				.QueryInterface(kDSTreeItem)
-				.QueryInterface(kWebNav);
-		var docShell = aRootDocShell;
-		traceDocShellTree:
-		do {
-			if (docShell.document == aDocument)
-				return docShell;
-
-			if (docShell.childCount) {
-				docShell = docShell.getChildAt(0);
-				docShell = docShell
-					.QueryInterface(kDSTreeNode)
-					.QueryInterface(kWebNav);
-			}
-			else {
-				parentDocShell = docShell.parent.QueryInterface(kDSTreeNode);
-				while (docShell.childOffset == parentDocShell.childCount-1)
-				{
-					docShell = parentDocShell;
-					if (docShell == aRootDocShell || !docShell.parent)
-						break traceDocShellTree;
-					parentDocShell = docShell.parent.QueryInterface(kDSTreeNode);
-				}
-				docShell = parentDocShell.getChildAt(docShell.childOffset+1)
-					.QueryInterface(kDSTreeNode)
-					.QueryInterface(kWebNav);
-			}
-		} while (docShell != aRootDocShell);
 
 		return null;
 	},
@@ -1196,12 +1165,13 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		var doc = aEvent.target;
 		var w   = 'document' in doc ? doc :
-				this.getDocShellFromDocument(doc.ownerDocument || doc)
-				.QueryInterface(Components.interfaces.nsIWebNavigation)
-				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-				.getInterface(Components.interfaces.nsIDOMWindow);
+				this.getDocShellFromDocument(doc.ownerDocument || doc);
 
 		if (!w) return;
+
+		w = w.QueryInterface(Components.interfaces.nsIWebNavigation)
+				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+				.getInterface(Components.interfaces.nsIDOMWindow);
 
 		document.getElementById('Browser:RewindPrev').setAttribute('disabled', true);
 		document.getElementById('Browser:Rewind').setAttribute('disabled', true);
