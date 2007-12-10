@@ -85,12 +85,12 @@ var RewindForwardService = {
  
 	getLinkProperty : function(aNode, aProp) 
 	{
-		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
 		if (aNode.nodeType != Node.ELEMENT_NODE)
 			aNode = aNode.parentNode;
 
 		return aNode[aProp] ||
-				aNode.getAttributeNS(XLinkNS, aProp) ||
+				aNode.getAttributeNS('http://www.w3.org/1999/xlink', aProp) ||
+				aNode.getAttributeNS('http://www.w3.org/1999/xhtml', aProp) ||
 				aNode.getAttribute(aProp) ||
 				'';
 	},
@@ -1129,9 +1129,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	onDocumentModified : function(aEvent) 
 	{
 		if (!this.shouldFindPrevLinks && !this.shouldFindNextLinks) return;
-
-		const XHTMLNS = 'http://www.w3.org/1999/xhtml';
-		const XLinkNS = 'http://www.w3.org/1999/xlink';
 
 		var node;
 		try {
