@@ -55,14 +55,17 @@ RewindForwardSiteInfoLoader.prototype = {
 			info.urls  = urls;
 		}
 
-		RewindForwardService.siteInfo[this.uri] = info;
+		if (info.urls && info.urls.length &&
+			info.rules && info.rules.length) {
+			RewindForwardService.siteInfo[this.uri] = info;
 
-		RewindForwardService.setPref(
-			'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.cache',
-			info.toSource());
-		RewindForwardService.setPref(
-			'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.last',
-			String(Date.now()));
+			RewindForwardService.setPref(
+				'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.cache',
+				info.toSource());
+			RewindForwardService.setPref(
+				'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.last',
+				String(Date.now()));
+		}
 
 		delete this.request;
 	},
