@@ -1442,7 +1442,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				)
 			);
 		}
-		var toolbox = document.getElementById('navigator-toolbox');
+		var toolbox = document.getElementById('navigator-toolbox') || // Firefox 3
+					document.getElementById('navigator-toolbox'); // Firefox 2
 		if (toolbox.customizeDone) {
 			toolbox.__rewindforward__customizeDone = toolbox.customizeDone;
 			toolbox.customizeDone = function(aChanged) {
@@ -1483,7 +1484,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	{
 		// show custom buttons only in the initial startup
 		const PREFROOT = 'extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}';
-		var bar = document.getElementById('nav-bar');
+		var bar = document.getElementById('navigation-toolbar') || // Firefox 3
+				document.getElementById('nav-bar'); // Firefox 2
 		if (bar && bar.currentSet) {
 
 			var STRBUNDLE = Components.classes['@mozilla.org/intl/stringbundle;1'].getService(Components.interfaces.nsIStringBundleService);
@@ -1496,22 +1498,24 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			var buttons = currentset.replace(/__empty/, '').split(',');
 
 			if (!this.getPref(PREFROOT+'.initialshow.rewind-button')) {
+				var backRegExp = /(unified-back-forward-button|back-button|forward-button)/;
 				if (currentset.indexOf('rewind-button') < 0) {
-					if (currentset.indexOf('back-button') < 0)
+					if (!butonRegExp.test(currentset))
 						buttons.push('rewind-button');
 					else {
-						currentset = currentset.replace(/back-button/, 'rewind-button,back-button');
+						currentset = currentset.replace(butonRegExp, 'rewind-button,$1');
 						buttons = currentset.split(',');
 					}
 				}
 				this.setPref(PREFROOT+'.initialshow.rewind-button', true);
 			}
 			if (!this.getPref(PREFROOT+'.initialshow.fastforward-button')) {
+				var forwardRegExp = /(unified-back-forward-button|forward-button|back-button)/;
 				if (currentset.indexOf('fastforward-button') < 0) {
-					if (currentset.indexOf('back-button') < 0)
+					if (forwardRegExp.test(currentset))
 						buttons.push('fastforward-button');
 					else {
-						currentset = currentset.replace(/forward-button/, 'forward-button,fastforward-button');
+						currentset = currentset.replace(forwardRegExp, '$1,fastforward-button');
 						buttons = currentset.split(',');
 					}
 				}
