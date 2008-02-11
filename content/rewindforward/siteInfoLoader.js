@@ -33,22 +33,25 @@ RewindForwardSiteInfoLoader.prototype = {
 		var info = {};
 
 		if (this.request.status == 200) {
-			var parser = new DOMParser();
-			var doc = parser.parseFromString(this.request.responseText, 'text/xml');
-			var textarea = RewindForwardService.evaluateXPath(
-					'//*[@class="autopagerize_data"]',
-					doc
-				);
-
 			var rules = {};
 			var urls  = [];
-			var parsedInfo;
-			for (var i = 0, maxi = textarea.snapshotLength; i < maxi; i++)
-			{
-				parsedInfo = this.parseInfo(textarea.snapshotItem(i).textContent);
-				if (!parsedInfo) continue;
-				rules[parsedInfo.url] = parsedInfo;
-				urls.push(parsedInfo.url);
+			var parser = new DOMParser();
+			try {
+				var doc = parser.parseFromString(this.request.responseText, 'text/xml');
+				var textarea = RewindForwardService.evaluateXPath(
+						'//*[@class="autopagerize_data"]',
+						doc
+					);
+				var parsedInfo;
+				for (var i = 0, maxi = textarea.snapshotLength; i < maxi; i++)
+				{
+					parsedInfo = this.parseInfo(textarea.snapshotItem(i).textContent);
+					if (!parsedInfo) continue;
+					rules[parsedInfo.url] = parsedInfo;
+					urls.push(parsedInfo.url);
+				}
+			}
+			catch(e) {
 			}
 
 			info.rules = rules;
