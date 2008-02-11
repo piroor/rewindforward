@@ -527,6 +527,8 @@ var RewindForwardService = {
 		findRule:
 		for (var i in this.siteInfo)
 		{
+			if (!this.siteInfo[i].urls) continue;
+
 			if (!this.siteInfo[i].urlsRule)
 				this.siteInfo[i].urlsRule = new RegExp('^('+(this.siteInfo[i].urls.join(')|^(') || '[^\s\w]')+')');
 
