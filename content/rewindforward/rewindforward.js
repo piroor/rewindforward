@@ -1452,14 +1452,14 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			toolbox.__rewindforward__customizeDone = toolbox.customizeDone;
 			toolbox.customizeDone = function(aChanged) {
 				this.__rewindforward__customizeDone(aChanged);
-				(window.UpdateBackForwardButtons || window.UpdateBackForwardCommands)();
+				(window.UpdateBackForwardButtons || window.UpdateBackForwardCommands)(gBrowser.webNavigation);
 			};
 		}
 		if ('BrowserToolboxCustomizeDone' in window) {
 			window.__rewindforward__BrowserToolboxCustomizeDone = window.BrowserToolboxCustomizeDone;
 			window.BrowserToolboxCustomizeDone = function(aChanged) {
 				window.__rewindforward__BrowserToolboxCustomizeDone.apply(window, arguments);
-				(window.UpdateBackForwardButtons || window.UpdateBackForwardCommands)();
+				(window.UpdateBackForwardButtons || window.UpdateBackForwardCommands)(gBrowser.webNavigation);
 			};
 		}
 

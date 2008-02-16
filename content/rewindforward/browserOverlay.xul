@@ -12,8 +12,6 @@
 <commandset id="mainCommandSet">
 	<command id="Browser:Rewind"
 		oncommand="BrowserRewind(this.getAttribute('mode') == 'navigation');"
-		disabled="true"
-		mode="navigation"
 		label-navigation="&rewindCmd.label;"
 		label-link="&prevCmd.label;"
 		tooltiptext-navigation="&rewindButton.tooltip;"
@@ -21,15 +19,11 @@
 		tooltiptext-link="&prevButton.tooltip;"/>
 	<command id="Browser:RewindPrev"
 		oncommand="BrowserRewindPrev();"
-		disabled="true"
-		mode="link"
 		tooltiptext-link="&prevButton.tooltip;"
 		tooltiptext-link-blank="&prevButton.tooltip.blank;"/>
 
 	<command id="Browser:Fastforward"
 		oncommand="BrowserFastforward(this.getAttribute('mode') == 'navigation');"
-		disabled="true"
-		mode="navigation"
 		label-navigation="&fastforwardCmd.label;"
 		label-link="&nextCmd.label;"
 		tooltiptext-navigation="&fastforwardButton.tooltip;"
@@ -37,8 +31,6 @@
 		tooltiptext-link="&nextButton.tooltip;"/>
 	<command id="Browser:FastforwardNext"
 		oncommand="BrowserFastforwardNext();"
-		disabled="true"
-		mode="link"
 		tooltiptext-link="&nextButton.tooltip;"
 		tooltiptext-link-blank="&nextButton.tooltip.blank;"/>
 </commandset>
