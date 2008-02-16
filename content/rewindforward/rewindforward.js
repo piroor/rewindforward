@@ -1375,8 +1375,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		window.removeEventListener('load', this, false);
 
-		eval('window.UpdateBackForwardButtons = '+
-			window.UpdateBackForwardButtons.toSource().replace(
+		var func = ('UpdateBackForwardButtons' in window) ? 'UpdateBackForwardButtons' : // Firefox 2
+				'UpdateBackForwardCommands' ; // Firefox 3
+		eval('window.'+func+' = '+
+			window[func].toSource().replace(
 				/(\}\)?)$/,
 				<><![CDATA[
 					RewindForwardService.updateButtons(document.getElementById('Browser:Stop').hasAttribute('disabled'));
@@ -1450,14 +1452,14 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			toolbox.__rewindforward__customizeDone = toolbox.customizeDone;
 			toolbox.customizeDone = function(aChanged) {
 				this.__rewindforward__customizeDone(aChanged);
-				window.UpdateBackForwardButtons();
+				(window.UpdateBackForwardButtons || window.UpdateBackForwardCommands)();
 			};
 		}
 		if ('BrowserToolboxCustomizeDone' in window) {
 			window.__rewindforward__BrowserToolboxCustomizeDone = window.BrowserToolboxCustomizeDone;
 			window.BrowserToolboxCustomizeDone = function(aChanged) {
 				window.__rewindforward__BrowserToolboxCustomizeDone.apply(window, arguments);
-				window.UpdateBackForwardButtons();
+				(window.UpdateBackForwardButtons || window.UpdateBackForwardCommands)();
 			};
 		}
 
@@ -1502,10 +1504,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			if (!this.getPref(PREFROOT+'.initialshow.rewind-button')) {
 				var backRegExp = /(unified-back-forward-button|back-button|forward-button)/;
 				if (currentset.indexOf('rewind-button') < 0) {
-					if (!butonRegExp.test(currentset))
+					if (!backRegExp.test(currentset))
 						buttons.push('rewind-button');
 					else {
-						currentset = currentset.replace(butonRegExp, 'rewind-button,$1');
+						currentset = currentset.replace(backRegExp, 'rewind-button,$1');
 						buttons = currentset.split(',');
 					}
 				}
@@ -1514,7 +1516,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			if (!this.getPref(PREFROOT+'.initialshow.fastforward-button')) {
 				var forwardRegExp = /(unified-back-forward-button|forward-button|back-button)/;
 				if (currentset.indexOf('fastforward-button') < 0) {
-					if (forwardRegExp.test(currentset))
+					if (!forwardRegExp.test(currentset))
 						buttons.push('fastforward-button');
 					else {
 						currentset = currentset.replace(forwardRegExp, '$1,fastforward-button');
