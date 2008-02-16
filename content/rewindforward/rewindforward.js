@@ -1065,24 +1065,24 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
  
 	updateBackForwardPopup : function(aPopup, aCommandNode) 
 	{
-		if (!aPopup.hasChildNodes() ||
-			(aPopup.childNodes[0].getAttribute('rewindforward-menuitem') != 'true')) {
+		if (aPopup.hasChildNodes() &&
+			(aPopup.childNodes[0].getAttribute('rewindforward-menuitem') == 'true'))
+			return;
 
-			aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
-			var id   = aCommandNode.id == 'Browser:Rewind' ? 'rewindMenuItem' : 'fastforwardMenuItem';
-			var item = document.getElementById(id).cloneNode(true);
-			item.setAttribute('id', id+'-clone');
-			aPopup.insertBefore(item, aPopup.firstChild);
+		aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
+		var id   = aCommandNode.id == 'Browser:Rewind' ? 'rewindMenuItem' : 'fastforwardMenuItem';
+		var item = document.getElementById(id).cloneNode(true);
+		item.setAttribute('id', id+'-clone');
+		aPopup.insertBefore(item, aPopup.firstChild);
 
-			aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
-			aPopup.insertBefore(document.createElement('menuitem'), aPopup.firstChild);
-			aPopup.firstChild.setAttribute('label', document.getElementById(aCommandNode.id == 'Browser:Rewind' ? 'back-button' : 'forward-button').getAttribute('rewindforward-original-label'));
-			aPopup.firstChild.setAttribute('rewindforward-menuitem', true);
-			aPopup.firstChild.setAttribute('rewindforward-menuitem-backforward', true);
-			aPopup.firstChild.setAttribute('class', 'menuitem-iconic');
-			aPopup.firstChild.setAttribute('oncommand', 'Browser'+(aCommandNode.id == 'Browser:Rewind' ? 'Back' : 'Forward' )+'(event); event.stopPropagation(); this.parentNode.hidePopup();');
-			aPopup.firstChild.setAttribute('onclick', 'if ("checkForMiddleClick" in window) { checkForMiddleClick(this, event); }; event.stopPropagation();');
-		}
+		aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
+		aPopup.insertBefore(document.createElement('menuitem'), aPopup.firstChild);
+		aPopup.firstChild.setAttribute('label', document.getElementById(aCommandNode.id == 'Browser:Rewind' ? 'back-button' : 'forward-button').getAttribute('rewindforward-original-label'));
+		aPopup.firstChild.setAttribute('rewindforward-menuitem', true);
+		aPopup.firstChild.setAttribute('rewindforward-menuitem-backforward', true);
+		aPopup.firstChild.setAttribute('class', 'menuitem-iconic');
+		aPopup.firstChild.setAttribute('oncommand', 'Browser'+(aCommandNode.id == 'Browser:Rewind' ? 'Back' : 'Forward' )+'(event); event.stopPropagation(); this.parentNode.hidePopup();');
+		aPopup.firstChild.setAttribute('onclick', 'if ("checkForMiddleClick" in window) { checkForMiddleClick(this, event); }; event.stopPropagation();');
 	},
   
 	newBrowserBackMenu : function(aEvent) 
@@ -1096,6 +1096,34 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		var button = document.getElementById('forward-button');
 		return RewindForwardService.fillPopupMenuInternal(aEvent, document.getElementById('Browser:Fastforward'),
 			button.getAttribute('rewindforward-override') ? true : false );
+	},
+	newFillHistoryMenu : function(aPopup) // Firefox 3
+	{
+		this.__rewindforward__FillHistoryMenu(aPopup);
+
+		var nodes = aPopup.childNodes;
+
+		var current,
+			prev;
+		for (var i = nodes.length-1; i > -1; i--)
+		{
+			if (!nodes[i].getAttribute('index')) break;
+
+			current = RewindForwardService.getHistoryEntryAt(parseInt(nodes[i].getAttribute('index')));
+			if (!prev) {
+				prev = current;
+				continue;
+			}
+
+			if (
+				(!current.URI.host && prev.URI.host) ||
+				(current.URI.host && !prev.URI.host) ||
+				(current.URI.host != prev.URI.host)
+				)
+				aPopup.insertBefore(document.createElement('menuseparator'), nodes[i+1]).setAttribute('index', -1);
+
+			prev = current;
+		}
 	},
   
 	// handle events 
@@ -1433,10 +1461,16 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			)
 		);
 
-		window.__rewindforward__BrowserBackMenu = window.BrowserBackMenu;
-		window.BrowserBackMenu = this.newBrowserBackMenu;
-		window.__rewindforward__BrowserForwardMenu = window.BrowserForwardMenu;
-		window.BrowserForwardMenu = this.newBrowserForwardMenu;
+		if (window.BrowserBackMenu) { // Firefox 2
+			window.__rewindforward__BrowserBackMenu = window.BrowserBackMenu;
+			window.BrowserBackMenu = this.newBrowserBackMenu;
+			window.__rewindforward__BrowserForwardMenu = window.BrowserForwardMenu;
+			window.BrowserForwardMenu = this.newBrowserForwardMenu;
+		}
+		else { // Firefox 3
+			window.__rewindforward__FillHistoryMenu = window.FillHistoryMenu;
+			window.FillHistoryMenu = this.newFillHistoryMenu;
+		}
 
 		if ('BrowserCustomizeToolbar' in window) {
 			eval('window.BrowserCustomizeToolbar = '+
