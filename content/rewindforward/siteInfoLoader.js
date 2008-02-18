@@ -76,7 +76,7 @@ RewindForwardSiteInfoLoader.prototype = {
 	},
 	parseInfo : function(aString)
 	{
-		var pattern = /(^[^:]*?):(.*)$/;
+		var pattern = /^\s*([^:\s]*?)\s*:(.*)$/;
 		var info = {};
 		aString.split(/\r\n|\r|\n/).forEach(function(aPart) {
 			if (!aPart.match(pattern)) return;
