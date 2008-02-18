@@ -711,11 +711,13 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	 
 	incrementPageURI : function(aCount, aURI) 
 	{
-		var res = aURI.match(/^\w+:\/\/[^\/]+\/([^0-9]*|.+[0-9]+[^0-9]+)([0-9]+)[^0-9]*$/);
+		var res = aURI.match(/^\w+:\/\/[^\/]+\/([^0-9]*|.+[0-9]+[^0-9]+)([0-9]+)([^0-9]*)$/);
 		if (!res || !res[2]) return null;
 
 		var prefix = res[1];
 		var num    = res[2];
+		var suffix = res[3];
+		if (suffix && !/^[.\/]/.test(suffix)) return null;
 
 		var newNum = String(Number(num.replace(/^0+/, ''))+aCount);
 		while (newNum.length < num.length)
