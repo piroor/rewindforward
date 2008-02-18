@@ -71,8 +71,8 @@
 			name="rewindforward.use_another_icons"
 			type="bool"/>
 
-		<preference id="rewindforward.virtual_link.enabled"
-			name="rewindforward.virtual_link.enabled"
+		<preference id="rewindforward.related.virtual_link.enabled"
+			name="rewindforward.related.virtual_link.enabled"
 			type="bool"/>
 		<preference id="rewindforward.related.use.label"
 			name="rewindforward.related.use.label"
@@ -106,7 +106,7 @@
 			<caption label="&rewindforward.related.use.caption;"/>
 			<checkbox id="virtual_link_enabled"
 				label="&rewindforward.related.virtual_link.enabled;"
-				preference="rewindforward.virtual_link.enabled"
+				preference="rewindforward.related.virtual_link.enabled"
 				flex="1"/>
 			<checkbox id="rewindforward.related.use.label-check"
 				label="&rewindforward.related.use.label;"
