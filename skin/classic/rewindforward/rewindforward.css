@@ -1,4 +1,4 @@
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul") !important;
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 
 .rewindMenuItem {
@@ -24,7 +24,7 @@ menuitem[rewindforward-menuitem-backforward="true"] image {
 
 #rewindMenu menuseparator[index="-1"],
 #fastforwardMenu menuseparator[index="-1"] {
-	border-top: thin -moz-bg-solid;
+	border-top: 1px solid -moz-DialogText;
 	border-right: none 0;
 	border-bottom: none 0;
 	border-left: none 0;
