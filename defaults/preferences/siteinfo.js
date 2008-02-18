@@ -344,9 +344,9 @@ pref("rewindforward.rule.prev.d.hatena.ne.jp",
 
 // ÇÕÇƒÇ»ÉOÉãÅ[Év
 pref("rewindforward.rule.next.*.g.hatena.ne.jp",
-	"//div[@class='calendar']/a[contains(@href, '?of=')][last()]");
+	"//div[@class='calendar']/a[contains(@href, '?of=')][last()]|//div[@class='calendar']/a[last()]");
 pref("rewindforward.rule.prev.*.g.hatena.ne.jp",
-	"//div[@class='calendar']/a[contains(@href, '?of=')][1]");
+	"//div[@class='calendar']/a[contains(@href, '?of=')][1]|//div[@class='calendar']/a[1]");
 
 // Google Scholar
 pref("rewindforward.rule.next.scholar.google.com",

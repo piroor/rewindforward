@@ -634,7 +634,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
  
 	getLinksFromXPath : function(aXPath, aXMLDocument, aLevel, aType) 
 	{
-
 		var links = [];
 		var result;
 		try {
