@@ -1196,11 +1196,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 				.getInterface(Components.interfaces.nsIDOMWindow);
 
-		document.getElementById('Browser:RewindPrev').setAttribute('disabled', true);
-		document.getElementById('Browser:Rewind').setAttribute('disabled', true);
-		document.getElementById('Browser:FastforwardNext').setAttribute('disabled', true);
-		document.getElementById('Browser:Fastforward').setAttribute('disabled', true);
-
 		w.removeEventListener('DOMAttrModified', this, true);
 		w.removeEventListener('DOMSubtreeModified', this, true);
 		w.removeEventListener('DOMNodeInserted', this, true);
