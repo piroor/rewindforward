@@ -1178,7 +1178,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		var rev = this.getLinkProperty(node, 'rev');
 		if (!rel && !rev) return;
 
-		if (rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
+		if (
+			node.ownerDocument.defaultView.top == gBrowser.contentWindow &&
+			(rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
+			)
 			this.updateButtons(true);
 	},
  
