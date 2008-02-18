@@ -1173,11 +1173,17 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		if (w.top == window) return;
 
-		this.getLinksFromAllFramesInternal([w], 'next');
-		this.getLinksFromAllFramesInternal([w], 'prev');
-
-		if (w.top == gBrowser.contentWindow)
+		if (w.top == gBrowser.contentWindow) {
 			this.updateButtons(true);
+		}
+		else {
+			window.setTimeout(function(aSelf) {
+				aSelf.getLinksFromAllFramesInternal([w], 'next');
+				window.setTimeout(function(aSelf) {
+					aSelf.getLinksFromAllFramesInternal([w], 'prev');
+				}, 100, aSelf);
+			}, 100, this);
+		}
 	},
  
 	onDocumentModified : function(aEvent) 
