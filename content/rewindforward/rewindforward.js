@@ -1141,10 +1141,11 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				return;
 
 			case 'unload':
-				if (aEvent.originalTarget == document)
-					this.destroy();
-				else
-					this.onDocumentUnload(aEvent);
+				this.destroy();
+				return;
+
+			case 'DOMContentLoaded':
+				this.onDocumentLoad(aEvent);
 				return;
 
 			case 'DOMAttrModified':
@@ -1156,6 +1157,29 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		}
 	},
 	 
+	onDocumentLoad : function(aEvent) 
+	{
+		if (!aEvent.target) return;
+
+		var doc = aEvent.target;
+		var w   = 'document' in doc ? doc :
+				this.getDocShellFromDocument(doc.ownerDocument || doc);
+
+		if (!w) return;
+
+		w = w.QueryInterface(Components.interfaces.nsIWebNavigation)
+				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+				.getInterface(Components.interfaces.nsIDOMWindow);
+
+		if (w.top == window) return;
+
+		this.getLinksFromAllFramesInternal([w], 'next');
+		this.getLinksFromAllFramesInternal([w], 'prev');
+
+		if (w.top == gBrowser.contentWindow)
+			this.updateButtons(true);
+	},
+ 
 	onDocumentModified : function(aEvent) 
 	{
 		if (!this.shouldFindPrevLinks && !this.shouldFindNextLinks) return;
@@ -1183,28 +1207,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			(rel.match(/\b(next|prev)\b/) || rev.match(/\b(next|prev)\b/))
 			)
 			this.updateButtons(true);
-	},
- 
-	onDocumentUnload : function(aEvent) 
-	{
-		if (!aEvent.target) return;
-
-		var doc = aEvent.target;
-		var w   = 'document' in doc ? doc :
-				this.getDocShellFromDocument(doc.ownerDocument || doc);
-
-		if (!w) return;
-
-		w = w.QueryInterface(Components.interfaces.nsIWebNavigation)
-				.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-				.getInterface(Components.interfaces.nsIDOMWindow);
-
-		w.removeEventListener('DOMAttrModified', this, true);
-		w.removeEventListener('DOMSubtreeModified', this, true);
-		w.removeEventListener('DOMNodeInserted', this, true);
-		w.removeEventListener('DOMNodeInsertedIntoDocument', this, true);
-
-		w.removeEventListener('unload', this, false);
 	},
  
 	onKeyPress : function(aEvent) 
@@ -1315,51 +1317,23 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
   
 	observe : function(aSubject, aTopic, aData) 
 	{
-		switch (aTopic)
+		if (aTopic != 'nsPref:changed') return;
+
+		switch (aData)
 		{
-			default:
-				return;
-
-			case 'nsPref:changed':
-				switch (aData)
-				{
-					default:
-						return;
-
-					case 'rewindforward.gonextprev.exceptions':
-						this.gonextprevExceptions = this.gonextprevExceptions.compile(
-							'^(' +
-							this.getPref(aData)
-								.split('|')
-								.map(function(aItem) {
-									if (/^\w+:\/\//.test(aItem))
-										aItem = 'https?://'+aItem;
-									return aItem.replace(/\./g, '\\.').replace(/\*/g, '.\\*');
-								})
-								.join('|') +
-							')'
-						);
-						return;
-				}
-				return;
-
-			case 'EndDocumentLoad':
-			case 'FailDocumentLoad':
-				if (
-					(this.shouldFindPrevLinks || this.shouldFindNextLinks) &&
-					aSubject &&
-					!aSubject.document.documentElement.getAttribute('__rewindforward__event_handled')
-					) {
-					aSubject.document.documentElement.setAttribute('__rewindforward__event_handled', true);
-
-					aSubject.addEventListener('DOMAttrModified', this, true);
-					aSubject.addEventListener('DOMSubtreeModified', this, true);
-					aSubject.addEventListener('DOMNodeInserted', this, true);
-					aSubject.addEventListener('DOMNodeInsertedIntoDocument', this, true);
-
-					aSubject.addEventListener('unload', this, false);
-				}
-				this.updateButtons(true);
+			case 'rewindforward.gonextprev.exceptions':
+				this.gonextprevExceptions = this.gonextprevExceptions.compile(
+					'^(' +
+					this.getPref(aData)
+						.split('|')
+						.map(function(aItem) {
+							if (/^\w+:\/\//.test(aItem))
+								aItem = 'https?://'+aItem;
+							return aItem.replace(/\./g, '\\.').replace(/\*/g, '.\\*');
+						})
+						.join('|') +
+					')'
+				);
 				return;
 		}
 	},
@@ -1495,13 +1469,14 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			};
 		}
 
-		const observerService = Components.classes['@mozilla.org/observer-service;1']
-							.getService(Components.interfaces.nsIObserverService);
-		observerService.addObserver(this, 'EndDocumentLoad', false);
-		observerService.addObserver(this, 'FailDocumentLoad', false);
-
 		window.addEventListener('keypress', this, true);
 		window.addEventListener('unload', this, false);
+
+		gBrowser.addEventListener('DOMContentLoaded', this, true);
+		gBrowser.addEventListener('DOMAttrModified', this, true);
+		gBrowser.addEventListener('DOMSubtreeModified', this, true);
+		gBrowser.addEventListener('DOMNodeInserted', this, true);
+		gBrowser.addEventListener('DOMNodeInsertedIntoDocument', this, true);
 
 		this.addPrefListener(this);
 		this.observe(null, 'nsPref:changed', 'rewindforward.gonextprev.exceptions');
@@ -1579,13 +1554,14 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
   
 	destroy : function() 
 	{
-		const observerService = Components.classes['@mozilla.org/observer-service;1']
-							.getService(Components.interfaces.nsIObserverService);
-		observerService.removeObserver(this, 'EndDocumentLoad', false);
-		observerService.removeObserver(this, 'FailDocumentLoad', false);
-
 		window.removeEventListener('keypress', this, true);
 		window.removeEventListener('unload', this, false);
+
+		gBrowser.removeEventListener('DOMContentLoaded', this, true);
+		gBrowser.removeEventListener('DOMAttrModified', this, true);
+		gBrowser.removeEventListener('DOMSubtreeModified', this, true);
+		gBrowser.removeEventListener('DOMNodeInserted', this, true);
+		gBrowser.removeEventListener('DOMNodeInsertedIntoDocument', this, true);
 
 		this.removePrefListener(this);
 	},
