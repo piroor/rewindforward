@@ -18,7 +18,8 @@ pref("rewindforward.matchingPatterns.prev.blacklist", "\u623b\u308b/\u9032\u3080
 pref("rewindforward.matchingPatterns.next", "\u6b21|\u9032|\u5148|\u30c4\u30ae|\u3064\u304e\u3078|next|forward|after|ahead|Next|Forward|After|Ahead|NEXT|FORWARD|AFTER|AHEAD|>>|->|=>|\u2192|\uff1e|\u226b|\u00bb");
 pref("rewindforward.matchingPatterns.next.blacklist", "\u623b\u308b/\u9032\u3080|\u300c\u9032\u3080\u300d|\"Forward\"|Fastforward|FASTFORWARD|\u76ee\u6b21");
 
-pref("rewindforward.siteinfo.importFrom", "http://swdyh.infogami.com/autopagerize|http://userjs.oh.land.to/pagerization/convert.php?file=siteinfo.v5");
+pref("rewindforward.siteinfo.importFrom", "http://swdyh.infogami.com/autopagerize");
+// http://userjs.oh.land.to/pagerization/convert.php?file=siteinfo.v5 : 404 on 2008.2.19
 pref("rewindforward.siteinfo.expire", 86400000);
 
 pref("extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}.name", "chrome://rewindforward/locale/rewindforward.properties");

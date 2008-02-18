@@ -37,7 +37,9 @@ RewindForwardSiteInfoLoader.prototype = {
 			var urls  = [];
 			var parser = new DOMParser();
 			try {
-				var doc = parser.parseFromString(this.request.responseText, 'text/xml');
+				var source = this.request.responseText
+						.replace(/((\w+)="[^"]+"[^>]*)[\s\r\n](\2)="[^"]+"/, '$1'); // 2007.2.19, fix syntax error on autopagerize wiki
+				var doc = parser.parseFromString(source, 'text/xml');
 				var textarea = RewindForwardService.evaluateXPath(
 						'//*[@class="autopagerize_data"]',
 						doc
