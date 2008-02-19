@@ -517,8 +517,6 @@ var RewindForwardService = {
 				rate : 0
 			};
 
-		if (rel != 'next') return result;
-
 		var matchingResult;
 		var pos;
 		var regexp = new RegExp();
@@ -1199,10 +1197,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			node = aEvent.target;
 		}
 
-		if (
-			node.nodeType == Node.ELEMENT_NODE &&
-			node.namespaceURI == 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
-			)
+		if (node.ownerDocument == document || node.document == document)
 			return;
 
 		var rel = this.getLinkProperty(node, 'rel');
