@@ -522,7 +522,6 @@ var RewindForwardService = {
 		var regexp = new RegExp();
 		var rule;
 
-		findRule:
 		for (var i in this.siteInfo)
 		{
 			if (!this.siteInfo[i].urls) continue;
@@ -534,6 +533,7 @@ var RewindForwardService = {
 				continue;
 
 			// we have to find rule from last because the last rule of duplicated rules should be applied.
+			findRule:
 			for (var j = this.siteInfo[i].urls.length-1; j > -1; j--)
 			{
 				if (!regexp.compile(this.siteInfo[i].urls[j]).test(aURI))
@@ -541,7 +541,7 @@ var RewindForwardService = {
 
 				rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
 				if (rule) {
-					result.rule = rule;
+					result.rule = (result.rule ? result.rule+'|' : '' ) + rule;
 					result.rate = this.kLINK_RELATED_CUSTOM;
 					break findRule;
 				}
