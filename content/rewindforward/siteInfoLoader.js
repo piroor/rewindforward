@@ -36,6 +36,7 @@ RewindForwardSiteInfoLoader.prototype = {
 			var rules = {};
 			var urls  = [];
 			var parser = new DOMParser();
+			var rulesFound = false;
 			try {
 				var source = this.request.responseText
 						.replace(/((\w+)="[^"]+"[^>]*)[\s\r\n](\2)="[^"]+"/, '$1'); // 2007.2.19, fix syntax error on autopagerize wiki
@@ -51,6 +52,7 @@ RewindForwardSiteInfoLoader.prototype = {
 					if (!parsedInfo) continue;
 					rules[parsedInfo.url] = parsedInfo;
 					urls.push(parsedInfo.url);
+					rulesFound = true;
 				}
 			}
 			catch(e) {
@@ -61,7 +63,7 @@ RewindForwardSiteInfoLoader.prototype = {
 		}
 
 		if (info.urls && info.urls.length &&
-			info.rules && info.rules.length) {
+			info.rules && rulesFound) {
 			RewindForwardService.siteInfo[this.uri] = info;
 
 			RewindForwardService.setPref(
