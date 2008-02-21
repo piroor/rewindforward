@@ -120,10 +120,14 @@
 				<button label="&rewindforward.related.customizeRules.button;"
 					oncommand="window.openDialog('chrome://rewindforward/content/customizeRules.xul', '', 'chrome,resizable,modal');"/>
 			</hbox>
-			<checkbox id="rewindforward.related.use.siteInfo-check"
-				label="&rewindforward.related.use.siteInfo;"
-				preference="rewindforward.related.use.siteInfo"
-				flex="1"/>
+			<hbox align="center">
+				<checkbox id="rewindforward.related.use.siteInfo-check"
+					label="&rewindforward.related.use.siteInfo;"
+					preference="rewindforward.related.use.siteInfo"
+					flex="1"/>
+				<button label="&rewindforward.siteInfo.update.button;"
+					oncommand="RewindForwardService.initSiteInfo(true);"/>
+			</hbox>
 		</groupbox>
 	</groupbox>
 	<groupbox orient="vertical" id="useAnotherIconsGroup">
@@ -138,5 +142,8 @@
 		</radiogroup>
 	</groupbox>
 </prefpane>
+
+<script type="application/x-javascript" src="rewindforward.js"/>
+<script type="application/x-javascript" src="siteInfoLoader.js"/>
 
 </prefwindow>

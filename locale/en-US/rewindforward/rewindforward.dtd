@@ -39,7 +39,8 @@
 <!ENTITY rewindforward.related.use.label           "Suggest by link labels">
 <!ENTITY rewindforward.related.use.customRules     "Suggest by built-in rules">
 <!ENTITY rewindforward.related.use.siteInfo        "Suggest by SiteInfo for AutoPagerize">
-<!ENTITY rewindforward.related.customizeRules.button  "Customize matching rules">
+<!ENTITY rewindforward.related.customizeRules.button  "Customize matching rules...">
+<!ENTITY rewindforward.siteInfo.update.button      "Update SiteInfo now">
 
 <!ENTITY rewindforward.icon.caption "Icons of &quot;Next Page&quot; and &quot;Previous Page&quot; buttons (restarting required)">
 <!ENTITY rewindforward.icon.normal  "Use type-1 icons">

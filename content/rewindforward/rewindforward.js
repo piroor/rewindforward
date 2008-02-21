@@ -1343,8 +1343,9 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	// siteinfo 
 	 
 	siteInfo : {}, 
+	siteInfoUpdateTimer : {},
  
-	initSiteInfo : function() 
+	initSiteInfo : function(aForce) 
 	{
 		var uris = this.getPref('rewindforward.siteinfo.importFrom').split('|');
 		var expire = this.getPref('rewindforward.siteinfo.expire');
@@ -1355,15 +1356,25 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		{
 			cache = this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.cache');
 			last  = parseInt(this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.last') || 0);
-			if (!cache || now >= expire + last) {
+			if (aForce || !cache || now >= expire + last) {
 				new RewindForwardSiteInfoLoader(uris[i]);
+				last = now;
 			}
 			else {
 				this.siteInfo[uris[i]] = eval(cache);
 			}
-			window.setTimeout(
-				'new RewindForwardSiteInfoLoader("'+uris[i]+'")',
-				last + expire - now
+			if (this.siteInfoUpdateTimer[uris[i]]) {
+				window.clearTimeout(this.siteInfoUpdateTimer[uris[i]]);
+			}
+			this.siteInfoUpdateTimer[uris[i]] = window.setTimeout(
+				function(aURI, aSelf)
+				{
+					new RewindForwardSiteInfoLoader(aURI);
+					delete aSelf.siteInfoUpdateTimer[aURI];
+				},
+				last + expire - now,
+				uris[i],
+				this
 			);
 		}
 	},
@@ -1372,7 +1383,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	 
 	init : function() 
 	{
-		if (this.initialized) return;
+		if (this.initialized || !('gBrowser' in window)) return;
 		this.initialized = true;
 
 		window.removeEventListener('load', this, false);
@@ -1564,6 +1575,11 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		gBrowser.removeEventListener('DOMSubtreeModified', this, true);
 		gBrowser.removeEventListener('DOMNodeInserted', this, true);
 		gBrowser.removeEventListener('DOMNodeInsertedIntoDocument', this, true);
+
+		for (var i in this.siteInfoUpdateTimer)
+		{
+			window.clearTimeout(this.siteInfoUpdateTimer[i]);
+		}
 
 		this.removePrefListener(this);
 	},
