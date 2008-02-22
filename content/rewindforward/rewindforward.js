@@ -1329,9 +1329,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					this.getPref(aData)
 						.split('|')
 						.map(function(aItem) {
-							if (/^\w+:\/\//.test(aItem))
+							if (!/^\w+:\/\//.test(aItem))
 								aItem = 'https?://'+aItem;
-							return aItem.replace(/\./g, '\\.').replace(/\*/g, '.\\*');
+							return aItem.replace(/\./g, '\\.')
+									.replace(/\*/g, '.*');
 						})
 						.join('|') +
 					')'
@@ -1339,6 +1340,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				return;
 		}
 	},
+	domain : 'rewindforward',
   
 	// siteinfo 
 	 
