@@ -6,6 +6,7 @@ overlay	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/cont
 
 locale	rewindforward	en-US	jar:chrome/rewindforward.jar!/locale/en-US/rewindforward/
 locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
+locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
 
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/

@@ -1,0 +1,85 @@
+<!ENTITY rewindCmd.label           "Torna indietro">
+<!ENTITY rewindButton.tooltip      "Torna al precedente dominio">
+<!ENTITY rewindButton.tooltip.toEndPoint "Torna all'inizio del dominio">
+<!ENTITY fastforwardCmd.label      "Vai avanti">
+<!ENTITY fastforwardButton.tooltip "Vai al prossimo dominio">
+<!ENTITY fastforwardButton.tooltip.toEndPoint "Vai alla fine del dominio">
+<!ENTITY prevCmd.label             "Precedente">
+<!ENTITY prevButton.tooltip        "Pagina precedente (&#37;s)">
+<!ENTITY prevButton.tooltip.blank  "Non ci sono pagine precedenti">
+<!ENTITY nextCmd.label             "Seguente">
+<!ENTITY nextButton.tooltip        "Pagina seguente (&#37;s)">
+<!ENTITY nextButton.tooltip.blank  "Non ci sono pagine seguenti">
+
+
+<!ENTITY rewindforward.config.title       "Configurazione di Rewind/Fastforward Buttons">
+
+<!ENTITY rewindforward.general.tab             "Generale">
+
+<!ENTITY rewindforward.override_button.caption "Indietro/Avanti">
+<!ENTITY rewindforward.override_button.back    "Utilizzare il pulsante &quot;Indietro&quot; al posto del pulsante &quot;Torna indietro&quot;">
+<!ENTITY rewindforward.override_button.forward "Utilizzare il pulsante &quot;Avanti&quot; al posto del pulsante &quot;Vai avanti&quot;">
+
+
+<!ENTITY rewindforward.history.caption           "Torna indietro/Vai avanti">
+<!ENTITY rewindforward.history.fill_history_menu "Inserisci gli oggetti della cronologia nel menu contestuale dei pulsanti">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.enabled  "Torna indietro alla prima pagina del dominio">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.disabled "Torna indietro alla pagina del precedente dominio">
+
+<!ENTITY rewindforward.related.tab               "Pagine correlate">
+<!ENTITY rewindforward.related.caption           "Pagine correlate">
+<!ENTITY rewindforward.related.find_next_links   "Utilizza il pulsante &quot;Seguente&quot; al posto del pulsante &quot;Vai avanti&quot;">
+<!ENTITY rewindforward.related.find_prev_links   "Utilizza il pulsante &quot;Precedente&quot; al posto del pulsante &quot;Torna indietro&quot;">
+
+<!ENTITY rewindforward.related.gonextprev.enabled "Vai alla pagina seguente quando si scorre fino al fondo della pagina">
+<!ENTITY rewindforward.related.gonextprev.button "Personalizza eccezioni">
+
+<!ENTITY rewindforward.related.use.caption         "Suggerimenti automatici per pagine precedenti e seguenti">
+<!ENTITY rewindforward.related.virtual_link.enabled "Visita sequenzialmente gli indirizzi utilizzando i pulsanti &quot;Precedente&quot; e &quot;Seguente&quot;">
+<!ENTITY rewindforward.related.use.label           "Considera etichette dei collegamenti">
+<!ENTITY rewindforward.related.use.customRules     "Considera regole integrate">
+<!ENTITY rewindforward.related.use.siteInfo        "Considera SiteInfo per AutoPagerize">
+<!ENTITY rewindforward.related.customizeRules.button  "Personalizza regole di confronto">
+
+<!ENTITY rewindforward.icon.caption "Icone per i pulsanti &quot;Seguente&quot; e &quot;Precedente&quot; (richiede il riavvio)">
+<!ENTITY rewindforward.icon.normal  "Utilizza icone tipo-1">
+<!ENTITY rewindforward.icon.another "Utilizza icone tipo-2">
+
+
+<!ENTITY rewindforward.rules.title  "Regole personalizzate per pagina seguente/precedente">
+<!ENTITY rewindforward.rules.desc   "Inserire l'espressione XPath per determinare i collegamenti che si riferiscono alle pagine precedenti o seguenti. Il carattere speciale (*) è disponibile per i nomi dei domini.">
+<!ENTITY rewindforward.rules.col.domain "Dominio">
+<!ENTITY rewindforward.rules.col.prev   "Seguente">
+<!ENTITY rewindforward.rules.col.next   "Precedente">
+
+<!ENTITY button.newRule.label    "Nuova regola">
+<!ENTITY button.modifyPrev.label "Modifica espressione &quot;Precedente&quot;">
+<!ENTITY button.modifyNext.label "Modifica espressione &quot;Seguente&quot;">
+<!ENTITY button.delete.label     "Elimina">
+<!ENTITY button.reset.label      "Ripristina valori predefiniti">
+
+<!ENTITY copyDomain.label       "Copia dominio">
+<!ENTITY copyDomain.accesskey   "C">
+<!ENTITY copyXPath.label        "Copia espressione">
+<!ENTITY copyXPath.accesskey    "o">
+<!ENTITY newRule.label          "Definisci nuova regola">
+<!ENTITY newRule.accesskey      "D">
+<!ENTITY modifyPrev.label       "Modifica espressione &quot;Precedente&quot;">
+<!ENTITY modifyPrev.accesskey   "P">
+<!ENTITY modifyNext.label       "Modifica espressione &quot;Seguente&quot;">
+<!ENTITY modifyNext.accesskey   "S">
+<!ENTITY delete.label           "Elimina">
+<!ENTITY delete.accesskey       "E">
+
+
+<!ENTITY rewindforward.exceptions.title  "Domini esclusi dal caricamento automatico al raggiungimento del fondo delle pagine">
+<!ENTITY rewindforward.exceptions.desc   "Inserire i domini per i quali disabilitare il caricamento automatico al raggiungimento del fondo delle pagine. Il carattere speciale (*) è disponibile per i nomi dei domini.">
+<!ENTITY newSite.label          "Aggiungi dominio">
+<!ENTITY newSite.accesskey      "A">
+<!ENTITY modifySite.label     "Modifica">
+<!ENTITY modifySite.accesskey "M">
+<!ENTITY button.newSite.label    "Aggiungi dominio">
+<!ENTITY button.modifySite.label "Modifica">
+
+
+<!ENTITY rewindforward.OK                "OK">
