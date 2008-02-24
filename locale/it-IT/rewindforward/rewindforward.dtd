@@ -32,14 +32,15 @@
 <!ENTITY rewindforward.related.find_prev_links   "Utilizza il pulsante &quot;Precedente&quot; al posto del pulsante &quot;Torna indietro&quot;">
 
 <!ENTITY rewindforward.related.gonextprev.enabled "Vai alla pagina seguente quando si scorre fino al fondo della pagina">
-<!ENTITY rewindforward.related.gonextprev.button "Personalizza eccezioni">
+<!ENTITY rewindforward.related.gonextprev.button "Personalizza eccezioni...">
 
 <!ENTITY rewindforward.related.use.caption         "Suggerimenti automatici per pagine precedenti e seguenti">
 <!ENTITY rewindforward.related.virtual_link.enabled "Visita sequenzialmente gli indirizzi utilizzando i pulsanti &quot;Precedente&quot; e &quot;Seguente&quot;">
 <!ENTITY rewindforward.related.use.label           "Considera etichette dei collegamenti">
 <!ENTITY rewindforward.related.use.customRules     "Considera regole integrate">
 <!ENTITY rewindforward.related.use.siteInfo        "Considera SiteInfo per AutoPagerize">
-<!ENTITY rewindforward.related.customizeRules.button  "Personalizza regole di confronto">
+<!ENTITY rewindforward.related.customizeRules.button  "Personalizza regole di confronto...">
+<!ENTITY rewindforward.siteInfo.update.button      "Aggiorna SiteInfo">
 
 <!ENTITY rewindforward.icon.caption "Icone per i pulsanti &quot;Seguente&quot; e &quot;Precedente&quot; (richiede il riavvio)">
 <!ENTITY rewindforward.icon.normal  "Utilizza icone tipo-1">
