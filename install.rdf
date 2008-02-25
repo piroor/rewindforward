@@ -21,17 +21,20 @@
     <em:localized>
       <RDF:Description em:locale="en-US"
                        em:name="Rewind/Fastforward Buttons"
-                       em:description="Adds &quot;Rewind&quot; and &quot;Fastforward&quot; buttons for the toolbar."/>
+                       em:description="Adds &quot;Rewind&quot; and &quot;Fastforward&quot; buttons for the toolbar."
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en"/>
     </em:localized>
     <em:localized>
       <RDF:Description em:locale="ja"
                        em:name="巻き戻し/早送りボタン"
-                       em:description="ツールバーに「巻き戻し」と「早送り」のボタンを加えます。"/>
+                       em:description="ツールバーに「巻き戻し」と「早送り」のボタンを加えます。"
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html"/>
     </em:localized>
     <em:localized>
       <RDF:Description em:locale="it-IT"
                        em:name="Rewind/Fastforward Buttons"
-                       em:description="Permette di aggiungere i pulsanti &quot;Torna indietro&quot; e &quot;Vai avanti&quot; alla barra degli strumenti"/>
+                       em:description="Permette di aggiungere i pulsanti &quot;Torna indietro&quot; e &quot;Vai avanti&quot; alla barra degli strumenti"
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en"/>
     </em:localized>
 
 
