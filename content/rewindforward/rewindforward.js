@@ -1338,6 +1338,15 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					')'
 				);
 				return;
+
+			default:
+				if (!/^rewindforward\.siteinfo\.(.+)\.cache/.test(aData)) return;
+				var uri = decodeURIComponent(RegExp.$1);
+				var cache = this.getPref(aData);
+				if (cache)
+					this.siteInfo[uri] = eval(cache);
+				else
+					this.siteInfo[uri] = null;
 		}
 	},
 	domain : 'rewindforward',

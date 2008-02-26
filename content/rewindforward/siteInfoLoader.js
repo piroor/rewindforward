@@ -64,8 +64,6 @@ RewindForwardSiteInfoLoader.prototype = {
 
 		if (info.urls && info.urls.length &&
 			info.rules && rulesFound) {
-			RewindForwardService.siteInfo[this.uri] = info;
-
 			RewindForwardService.setPref(
 				'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.cache',
 				info.toSource());
