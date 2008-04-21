@@ -11,6 +11,7 @@ locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforw
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
 skin	rewindforward-luna	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0b5pre os=WINNT
 skin	rewindforward-aero	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0b5pre os=WINNT osversion>=6
+skin	rewindforward-darwin	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-darwin/	appversion>=3.0b5pre os=Darwin
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
 skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
 
