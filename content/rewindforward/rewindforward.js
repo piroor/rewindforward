@@ -1339,6 +1339,13 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				);
 				return;
 
+			case 'rewindforward.use_another_icons':
+				if (this.getPref(aData))
+					document.documentElement.setAttribute('rewindforward-anothericon', true);
+				else
+					document.documentElement.removeAttribute('rewindforward-anothericon');
+				return;
+
 			default:
 				if (!/^rewindforward\.siteinfo\.(.+)\.cache/.test(aData)) return;
 				var uri = decodeURIComponent(RegExp.$1);
@@ -1504,11 +1511,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		this.addPrefListener(this);
 		this.observe(null, 'nsPref:changed', 'rewindforward.gonextprev.exceptions');
-
-		if (this.getPref('rewindforward.use_another_icons'))
-			document.documentElement.setAttribute('rewindforward-anothericon', true);
-		else
-			document.documentElement.removeAttribute('rewindforward-anothericon');
+		this.observe(null, 'nsPref:changed', 'rewindforward.use_another_icons');
 
 		this.initSiteInfo();
 
