@@ -30,6 +30,13 @@
 }
 
 
+.toolbarbutton-1.rewind-button,
+.toolbarbutton-1.fastforward-button {
+	padding-left: 1px !important;
+	padding-right: 1px !important;
+}
+
+
 
 /* keyhole */
 
