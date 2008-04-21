@@ -9,10 +9,14 @@ locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
 locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
 
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
-skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0b5pre os=WINNT
-skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0b5pre os=WINNT osversion>=6
+skin	rewindforward-luna	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0b5pre os=WINNT
+skin	rewindforward-aero	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0b5pre os=WINNT osversion>=6
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
 skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
 
 style	chrome://browser/content/browser.xul	chrome://rewindforward/skin/rewindforward.css
+style	chrome://browser/content/browser.xul	chrome://rewindforward-luna/skin/toolbar.css
+style	chrome://browser/content/browser.xul	chrome://rewindforward-aero/skin/rewindforward.css
 style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/skin/rewindforward.css
+style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward-luna/skin/toolbar.css
+style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward-aero/skin/rewindforward.css
