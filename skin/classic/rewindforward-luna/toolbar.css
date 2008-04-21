@@ -212,7 +212,7 @@
 	-moz-image-region: rect(72px 88px 96px 64px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="link"] {
-	-moz-image-region: rect(0px 210px 16px 186px) !important;
+	-moz-image-region: rect(0px 210px 24px 186px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="link"][buttonover="true"],
 [iconsize="small"] #back-button[rewindforward-override="link"]:hover {
@@ -307,7 +307,7 @@
 	-moz-image-region: rect(72px 186px 96px 162px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"] {
-	-moz-image-region: rect(0px 308px 16px 284px) !important;
+	-moz-image-region: rect(0px 308px 24px 284px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"][buttonover="true"],
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"]:hover {

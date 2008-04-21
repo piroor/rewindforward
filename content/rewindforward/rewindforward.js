@@ -866,9 +866,9 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 						.replace(/\s+/g, ' ')));
 				aInfo.navigation.setAttribute('mode',
 					'link');
+				link = null;
 			}
 			aInfo.navigationBroadcaster.setAttribute('mode', 'link');
-			link = null;
 		}
 
 		if (!aInfo.base) return;
