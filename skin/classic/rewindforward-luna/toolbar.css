@@ -201,26 +201,26 @@
 }
 
 [iconsize="small"] #back-button[rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 89px 24px 64px) !important;
+	-moz-image-region: rect(0px 88px 24px 64px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="navigation"][buttonover="true"],
 [iconsize="small"] #back-button[rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(24px 89px 48px 64px) !important;
+	-moz-image-region: rect(24px 88px 48px 64px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #back-button[rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 89px 96px 64px) !important;
+	-moz-image-region: rect(72px 88px 96px 64px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="link"] {
-	-moz-image-region: rect(0px 211px 16px 187px) !important;
+	-moz-image-region: rect(0px 210px 16px 186px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="link"][buttonover="true"],
 [iconsize="small"] #back-button[rewindforward-override="link"]:hover {
-	-moz-image-region: rect(24px 211px 48px 187px) !important;
+	-moz-image-region: rect(24px 210px 48px 186px) !important;
 }
 [iconsize="small"] #back-button[rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #back-button[rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 211px 96px 187px) !important;
+	-moz-image-region: rect(72px 210px 96px 186px) !important;
 }
 
 #forward-button[rewindforward-override="navigation"] {
@@ -247,26 +247,26 @@
 }
 
 [iconsize="small"] #forward-button[rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 113px 16px 89px) !important;
+	-moz-image-region: rect(0px 112px 24px 88px) !important;
 }
 [iconsize="small"] #forward-button[rewindforward-override="navigation"][buttonover="true"],
 [iconsize="small"] #forward-button[rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(24px 113px 48px 89px) !important;
+	-moz-image-region: rect(24px 112px 48px 88px) !important;
 }
 [iconsize="small"] #forward-button[rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #forward-button[rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 113px 96px 89px) !important;
+	-moz-image-region: rect(72px 112px 96px 88px) !important;
 }
 [iconsize="small"] #forward-button[rewindforward-override="link"] {
-	-moz-image-region: rect(0px 235px 24px 211px) !important;
+	-moz-image-region: rect(0px 234px 24px 210px) !important;
 }
 [iconsize="small"] #forward-button[rewindforward-override="link"][buttonover="true"],
 [iconsize="small"] #forward-button[rewindforward-override="link"]:hover {
-	-moz-image-region: rect(24px 235px 48px 211px) !important;
+	-moz-image-region: rect(24px 234px 48px 210px) !important;
 }
 [iconsize="small"] #forward-button[rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #forward-button[rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 235px 96px 211px) !important;
+	-moz-image-region: rect(72px 234px 96px 210px) !important;
 }
 
 
@@ -296,26 +296,26 @@
 }
 
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 187px 24px 163px) !important;
+	-moz-image-region: rect(0px 186px 24px 162px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="navigation"][buttonover="true"],
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(24px 187px 48px 163px) !important;
+	-moz-image-region: rect(24px 186px 48px 162px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 187px 96px 163px) !important;
+	-moz-image-region: rect(72px 186px 96px 162px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"] {
-	-moz-image-region: rect(0px 309px 16px 285px) !important;
+	-moz-image-region: rect(0px 308px 16px 284px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"][buttonover="true"],
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"]:hover {
-	-moz-image-region: rect(24px 309px 48px 285px) !important;
+	-moz-image-region: rect(24px 308px 48px 284px) !important;
 }
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 309px 96px 285px) !important;
+	-moz-image-region: rect(72px 308px 96px 284px) !important;
 }
 
 
@@ -343,24 +343,24 @@
 }
 
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 163px 16px 139px) !important;
+	-moz-image-region: rect(0px 162px 24px 138px) !important;
 }
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"][buttonover="true"],
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(24px 163px 48px 139px) !important;
+	-moz-image-region: rect(24px 162px 48px 138px) !important;
 }
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 163px 96px 139px) !important;
+	-moz-image-region: rect(72px 162px 96px 138px) !important;
 }
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="link"] {
-	-moz-image-region: rect(0px 285px 24px 261px) !important;
+	-moz-image-region: rect(0px 284px 24px 260px) !important;
 }
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="link"][buttonover="true"],
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="link"]:hover {
-	-moz-image-region: rect(24px 285px 48px 261px) !important;
+	-moz-image-region: rect(24px 284px 48px 260px) !important;
 }
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(72px 285px 96px 261px) !important;
+	-moz-image-region: rect(72px 284px 96px 260px) !important;
 }
