@@ -1418,7 +1418,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					if ((function(aEvent) {
 							var button = document.getElementById('back-button');
 							if (aEvent && aEvent.target.id == 'back-button') {
-								if (button.getAttribute('rewindforward-prev') == 'true') {
+								if (button.getAttribute('rewindforward-override') == 'link') {
 									BrowserRewindPrev(aEvent);
 									return true;
 								}
@@ -1441,7 +1441,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					if ((function(aEvent) {
 							var button = document.getElementById('forward-button');
 							if (aEvent && aEvent.target.id == 'forward-button') {
-								if (button.getAttribute('rewindforward-next') == 'true') {
+								if (button.getAttribute('rewindforward-override') == 'link') {
 									BrowserFastforwardNext(aEvent);
 									return true;
 								}
