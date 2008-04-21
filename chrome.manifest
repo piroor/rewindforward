@@ -9,6 +9,8 @@ locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
 locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
 
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
+skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0b5pre os=WINNT
+skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0b5pre os=WINNT osversion>=6
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
 skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
 
