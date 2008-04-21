@@ -1346,6 +1346,19 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					document.documentElement.removeAttribute('rewindforward-anothericon');
 				return;
 
+			case 'rewindforward.override_button.back':
+			case 'rewindforward.override_button.forward':
+			case 'rewindforward.goToEndPointOfCurrentDomain':
+			case 'rewindforward.find_prev_links':
+			case 'rewindforward.find_next_links':
+			case 'rewindforward.related.virtual_link.enabled':
+			case 'rewindforward.related.use.label':
+			case 'rewindforward.related.use.customRules':
+			case 'rewindforward.related.use.siteInfo':
+			case 'rewindforward.gonextprev.enabled':
+				this.updateButtons(true);
+				return;
+
 			default:
 				if (!/^rewindforward\.siteinfo\.(.+)\.cache/.test(aData)) return;
 				var uri = decodeURIComponent(RegExp.$1);
