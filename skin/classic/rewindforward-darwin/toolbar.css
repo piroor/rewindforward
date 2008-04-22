@@ -13,74 +13,61 @@
 }
 
 
+.toolbarbutton-1.rewind-button,
+.toolbarbutton-1.fastforward-button {
+	padding-left: 1px;
+	padding-right: 1px;
+}
+
+
 
 .toolbarbutton-1.rewind-button,
-.toolbarbutton-1.rewind-button[buttonover="true"],
-.toolbarbutton-1.rewind-button:hover,
-#back-button[rewindforward-override="navigation"],
-#back-button[rewindforward-override="navigation"][buttonover="true"],
-#back-button[rewindforward-override="navigation"]:hover {
+#back-button[rewindforward-override="navigation"] {
 	-moz-image-region: rect(0px 36px 23px 0px) !important;
 }
-.toolbarbutton-1.rewind-button[disabled="true"],
-.toolbarbutton-1.rewind-button[disabled="true"][buttonover="true"],
-.toolbarbutton-1.rewind-button[disabled="true"]:hover {
+.toolbarbutton-1.rewind-button[disabled="true"] {
 	-moz-image-region: rect(23px 36px 46px 0px) !important;
 }
-.toolbarbutton-1.rewind-button:hover:active:not([disabled="true"]),
+.toolbarbutton-1.rewind-button:hover:active,
+.toolbarbutton-1.rewind-button[buttondown="true"],
 .toolbarbutton-1.rewind-button[open="true"] {
 	-moz-image-region: rect(46px 36px 69px 0px) !important;
 }
 .toolbarbutton-1.rewind-button[mode="link"],
-.toolbarbutton-1.rewind-button[mode="link"][buttonover="true"],
-.toolbarbutton-1.rewind-button[mode="link"]:hover,
-#back-button[rewindforward-override="link"],
-#back-button[rewindforward-override="link"][buttonover="true"],
-#back-button[rewindforward-override="link"]:hover {
+#back-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 108px 23px 72px) !important;
 }
-.toolbarbutton-1.rewind-button[disabled="true"][mode="link"],
-.toolbarbutton-1.rewind-button[disabled="true"][mode="link"][buttonover="true"],
-.toolbarbutton-1.rewind-button[disabled="true"][mode="link"]:hover {
+.toolbarbutton-1.rewind-button[mode="link"][disabled="true"] {
 	-moz-image-region: rect(23px 108px 46px 72px) !important;
 }
-.toolbarbutton-1.rewind-button[mode="link"]:hover:active:not([disabled="true"]),
+.toolbarbutton-1.rewind-button[mode="link"]:hover:active,
+.toolbarbutton-1.rewind-button[mode="link"][buttondown="true"],
 .toolbarbutton-1.rewind-button[mode="link"][open="true"] {
 	-moz-image-region: rect(46px 108px 69px 72px) !important;
 }
 
 
 .toolbarbutton-1.fastforward-button,
-.toolbarbutton-1.fastforward-button[buttonover="true"],
-.toolbarbutton-1.fastforward-button:hover,
-#forward-button[rewindforward-override="navigation"],
-#forward-button[rewindforward-override="navigation"][buttonover="true"],
-#forward-button[rewindforward-override="navigation"]:hover {
+#forward-button[rewindforward-override="navigation"] {
 	-moz-image-region: rect(0px 72px 23px 36px) !important;
 }
-.toolbarbutton-1.fastforward-button[disabled="true"],
-.toolbarbutton-1.fastforward-button[disabled="true"][buttonover="true"],
-.toolbarbutton-1.fastforward-button[disabled="true"]:hover {
+.toolbarbutton-1.fastforward-button[disabled="true"] {
 	-moz-image-region: rect(23px 72px 46px 36px) !important;
 }
-.toolbarbutton-1.fastforward-button:hover:active:not([disabled="true"]),
+.toolbarbutton-1.fastforward-button:hover:active,
+.toolbarbutton-1.fastforward-button[buttondown="true"],
 .toolbarbutton-1.fastforward-button[open="true"] {
 	-moz-image-region: rect(46px 72px 69px 36px) !important;
 }
 .toolbarbutton-1.fastforward-button[mode="link"],
-.toolbarbutton-1.fastforward-button[mode="link"][buttonover="true"],
-.toolbarbutton-1.fastforward-button[mode="link"]:hover,
-#forward-button[rewindforward-override="link"],
-#forward-button[rewindforward-override="link"][buttonover="true"],
-#forward-button[rewindforward-override="link"]:hover {
+#forward-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 144px 23px 108px) !important;
 }
-.toolbarbutton-1.fastforward-button[disabled="true"][mode="link"],
-.toolbarbutton-1.fastforward-button[disabled="true"][mode="link"][buttonover="true"],
-.toolbarbutton-1.fastforward-button[disabled="true"][mode="link"]:hover {
+.toolbarbutton-1.fastforward-button[mode="link"][disabled="true"] {
 	-moz-image-region: rect(23px 144px 46px 108px) !important;
 }
-.toolbarbutton-1.fastforward-button[mode="link"]:hover:active:not([disabled="true"]),
+.toolbarbutton-1.fastforward-button[mode="link"]:hover:active,
+.toolbarbutton-1.fastforward-button[mode="link"][buttondown="true"],
 .toolbarbutton-1.fastforward-button[mode="link"][open="true"] {
 	-moz-image-region: rect(46px 144px 69px 108px) !important;
 }
@@ -88,18 +75,14 @@
 
 /* keyhole */
 
-[mode="icons"] #back-button[rewindforward-override="navigation"],
-[mode="icons"] #back-button[rewindforward-override="navigation"][buttonover="true"],
-[mode="icons"] #back-button[rewindforward-override="navigation"]:hover {
+[mode="icons"] #back-button[rewindforward-override="navigation"] {
 	-moz-image-region: rect(0px 179px 33px 144px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
 [mode="icons"] #back-button[rewindforward-override="navigation"][open="true"] {
 	-moz-image-region: rect(66px 179px 99px 144px) !important;
 }
-[mode="icons"] #back-button[rewindforward-override="link"],
-[mode="icons"] #back-button[rewindforward-override="link"][buttonover="true"],
-[mode="icons"] #back-button[rewindforward-override="link"]:hover {
+[mode="icons"] #back-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 257px 33px 222px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
@@ -107,18 +90,14 @@
 	-moz-image-region: rect(66px 257px 99px 222px) !important;
 }
 
-[mode="icons"] #forward-button[rewindforward-override="navigation"],
-[mode="icons"] #forward-button[rewindforward-override="navigation"][buttonover="true"],
-[mode="icons"] #forward-button[rewindforward-override="navigation"]:hover {
+[mode="icons"] #forward-button[rewindforward-override="navigation"] {
 	-moz-image-region: rect(0px 206px 33px 179px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
 [mode="icons"] #forward-button[rewindforward-override="navigation"][open="true"] {
 	-moz-image-region: rect(66px 206px 99px 179px) !important;
 }
-[mode="icons"] #forward-button[rewindforward-override="link"],
-[mode="icons"] #forward-button[rewindforward-override="link"][buttonover="true"],
-[mode="icons"] #forward-button[rewindforward-override="link"]:hover {
+[mode="icons"] #forward-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 284px 33px 257px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
@@ -129,18 +108,14 @@
 
 /* small keyhole */
 
-[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"],
-[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"][buttonover="true"],
-[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"]:hover {
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"] {
 	-moz-image-region: rect(0px 334px 23px 300px) !important;
 }
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"][open="true"] {
 	-moz-image-region: rect(46px 334px 69px 300px) !important;
 }
-[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"],
-[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"][buttonover="true"],
-[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"]:hover {
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 416px 23px 382px) !important;
 }
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
@@ -148,18 +123,14 @@
 	-moz-image-region: rect(46px 416px 69px 382px) !important;
 }
 
-[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"],
-[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"][buttonover="true"],
-[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"]:hover {
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"] {
 	-moz-image-region: rect(0px 367px 23px 334px) !important;
 }
 [iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
 [iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"][open="true"] {
 	-moz-image-region: rect(46px 367px 69px 334px) !important;
 }
-[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"],
-[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"][buttonover="true"],
-[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"]:hover {
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 449px 23px 416px) !important;
 }
 [iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
