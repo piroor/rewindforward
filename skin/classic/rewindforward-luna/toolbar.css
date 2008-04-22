@@ -32,8 +32,8 @@
 
 .toolbarbutton-1.rewind-button,
 .toolbarbutton-1.fastforward-button {
-	padding-left: 1px !important;
-	padding-right: 1px !important;
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
 
