@@ -1,8 +1,0 @@
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
-
-#useAnotherIcons radio[value="false"] {
-	list-style-image: url("chrome://rewindforward-aero/skin/buttons-small2.png");
-}
-#useAnotherIcons radio[value="true"] {
-	list-style-image: url("chrome://rewindforward-aero/skin/buttons-small.png");
-}

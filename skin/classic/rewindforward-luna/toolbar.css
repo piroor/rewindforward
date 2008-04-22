@@ -5,28 +5,28 @@
 .toolbarbutton-1.fastforward-button,
 #back-button[rewindforward-override],
 #forward-button[rewindforward-override] {
-	list-style-image: url("chrome://rewindforward-luna/skin/buttons2.png") !important;
+	list-style-image: url("chrome://rewindforward/skin/buttons2.png") !important;
 }
 
 [iconsize="small"] .toolbarbutton-1.rewind-button,
 [iconsize="small"] .toolbarbutton-1.fastforward-button,
 [iconsize="small"] #back-button[rewindforward-override],
 [iconsize="small"] #forward-button[rewindforward-override] {
-	list-style-image: url("chrome://rewindforward-luna/skin/buttons-small2.png") !important;
+	list-style-image: url("chrome://rewindforward/skin/buttons-small2.png") !important;
 }
 
 [rewindforward-anothericon="true"] .toolbarbutton-1.rewind-button,
 [rewindforward-anothericon="true"] .toolbarbutton-1.fastforward-button,
 [rewindforward-anothericon="true"] #back-button[rewindforward-override],
 [rewindforward-anothericon="true"] #forward-button[rewindforward-override] {
-	list-style-image: url("chrome://rewindforward-luna/skin/buttons.png") !important;
+	list-style-image: url("chrome://rewindforward/skin/buttons.png") !important;
 }
 
 [rewindforward-anothericon="true"] [iconsize="small"] .toolbarbutton-1.rewind-button,
 [rewindforward-anothericon="true"] [iconsize="small"] .toolbarbutton-1.fastforward-button,
 [rewindforward-anothericon="true"] [iconsize="small"] #back-button[rewindforward-override],
 [rewindforward-anothericon="true"] [iconsize="small"] #forward-button[rewindforward-override] {
-	list-style-image: url("chrome://rewindforward-luna/skin/buttons-small.png") !important;
+	list-style-image: url("chrome://rewindforward/skin/buttons-small.png") !important;
 }
 
 
