@@ -41,26 +41,26 @@
 /* keyhole */
 
 [mode="icons"] #back-button[rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 134px 34px 96px) !important;
+	-moz-image-region: rect(0px 132px 34px 96px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="navigation"][buttonover="true"],
 [mode="icons"] #back-button[rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(34px 134px 68px 96px) !important;
+	-moz-image-region: rect(34px 132px 68px 96px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #back-button[rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(102px 134px 136px 96px) !important;
+	-moz-image-region: rect(102px 132px 136px 96px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="link"] {
-	-moz-image-region: rect(0px 290px 34px 252px) !important;
+	-moz-image-region: rect(0px 288px 34px 252px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="link"][buttonover="true"],
 [mode="icons"] #back-button[rewindforward-override="link"]:hover {
-	-moz-image-region: rect(34px 290px 68px 252px) !important;
+	-moz-image-region: rect(34px 288px 68px 252px) !important;
 }
 [mode="icons"] #back-button[rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #back-button[rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(102px 290px 136px 252px) !important;
+	-moz-image-region: rect(102px 288px 136px 252px) !important;
 }
 
 [mode="icons"][iconsize="small"] #back-button[rewindforward-override="navigation"] {
@@ -87,26 +87,26 @@
 }
 
 [mode="icons"] #forward-button[rewindforward-override="navigation"] {
-	-moz-image-region: rect(3px 160px 31px 134px) !important;
+	-moz-image-region: rect(3px 158px 31px 132px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="navigation"][buttonover="true"],
 [mode="icons"] #forward-button[rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(37px 160px 65px 134px) !important;
+	-moz-image-region: rect(37px 158px 65px 132px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #forward-button[rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(105px 160px 133px 134px) !important;
+	-moz-image-region: rect(105px 158px 133px 132px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="link"] {
-	-moz-image-region: rect(3px 316px 31px 290px) !important;
+	-moz-image-region: rect(3px 314px 31px 288px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="link"][buttonover="true"],
 [mode="icons"] #forward-button[rewindforward-override="link"]:hover {
-	-moz-image-region: rect(37px 316px 65px 290px) !important;
+	-moz-image-region: rect(37px 314px 65px 288px) !important;
 }
 [mode="icons"] #forward-button[rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #forward-button[rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(105px 316px 133px 290px) !important;
+	-moz-image-region: rect(105px 314px 133px 288px) !important;
 }
 
 [mode="icons"][iconsize="small"] #forward-button[rewindforward-override="navigation"] {
@@ -136,26 +136,26 @@
 /* keyhole, RTL */
 
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 252px 34px 214px) !important;
+	-moz-image-region: rect(0px 252px 34px 216px) !important;
 }
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="navigation"][buttonover="true"],
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(34px 252px 68px 214px) !important;
+	-moz-image-region: rect(34px 252px 68px 216px) !important;
 }
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(102px 252px 136px 214px) !important;
+	-moz-image-region: rect(102px 252px 136px 216px) !important;
 }
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="link"] {
-	-moz-image-region: rect(0px 408px 34px 370px) !important;
+	-moz-image-region: rect(0px 408px 34px 372px) !important;
 }
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="link"][buttonover="true"],
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="link"]:hover {
-	-moz-image-region: rect(34px 408px 68px 370px) !important;
+	-moz-image-region: rect(34px 408px 68px 372px) !important;
 }
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #back-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(102px 408px 136px 370px) !important;
+	-moz-image-region: rect(102px 408px 136px 372px) !important;
 }
 
 [mode="icons"][iconsize="small"] #back-button[chromedir="rtl"][rewindforward-override="navigation"] {
@@ -183,26 +183,26 @@
 
 
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"] {
-	-moz-image-region: rect(3px 214px 31px 188px) !important;
+	-moz-image-region: rect(3px 216px 31px 190px) !important;
 }
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"][buttonover="true"],
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"]:hover {
-	-moz-image-region: rect(37px 214px 65px 188px) !important;
+	-moz-image-region: rect(37px 216px 65px 190px) !important;
 }
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(105px 214px 133px 188px) !important;
+	-moz-image-region: rect(105px 216px 133px 190px) !important;
 }
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="link"] {
-	-moz-image-region: rect(3px 370px 31px 344px) !important;
+	-moz-image-region: rect(3px 372px 31px 346px) !important;
 }
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="link"][buttonover="true"],
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="link"]:hover {
-	-moz-image-region: rect(37px 370px 65px 344px) !important;
+	-moz-image-region: rect(37px 372px 65px 346px) !important;
 }
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"])[buttonover="true"]:active,
 [mode="icons"] #forward-button[chromedir="rtl"][rewindforward-override="link"]:not([disabled="true"]):hover:active {
-	-moz-image-region: rect(105px 370px 133px 344px) !important;
+	-moz-image-region: rect(105px 372px 133px 346px) !important;
 }
 
 [mode="icons"][iconsize="small"] #forward-button[chromedir="rtl"][rewindforward-override="navigation"] {
