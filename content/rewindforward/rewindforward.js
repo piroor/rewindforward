@@ -1576,7 +1576,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			var newset = buttons.join(',');
 			if (currentset != newset &&
 				PromptService.confirmEx(
-					window,
+					null,
 					msg.GetStringFromName('initialshow_confirm_title'),
 					msg.GetStringFromName('initialshow_confirm_text'),
 					(PromptService.BUTTON_TITLE_YES * PromptService.BUTTON_POS_0) +
