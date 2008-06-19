@@ -24,7 +24,7 @@ style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward-luna/s
 override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-luna/skin/buttons.png	os=WINNT
 override	chrome://rewindforward/skin/buttons2.png	chrome://rewindforward-luna/skin/buttons2.png	os=WINNT
 override	chrome://rewindforward/skin/buttons-small.png	chrome://rewindforward-luna/skin/buttons-small.png	os=WINNT
-override	chrome://rewindforward/skin/buttons2-small.png	chrome://rewindforward-luna/skin/buttons-small2.png	os=WINNT
+override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-luna/skin/buttons-small2.png	os=WINNT
 override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-aero/skin/buttons.png	os=WINNT osversion>=6
 override	chrome://rewindforward/skin/buttons2.png	chrome://rewindforward-aero/skin/buttons2.png	os=WINNT osversion>=6
 override	chrome://rewindforward/skin/buttons-small.png	chrome://rewindforward-aero/skin/buttons-small.png	os=WINNT osversion>=6
