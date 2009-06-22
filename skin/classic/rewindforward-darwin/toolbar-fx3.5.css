@@ -1,0 +1,81 @@
+@import url("chrome://rewindforward-darwin/skin/toolbar.css");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+
+.toolbarbutton-1.rewind-button,
+.toolbarbutton-1.fastforward-button,
+#back-button[rewindforward-override],
+#forward-button[rewindforward-override],
+[rewindforward-anothericon="true"] .toolbarbutton-1.rewind-button,
+[rewindforward-anothericon="true"] .toolbarbutton-1.fastforward-button,
+[rewindforward-anothericon="true"] #back-button[rewindforward-override],
+[rewindforward-anothericon="true"] #forward-button[rewindforward-override] {
+	list-style-image: url("chrome://rewindforward-darwin/skin/buttons-fx3.5.png") !important;
+}
+
+
+/* keyhole */
+
+[mode="icons"] #back-button[rewindforward-override="navigation"] {
+	-moz-image-region: rect(0px 176px 33px 144px) !important;
+}
+[mode="icons"] #back-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
+[mode="icons"] #back-button[rewindforward-override="navigation"][open="true"] {
+	-moz-image-region: rect(66px 176px 99px 144px) !important;
+}
+[mode="icons"] #back-button[rewindforward-override="link"] {
+	-moz-image-region: rect(0px 243px 33px 211px) !important;
+}
+[mode="icons"] #back-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
+[mode="icons"] #back-button[rewindforward-override="link"][open="true"] {
+	-moz-image-region: rect(66px 243px 99px 211px) !important;
+}
+
+[mode="icons"] #forward-button[rewindforward-override="navigation"] {
+	-moz-image-region: rect(0px 201px 33px 172px) !important;
+}
+[mode="icons"] #forward-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
+[mode="icons"] #forward-button[rewindforward-override="navigation"][open="true"] {
+	-moz-image-region: rect(66px 201px 99px 172px) !important;
+}
+[mode="icons"] #forward-button[rewindforward-override="link"] {
+	-moz-image-region: rect(0px 268px 33px 239px) !important;
+}
+[mode="icons"] #forward-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
+[mode="icons"] #forward-button[rewindforward-override="link"][open="true"] {
+	-moz-image-region: rect(66px 268px 99px 239px) !important;
+}
+
+
+/* small keyhole */
+
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"] {
+	-moz-image-region: rect(0px 312px 23px 287px) !important;
+}
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"][open="true"] {
+	-moz-image-region: rect(46px 312px 69px 287px) !important;
+}
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"] {
+	-moz-image-region: rect(0px 389px 23px 355px) !important;
+}
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
+[iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"][open="true"] {
+	-moz-image-region: rect(46px 389px 69px 355px) !important;
+}
+
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"] {
+	-moz-image-region: rect(0px 345px 23px 312px) !important;
+}
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="navigation"][open="true"] {
+	-moz-image-region: rect(46px 345px 69px 312px) !important;
+}
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"] {
+	-moz-image-region: rect(0px 422px 23px 389px) !important;
+}
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
+[iconsize="small"][mode="icons"] #forward-button[rewindforward-override="link"][open="true"] {
+	-moz-image-region: rect(46px 422px 69px 389px) !important;
+}

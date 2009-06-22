@@ -9,9 +9,9 @@ locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
 locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
 
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
-skin	rewindforward-luna	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0b5pre os=WINNT
-skin	rewindforward-aero	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0b5pre os=WINNT osversion>=6
-skin	rewindforward-darwin	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-darwin/	appversion>=3.0b5pre os=Darwin
+skin	rewindforward-luna	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0 os=WINNT
+skin	rewindforward-aero	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0 os=WINNT osversion>=6
+skin	rewindforward-darwin	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-darwin/	appversion>=3.0 os=Darwin
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
 skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
 
@@ -32,3 +32,5 @@ override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-a
 
 override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar.css	os=Darwin
 override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons.png	os=Darwin
+override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar-fx3.5.css	os=Darwin appversion>=3.5
+override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons-fx3.5.png	os=Darwin appversion>=3.5
