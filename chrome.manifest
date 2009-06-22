@@ -32,5 +32,5 @@ override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-a
 
 override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar.css	os=Darwin
 override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons.png	os=Darwin
-override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar-fx3.5.css	os=Darwin appversion>=3.5
-override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons-fx3.5.png	os=Darwin appversion>=3.5
+override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar-fx3.5.css	os=Darwin appversion>=3.4
+override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons-fx3.5.png	os=Darwin appversion>=3.4
