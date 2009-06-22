@@ -64,6 +64,20 @@
 			onclick="BrowserFastforward(true, event); event.stopPropagation();"/>
 		<menuseparator/>
 	</popup>
+	<popup id="prevPageMenu">
+		<menuitem rewindforward-menuitem="true"
+			class="menuitem-iconic rewindMenuItem"
+			label="&prevCmd.label;"
+			tooltiptext="&prevButton.tooltip.blank;"
+			oncommand="BrowserRewindPrev(event); event.stopPropagation();"/>
+	</popup>
+	<popup id="nextPageMenu">
+		<menuitem rewindforward-menuitem="true"
+			class="menuitem-iconic fastforwardMenuItem"
+			label="&nextCmd.label;"
+			tooltiptext="&nextButton.tooltip.blank;"
+			oncommand="BrowserFastforwardNext(event); event.stopPropagation();"/>
+	</popup>
 </popupset>
 
 
