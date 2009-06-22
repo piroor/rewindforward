@@ -51,11 +51,11 @@
 /* small keyhole */
 
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"] {
-	-moz-image-region: rect(0px 312px 23px 287px) !important;
+	-moz-image-region: rect(0px 312px 23px 278px) !important;
 }
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="navigation"][open="true"] {
-	-moz-image-region: rect(46px 312px 69px 287px) !important;
+	-moz-image-region: rect(46px 312px 69px 278px) !important;
 }
 [iconsize="small"][mode="icons"] #back-button[rewindforward-override="link"] {
 	-moz-image-region: rect(0px 389px 23px 355px) !important;
