@@ -1436,16 +1436,16 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				<><![CDATA[
 				{
 					if ((function(aEvent) {
+							if (!aEvent || ((aEvent.sourceEvent || aEvent).target.id != 'back-button'))
+								return false;
 							var button = document.getElementById('back-button');
-							if (aEvent && aEvent.target.id == 'back-button') {
-								if (button.getAttribute('rewindforward-override') == 'link') {
-									BrowserRewindPrev(aEvent);
-									return true;
-								}
-								else if (button.getAttribute('rewindforward-override') == 'navigation') {
-									BrowserRewind(true, aEvent);
-									return true;
-								}
+							if (button.getAttribute('rewindforward-override') == 'link') {
+								BrowserRewindPrev(aEvent);
+								return true;
+							}
+							else if (button.getAttribute('rewindforward-override') == 'navigation') {
+								BrowserRewind(true, aEvent);
+								return true;
 							}
 							return false;
 						})(arguments.length ? arguments[0] : null ))
@@ -1459,16 +1459,16 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				<><![CDATA[
 				{
 					if ((function(aEvent) {
+							if (!aEvent || ((aEvent.sourceEvent || aEvent).target.id != 'forward-button'))
+								return false;
 							var button = document.getElementById('forward-button');
-							if (aEvent && aEvent.target.id == 'forward-button') {
-								if (button.getAttribute('rewindforward-override') == 'link') {
-									BrowserFastforwardNext(aEvent);
-									return true;
-								}
-								else if (button.getAttribute('rewindforward-override') == 'navigation') {
-									BrowserFastforward(true, aEvent);
-									return true;
-								}
+							if (button.getAttribute('rewindforward-override') == 'link') {
+								BrowserFastforwardNext(aEvent);
+								return true;
+							}
+							else if (button.getAttribute('rewindforward-override') == 'navigation') {
+								BrowserFastforward(true, aEvent);
+								return true;
 							}
 							return false;
 						})(arguments.length ? arguments[0] : null ))
