@@ -1135,6 +1135,62 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			prev = current;
 		}
 	},
+ 
+	get backForwardMenu() 
+	{
+		return document.getElementById('backForwardMenu');
+	},
+	
+	get backForwardMenuCurrentItem() 
+	{
+		return this.evaluateXPath(
+				'descendant::*[contains(@class, "unified-nav-current")][1]',
+				this.backForwardMenu,
+				XPathResult.FIRST_ORDERED_NODE_TYPE
+			).singleNodeValue;
+	},
+  
+	showLinksPopup : function() 
+	{
+		var prev = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
+		var next = this.getLinkInMainFrame(this.getLinksFromAllFrames('next'));
+		if (!prev && !next) return;
+
+		var popup = document.getElementById('prevNextLinksPopup');
+		var prevItem = popup.firstChild;
+		var nextItem = popup.lastChild;
+
+		if (prev) {
+			prevItem.removeAttribute('collapsed');
+			prevItem.setAttribute('tooltiptext',
+				document.getElementById('Browser:RewindPrev')
+					.getAttribute('tooltiptext-link')
+					.replace(/%s/gi, (prev.label || prev.href))
+					.replace(/\s+/g, ' '));
+		}
+		else {
+			prevItem.setAttribute('collapsed', true);
+		}
+
+		if (next) {
+			nextItem.removeAttribute('collapsed');
+			nextItem.setAttribute('tooltiptext',
+				document.getElementById('Browser:FastforwardNext')
+					.getAttribute('tooltiptext-link')
+					.replace(/%s/gi, (next.label || next.href))
+					.replace(/\s+/g, ' '));
+		}
+		else {
+			nextItem.setAttribute('collapsed', true);
+		}
+
+		popup.openPopup(this.backForwardMenuCurrentItem, 'start_before', 0, 0, false, false);
+	},
+ 
+	hideLinksPopup : function() 
+	{
+		document.getElementById('prevNextLinksPopup').hidePopup();
+	},
   
 	// handle events 
 	
@@ -1163,6 +1219,17 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			case 'DOMNodeInserted':
 			case 'DOMNodeInsertedIntoDocument':
 				this.onDocumentModified(aEvent);
+				return;
+
+			case 'popupshowing':
+				window.setTimeout(function(aSelf, aPopup) {
+					if (aPopup.boxObject.width && aPopup.boxObject.height)
+						aSelf.showLinksPopup();
+				}, 10, this, aEvent.currentTarget);
+				return;
+
+			case 'popuphiding':
+				this.hideLinksPopup();
 				return;
 		}
 	},
@@ -1497,6 +1564,9 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		else { // Firefox 3
 			window.__rewindforward__FillHistoryMenu = window.FillHistoryMenu;
 			window.FillHistoryMenu = this.newFillHistoryMenu;
+			var popup = this.backForwardMenu;
+			popup.addEventListener('popupshowing', this, false);
+			popup.addEventListener('popuphiding', this, false);
 		}
 
 		if ('BrowserCustomizeToolbar' in window) {
@@ -1507,8 +1577,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				)
 			);
 		}
-		var toolbox = document.getElementById('navigator-toolbox') || // Firefox 3
-					document.getElementById('navigator-toolbox'); // Firefox 2
+		var toolbox = document.getElementById('navigator-toolbox');
 		if (toolbox.customizeDone) {
 			toolbox.__rewindforward__customizeDone = toolbox.customizeDone;
 			toolbox.customizeDone = function(aChanged) {
@@ -1613,6 +1682,12 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		gBrowser.removeEventListener('DOMSubtreeModified', this, true);
 		gBrowser.removeEventListener('DOMNodeInserted', this, true);
 		gBrowser.removeEventListener('DOMNodeInsertedIntoDocument', this, true);
+
+		var popup = this.backForwardMenu;
+		if (popup) {
+			popup.removeEventListener('popupshowing', this, false);
+			popup.removeEventListener('popuphiding', this, false);
+		}
 
 		for (var i in this.siteInfoUpdateTimer)
 		{

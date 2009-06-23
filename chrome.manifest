@@ -25,10 +25,18 @@ override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-luna/ski
 override	chrome://rewindforward/skin/buttons2.png	chrome://rewindforward-luna/skin/buttons2.png	os=WINNT
 override	chrome://rewindforward/skin/buttons-small.png	chrome://rewindforward-luna/skin/buttons-small.png	os=WINNT
 override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-luna/skin/buttons-small2.png	os=WINNT
+override	chrome://rewindforward/skin/rewind.png	chrome://rewindforward-luna/skin/rewind.png	os=WINNT
+override	chrome://rewindforward/skin/fastforward.png	chrome://rewindforward-luna/skin/fastforward.png	os=WINNT
+override	chrome://rewindforward/skin/previous.png	chrome://rewindforward-luna/skin/previous.png	os=WINNT
+override	chrome://rewindforward/skin/next.png	chrome://rewindforward-luna/skin/next.png	os=WINNT
 override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-aero/skin/buttons.png	os=WINNT osversion>=6
 override	chrome://rewindforward/skin/buttons2.png	chrome://rewindforward-aero/skin/buttons2.png	os=WINNT osversion>=6
 override	chrome://rewindforward/skin/buttons-small.png	chrome://rewindforward-aero/skin/buttons-small.png	os=WINNT osversion>=6
 override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-aero/skin/buttons-small2.png	os=WINNT osversion>=6
+override	chrome://rewindforward/skin/rewind.png	chrome://rewindforward-aero/skin/rewind.png	os=WINNT osversion>=6
+override	chrome://rewindforward/skin/fastforward.png	chrome://rewindforward-aero/skin/fastforward.png	os=WINNT osversion>=6
+override	chrome://rewindforward/skin/previous.png	chrome://rewindforward-aero/skin/previous.png	os=WINNT osversion>=6
+override	chrome://rewindforward/skin/next.png	chrome://rewindforward-aero/skin/next.png	os=WINNT osversion>=6
 
 override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar.css	os=Darwin
 override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons.png	os=Darwin

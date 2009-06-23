@@ -36,7 +36,7 @@
 </commandset>
 
 <popupset id="mainPopupSet">
-	<popup id="rewindMenu"
+	<menupopup id="rewindMenu"
 		ref-command="Browser:Rewind"
 		onpopupshowing="return RewindForwardService.fillPopupMenu(event);"
 		oncommand="gotoHistoryIndex(event);">
@@ -49,8 +49,8 @@
 			oncommand="BrowserRewind(true); event.stopPropagation();"
 			onclick="BrowserRewind(true, event); event.stopPropagation();"/>
 		<menuseparator/>
-	</popup>
-	<popup id="fastforwardMenu"
+	</menupopup>
+	<menupopup id="fastforwardMenu"
 		ref-command="Browser:Fastforward"
 		onpopupshowing="return RewindForwardService.fillPopupMenu(event);"
 		oncommand="gotoHistoryIndex(event);">
@@ -63,21 +63,17 @@
 			oncommand="BrowserFastforward(true); event.stopPropagation();"
 			onclick="BrowserFastforward(true, event); event.stopPropagation();"/>
 		<menuseparator/>
-	</popup>
-	<popup id="prevPageMenu">
-		<menuitem rewindforward-menuitem="true"
-			class="menuitem-iconic rewindMenuItem"
+	</menupopup>
+	<menupopup id="prevNextLinksPopup">
+		<menuitem class="menuitem-iconic prevMenuItem"
 			label="&prevCmd.label;"
 			tooltiptext="&prevButton.tooltip.blank;"
 			oncommand="BrowserRewindPrev(event); event.stopPropagation();"/>
-	</popup>
-	<popup id="nextPageMenu">
-		<menuitem rewindforward-menuitem="true"
-			class="menuitem-iconic fastforwardMenuItem"
+		<menuitem class="menuitem-iconic nextMenuItem"
 			label="&nextCmd.label;"
 			tooltiptext="&nextButton.tooltip.blank;"
 			oncommand="BrowserFastforwardNext(event); event.stopPropagation();"/>
-	</popup>
+	</menupopup>
 </popupset>
 
 

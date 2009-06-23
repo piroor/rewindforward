@@ -10,6 +10,13 @@
 	list-style-image: url("chrome://rewindforward/skin/fastforward.png") !important;
 }
 
+.prevMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/previous.png") !important;
+}
+.nextMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/next.png") !important;
+}
+
 menuitem[rewindforward-menuitem-backforward="true"] image {
 	max-width: 16px !important;
 	max-height: 16px !important;
