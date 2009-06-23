@@ -64,15 +64,16 @@
 			onclick="BrowserFastforward(true, event); event.stopPropagation();"/>
 		<menuseparator/>
 	</menupopup>
-	<menupopup id="prevNextLinksPopup">
+	<menupopup id="prevNextLinksPopup"
+		oncommand="RewindForwardService.hideLinksPopup();">
 		<menuitem class="menuitem-iconic prevMenuItem"
 			label="&prevCmd.label;"
 			tooltiptext="&prevButton.tooltip.blank;"
-			oncommand="BrowserRewindPrev(event); event.stopPropagation();"/>
+			oncommand="BrowserRewindPrev(event);"/>
 		<menuitem class="menuitem-iconic nextMenuItem"
 			label="&nextCmd.label;"
 			tooltiptext="&nextButton.tooltip.blank;"
-			oncommand="BrowserFastforwardNext(event); event.stopPropagation();"/>
+			oncommand="BrowserFastforwardNext(event);"/>
 	</menupopup>
 </popupset>
 

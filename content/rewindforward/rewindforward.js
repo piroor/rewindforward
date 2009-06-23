@@ -1152,8 +1152,13 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
   
 	showLinksPopup : function() 
 	{
-		var prev = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
-		var next = this.getLinkInMainFrame(this.getLinksFromAllFrames('next'));
+		var prev = document.getElementById('rewind-prev-button') ?
+					null :
+					this.getLinkInMainFrame(this.getLinksFromAllFrames('prev')) ;
+		var next = document.getElementById('fastforward-next-button') ?
+					null :
+					this.getLinkInMainFrame(this.getLinksFromAllFrames('next')) ;
+
 		if (!prev && !next) return;
 
 		var popup = document.getElementById('prevNextLinksPopup');
@@ -1190,6 +1195,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	hideLinksPopup : function() 
 	{
 		document.getElementById('prevNextLinksPopup').hidePopup();
+		this.backForwardMenu.hidePopup();
 	},
   
 	// handle events 
