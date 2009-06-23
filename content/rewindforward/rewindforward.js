@@ -1,6 +1,6 @@
 var RewindForwardService = { 
 	initialized : false,
-	 
+	
 	// constant properties 
 	
 	kFOUND_PREFIX   : 'rewindforward-found-first-links-', 
@@ -44,7 +44,7 @@ var RewindForwardService = {
 	kLINK_SAME_DOMAIN    : 1,
   
 	// utils 
-	 
+	
 	evaluateXPath : function(aExpression, aContext, aType) 
 	{
 		if (!aType) aType = XPathResult.ORDERED_NODE_SNAPSHOT_TYPE;
@@ -67,6 +67,17 @@ var RewindForwardService = {
 			};
 		}
 		return xpathResult;
+	},
+ 
+	getEventTargetId : function(aEvent) 
+	{
+		if (aEvent.sourceEvent) aEvent = aEvent.sourceEvent;
+		var node = aEvent.originalTarget || aEvent.target;
+		return this.evaluateXPath(
+				'ancestor::*[@id][1]/attribute::id',
+				node,
+				XPathResult.STRING_TYPE
+			).stringValue;
 	},
  
 	getDocShellFromDocument : function(aDocument) 
@@ -94,7 +105,7 @@ var RewindForwardService = {
 				aNode.getAttribute(aProp) ||
 				'';
 	},
- 	
+ 
 	getHistoryEntryAt : function(aIndex) 
 	{
 		var entry  = gBrowser.sessionHistory.getEntryAtIndex(aIndex, false);
@@ -393,7 +404,7 @@ var RewindForwardService = {
 
 		return null;
 	},
-	 
+	
 	getRelatedLinks : function(aType, aWindow) 
 	{
 		var w = aWindow || document.commandDispatcher.focusedWindow;
@@ -705,7 +716,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		return link.href ? link : null ;
 	},
-	 
+	
 	incrementPageURI : function(aCount, aURI) 
 	{
 		var res = aURI.match(/^\w+:\/\/[^\/]+\/([^0-9]*|.+[0-9]+[^0-9]+)([0-9]+)([^0-9]*)$/);
@@ -788,7 +799,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			findLinks   : aFindLinks && this.shouldFindNextLinks
 		});
 	},
-	 
+	
 	updateButton : function(aInfo) 
 	{
 		var disabled;
@@ -911,7 +922,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		}
 	},
  
-	readyToCustomize : function()
+	readyToCustomize : function() 
 	{
 		this.readyToCustomizeButton({
 			base : (this.getPref('rewindforward.override_button.back') ?
@@ -974,7 +985,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		var node  = document.getElementById(popup.getAttribute('ref-command'));
 		return this.fillPopupMenuInternal(aEvent, node);
 	},
-	 
+	
 	fillPopupMenuInternal : function(aEvent, aCommandNode, aShowBackForwardCommand) 
 	{
 		var popup = aEvent.target;
@@ -1155,7 +1166,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				return;
 		}
 	},
-	 
+	
 	onDocumentLoad : function(aEvent) 
 	{
 		if (!aEvent.target) return;
@@ -1372,7 +1383,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	domain : 'rewindforward',
   
 	// siteinfo 
-	 
+	
 	siteInfo : {}, 
 	siteInfoUpdateTimer : {},
  
@@ -1411,7 +1422,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	},
   
 	// initialize 
-	 
+	
 	init : function() 
 	{
 		if (this.initialized || !('gBrowser' in window)) return;
@@ -1436,7 +1447,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				<><![CDATA[
 				{
 					if ((function(aEvent) {
-							if (!aEvent || ((aEvent.sourceEvent || aEvent).target.id != 'back-button'))
+							if (!aEvent || (RewindForwardService.getEventTargetId(aEvent) != 'back-button'))
 								return false;
 							var button = document.getElementById('back-button');
 							if (button.getAttribute('rewindforward-override') == 'link') {
@@ -1459,7 +1470,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				<><![CDATA[
 				{
 					if ((function(aEvent) {
-							if (!aEvent || ((aEvent.sourceEvent || aEvent).target.id != 'forward-button'))
+							if (!aEvent || (RewindForwardService.getEventTargetId(aEvent) != 'forward-button'))
 								return false;
 							var button = document.getElementById('forward-button');
 							if (button.getAttribute('rewindforward-override') == 'link') {
