@@ -74,7 +74,7 @@ var RewindForwardService = {
 		if (aEvent.sourceEvent) aEvent = aEvent.sourceEvent;
 		var node = aEvent.originalTarget || aEvent.target;
 		return this.evaluateXPath(
-				'ancestor::*[@id][1]/attribute::id',
+				'ancestor-or-self::*[@id][1]/attribute::id',
 				node,
 				XPathResult.STRING_TYPE
 			).stringValue;
