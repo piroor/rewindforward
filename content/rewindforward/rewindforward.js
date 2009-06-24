@@ -234,7 +234,12 @@ var RewindForwardService = {
 
 		var SH      = gBrowser.sessionHistory;
 		var current = this.getHistoryEntryAt(SH.index);
-		var c_host  = this.domainRegExp.test(current.URI.spec) ? RegExp.$1 : null ;
+		var c_host = null;
+		try {
+			c_host = current.URI.host;
+		}
+		catch(e) {
+		}
 
 		var check = (aType == 'rewind') ?
 						function(aIndex) { return aIndex > -1 } :
@@ -247,7 +252,12 @@ var RewindForwardService = {
 		for (var i = start; check(i); i += step)
 		{
 			entry  = this.getHistoryEntryAt(i);
-			t_host = this.domainRegExp.test(entry.URI.spec) ? RegExp.$1 : null ;
+			t_host = null;
+			try {
+				t_host = entry.URI.host;
+			}
+			catch(e) {
+			}
 			if ((c_host && !t_host) || (!c_host && t_host) || (c_host != t_host)) {
 
 				if (this.getPref('rewindforward.goToEndPointOfCurrentDomain')) {
@@ -342,7 +352,12 @@ var RewindForwardService = {
 			return lastResult;
 		}
 
-		var domain = this.domainRegExp.test(w.location.href) ? RegExp.$1 : null ;
+		var domain = null;
+		try {
+			domain = w.location.host;
+		}
+		catch(e) {
+		}
 		var result      = {};
 		var resultArray = [];
 		var links = this.getRelatedLinks(aType, aWindow);
@@ -418,7 +433,7 @@ var RewindForwardService = {
 			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
 		if ((!customRule || !customRule.rule) &&
 			this.getPref('rewindforward.related.use.customRules'))
-			customRule = this.getCustomRule(w.location.href, rel);
+			customRule = this.getCustomRule(w.location, rel);
 
 		// find "next" or "prev" link with XPath
 		var xpath, comment;
@@ -451,7 +466,7 @@ var RewindForwardService = {
 
 		return links;
 	},
-	getCustomRule : function(aURI, aRelation)
+	getCustomRule : function(aLocation, aRelation)
 	{
 		var customRule, customRuleEntry;
 		var rel = aRelation;
@@ -459,7 +474,12 @@ var RewindForwardService = {
 				rule : '',
 				rate : 0
 			};
-		var domain = this.domainRegExp.test(aURI) ? RegExp.$1 : null ;
+		var domain = null;
+		try {
+			domain = aLocation.host;
+		}
+		catch(e) {
+		}
 		if (!domain) return result;
 
 		const pref = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPref);
@@ -1004,19 +1024,29 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 			if (showMenu && (!isBackForwardMenu || aShowBackForwardCommand)) {
 				var current,
-					prev;
+					c_host,
+					prev,
+					p_host;
 				for (var i = popup.childNodes.length-1; i > /*-1*/2; i--)
 				{
 					if (!popup.childNodes[i].getAttribute('index')) break;
 
 					current = prev;
+					c_host = p_host;
 					prev = this.getHistoryEntryAt(parseInt(popup.childNodes[i-1].getAttribute('index')));
 					if (!current) continue;
 
+					try {
+						p_host = prev.URI.host;
+					}
+					catch(e) {
+						p_host = null;
+					}
+
 					if (
-						(!current.URI.host && prev.URI.host) ||
-						(current.URI.host && !prev.URI.host) ||
-						(current.URI.host != prev.URI.host)
+						(!c_host && p_host) ||
+						(c_host && !p_host) ||
+						(c_host != p_host)
 						)
 						popup.insertBefore(document.createElement('menuseparator'), popup.childNodes[i]).setAttribute('index', -1);
 				}
