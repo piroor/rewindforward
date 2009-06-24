@@ -908,14 +908,14 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			!aInfo.canOverride ||
 			(!link && (aInfo.navigationButton || !aInfo.canSkip))
 			) {
-			aInfo.base.setAttribute('label',
-				aInfo.base.getAttribute('rewindforward-original-label'));
-			aInfo.base.setAttribute('tooltiptext',
-				aInfo.base.getAttribute('rewindforward-original-tooltip'));
+			aInfo.baseButton.setAttribute('label',
+				aInfo.baseButton.getAttribute('rewindforward-original-label'));
+			aInfo.baseButton.setAttribute('tooltiptext',
+				aInfo.baseButton.getAttribute('rewindforward-original-tooltip'));
 			if (aInfo.canMove)
-				aInfo.base.removeAttribute('disabled');
+				aInfo.baseButton.removeAttribute('disabled');
 			else
-				aInfo.base.setAttribute('disabled', true);
+				aInfo.baseButton.setAttribute('disabled', true);
 		}
 		else {
 			if (!link) {
