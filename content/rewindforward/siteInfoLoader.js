@@ -37,25 +37,44 @@ RewindForwardSiteInfoLoader.prototype = {
 			var urls  = [];
 			var parser = new DOMParser();
 			var rulesFound = false;
+
+			// first, try to parse as JSON
 			try {
-				var source = this.request.responseText
-						.replace(/((\w+)="[^"]+"[^>]*)[\s\r\n](\2)="[^"]+"/, '$1'); // 2007.2.19, fix syntax error on autopagerize wiki
-				var doc = parser.parseFromString(source, 'text/xml');
-				var textarea = RewindForwardService.evaluateXPath(
-						'//*[@class="autopagerize_data"]',
-						doc
-					);
-				var parsedInfo;
-				for (var i = 0, maxi = textarea.snapshotLength; i < maxi; i++)
-				{
-					parsedInfo = this.parseInfo(textarea.snapshotItem(i).textContent);
-					if (!parsedInfo) continue;
-					rules[parsedInfo.url] = parsedInfo;
-					urls.push(parsedInfo.url);
-					rulesFound = true;
+				var sandbox = new Components.utils.Sandbox(window);
+				Components.utils.evalInSandbox('data = '+(this.request.responseText || 'null'), sandbox);
+				if (sandbox.data) {
+					sandbox.data.forEach(function(aData) {
+						rules[aData.data.url] = aData.data;
+						urls.push(aData.data.url);
+						rulesFound = true;
+					}, this);
 				}
 			}
 			catch(e) {
+			}
+
+			// second, try to parse as Infogami Wiki Style
+			if (!rulesFound) {
+				try {
+					var source = this.request.responseText
+							.replace(/((\w+)="[^"]+"[^>]*)[\s\r\n](\2)="[^"]+"/, '$1'); // 2007.2.19, fix syntax error on autopagerize wiki
+					var doc = parser.parseFromString(source, 'text/xml');
+					var textarea = RewindForwardService.evaluateXPath(
+							'//*[@class="autopagerize_data"]',
+							doc
+						);
+					var parsedInfo;
+					for (var i = 0, maxi = textarea.snapshotLength; i < maxi; i++)
+					{
+						parsedInfo = this.parseInfo(textarea.snapshotItem(i).textContent);
+						if (!parsedInfo) continue;
+						rules[parsedInfo.url] = parsedInfo;
+						urls.push(parsedInfo.url);
+						rulesFound = true;
+					}
+				}
+				catch(e) {
+				}
 			}
 
 			info.rules = rules;
