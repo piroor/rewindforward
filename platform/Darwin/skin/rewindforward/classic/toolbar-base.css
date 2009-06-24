@@ -17,7 +17,10 @@
 }
 .toolbarbutton-1.rewind-button:hover:active:not([disabled="true"]),
 .toolbarbutton-1.rewind-button[buttondown="true"],
-.toolbarbutton-1.rewind-button[open="true"] {
+.toolbarbutton-1.rewind-button[open="true"],
+#back-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
+#back-button[rewindforward-override="navigation"][buttondown="true"],
+#back-button[rewindforward-override="navigation"][open="true"] {
 	-moz-image-region: rect(46px 36px 69px 0px) !important;
 }
 .toolbarbutton-1.rewind-button[mode="link"],
@@ -29,7 +32,10 @@
 }
 .toolbarbutton-1.rewind-button[mode="link"]:hover:active:not([disabled="true"]),
 .toolbarbutton-1.rewind-button[mode="link"][buttondown="true"],
-.toolbarbutton-1.rewind-button[mode="link"][open="true"] {
+.toolbarbutton-1.rewind-button[mode="link"][open="true"],
+#back-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
+#back-button[rewindforward-override="link"][buttondown="true"],
+#back-button[rewindforward-override="link"][open="true"] {
 	-moz-image-region: rect(46px 108px 69px 72px) !important;
 }
 
@@ -43,7 +49,10 @@
 }
 .toolbarbutton-1.fastforward-button:hover:active:not([disabled="true"]),
 .toolbarbutton-1.fastforward-button[buttondown="true"],
-.toolbarbutton-1.fastforward-button[open="true"] {
+.toolbarbutton-1.fastforward-button[open="true"],
+#forward-button[rewindforward-override="navigation"]:hover:active:not([disabled="true"]),
+#forward-button[rewindforward-override="navigation"][buttondown="true"],
+#forward-button[rewindforward-override="navigation"][open="true"] {
 	-moz-image-region: rect(46px 72px 69px 36px) !important;
 }
 .toolbarbutton-1.fastforward-button[mode="link"],
@@ -55,6 +64,9 @@
 }
 .toolbarbutton-1.fastforward-button[mode="link"]:hover:active:not([disabled="true"]),
 .toolbarbutton-1.fastforward-button[mode="link"][buttondown="true"],
-.toolbarbutton-1.fastforward-button[mode="link"][open="true"] {
+.toolbarbutton-1.fastforward-button[mode="link"][open="true"],
+#forward-button[rewindforward-override="link"]:hover:active:not([disabled="true"]),
+#forward-button[rewindforward-override="link"][buttondown="true"],
+#forward-button[rewindforward-override="link"][open="true"] {
 	-moz-image-region: rect(46px 144px 69px 108px) !important;
 }
