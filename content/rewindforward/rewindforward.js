@@ -426,33 +426,38 @@ var RewindForwardService = {
 		const rel = aType;
 		const rev = (rel == 'next') ? 'prev' : 'next' ;
 
-		var rate = this.kLINK_RELATED;
-
-		var customRule;
-		if (this.getPref('rewindforward.related.use.siteInfo'))
-			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
-		if ((!customRule || !customRule.rule) &&
-			this.getPref('rewindforward.related.use.customRules'))
-			customRule = this.getCustomRule(w.location, rel);
+		var links = [],
+			customRule,
+			comment;
 
 		// find "next" or "prev" link with XPath
-		var xpath, comment;
-		if (customRule && customRule.rule) {
-			xpath = customRule.rule;
-			rate = customRule.rate;
-			comment = customRule.comment;
+		if (this.getPref('rewindforward.related.use.siteInfo')) {
+			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
+			if (customRule && customRule.rule) {
+				links = this.getLinksFromXPath(customRule.rule, d, customRule.rate, this.kLINK_TYPE_RELATED);
+				comment = customRule.comment;
+			}
 		}
-		else {
-			xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rel, " "), " ', rel, ' ")]'].join('');
-			comment = 'builtin rule for rel/rev';
+		if (!links.length &&
+			this.getPref('rewindforward.related.use.customRules')) {
+			customRule = this.getCustomRule(w.location, rel);
+			if (customRule && customRule.rule) {
+				links = this.getLinksFromXPath(customRule.rule, d, customRule.rate, this.kLINK_TYPE_RELATED);
+				comment = customRule.comment;
+			}
 		}
-	//dump('XPATH: '+xpath+'\n');
-		var links = this.getLinksFromXPath(xpath, d, rate, this.kLINK_TYPE_RELATED);
+
+		if (!customRule && !links.length) {
+			let xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rel, " "), " ', rel, ' ")]'].join('');
+			links = this.getLinksFromXPath(xpath, d, this.kLINK_RELATED, this.kLINK_TYPE_RELATED);
+			comment = 'builtin rule for rel';
+		}
 
 		// find reverse links
 		if (!customRule && !links.length) {
 			xpath = ['descendant::*[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rev, " "), " ', rev, ' ")]'].join('');
 			links = this.getLinksFromXPath(xpath, d, this.kLINK_RELATED);
+			comment = 'builtin rule for rev';
 		}
 
 
@@ -548,7 +553,7 @@ var RewindForwardService = {
 
 		for (var i in this.siteInfo)
 		{
-			if (!this.siteInfo[i].urls) continue;
+			if (!this.siteInfo[i] || !this.siteInfo[i].urls) continue;
 
 			if (!this.siteInfo[i].urlsRule)
 				this.siteInfo[i].urlsRule = new RegExp('^('+(this.siteInfo[i].urls.join(')|^(') || '[^\s\w]')+')');
@@ -787,11 +792,11 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		}
 
 		this.updateButton({
-			base        : document.getElementById('back-button'),
-			navigation  : document.getElementById('rewind-button'),
-			link        : document.getElementById('rewind-prev-button'),
-			menuItem    : document.getElementById('rewindMenuItem'),
-			linkBroadcaster : document.getElementById('Browser:RewindPrev'),
+			baseButton       : document.getElementById('back-button'),
+			navigationButton : document.getElementById('rewind-button'),
+			linkButton       : document.getElementById('rewind-prev-button'),
+			menuItem         : document.getElementById('rewindMenuItem'),
+			linkBroadcaster  : document.getElementById('Browser:RewindPrev'),
 			navigationBroadcaster : document.getElementById('Browser:Rewind'),
 			type        : 'prev',
 			canMove     : gBrowser.webNavigation.canGoBack,
@@ -800,11 +805,11 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			findLinks   : aFindLinks && this.shouldFindPrevLinks
 		});
 		this.updateButton({
-			base        : document.getElementById('forward-button'),
-			navigation  : document.getElementById('fastforward-button'),
-			link        : document.getElementById('fastforward-next-button'),
-			menuItem    : document.getElementById('fastforwardMenuItem'),
-			linkBroadcaster : document.getElementById('Browser:FastforwardNext'),
+			baseButton       : document.getElementById('forward-button'),
+			navigationButton : document.getElementById('fastforward-button'),
+			linkButton       : document.getElementById('fastforward-next-button'),
+			menuItem         : document.getElementById('fastforwardMenuItem'),
+			linkBroadcaster  : document.getElementById('Browser:FastforwardNext'),
 			navigationBroadcaster : document.getElementById('Browser:Fastforward'),
 			type        : 'next',
 			canMove     : gBrowser.webNavigation.canGoForward,
@@ -820,19 +825,19 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		var toEndPoint = this.getPref('rewindforward.goToEndPointOfCurrentDomain');
 		var navigationTooltipAttr = toEndPoint ? 'tooltiptext-navigation-toEndPoint' : 'tooltiptext-navigation' ;
 
-		if (!aInfo.navigation && !aInfo.link && !aInfo.base) return;
+		if (!aInfo.navigationButton && !aInfo.linkButton && !aInfo.baseButton) return;
 
-		if (aInfo.base &&
-			!aInfo.base.getAttribute('rewindforward-original-tooltip')) {
-			aInfo.base.setAttribute('rewindforward-original-tooltip',
-				aInfo.base.getAttribute('tooltiptext'));
-			aInfo.base.setAttribute('rewindforward-original-label',
-				aInfo.base.getAttribute('label'));
+		if (aInfo.baseButton &&
+			!aInfo.baseButton.getAttribute('rewindforward-original-tooltip')) {
+			aInfo.baseButton.setAttribute('rewindforward-original-tooltip',
+				aInfo.baseButton.getAttribute('tooltiptext'));
+			aInfo.baseButton.setAttribute('rewindforward-original-label',
+				aInfo.baseButton.getAttribute('label'));
 		}
 
 		var link = this.getLinkInMainFrame(this.getLinksFromAllFrames(aInfo.type));
 
-		if (aInfo.link) {
+		if (aInfo.linkButton) {
 			disabled = aInfo.linkBroadcaster.hasAttribute('disabled');
 			if (disabled == Boolean(link)) {
 				if (disabled || link)
@@ -841,20 +846,20 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					aInfo.linkBroadcaster.setAttribute('disabled', true);
 			}
 			if (link) {
-				aInfo.link.setAttribute('tooltiptext',
+				aInfo.linkButton.setAttribute('tooltiptext',
 					aInfo.linkBroadcaster.getAttribute('tooltiptext-link')
 						.replace(/%s/gi, (link.label || link.href).replace(/\s+/g, ' ')));
 			}
 			else {
-				aInfo.link.setAttribute('tooltiptext',
+				aInfo.linkButton.setAttribute('tooltiptext',
 					aInfo.linkBroadcaster.getAttribute('tooltiptext-link-blank'));
 			}
 		}
 
-		if (!aInfo.navigation && !aInfo.base)
+		if (!aInfo.navigationButton && !aInfo.baseButton)
 			return;
 
-		if (!aInfo.findLinks || aInfo.link) link = null;
+		if (!aInfo.findLinks || aInfo.linkButton) link = null;
 
 		disabled = aInfo.navigationBroadcaster.hasAttribute('disabled');
 		if (disabled == Boolean(link) || disabled == aInfo.canMove) {
@@ -864,12 +869,12 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				aInfo.navigationBroadcaster.setAttribute('disabled', true);
 		}
 		if (!link) {
-			if (aInfo.navigation) {
-				aInfo.navigation.setAttribute('label',
+			if (aInfo.navigationButton) {
+				aInfo.navigationButton.setAttribute('label',
 					aInfo.navigationBroadcaster.getAttribute('label-navigation'));
-				aInfo.navigation.setAttribute('tooltiptext',
+				aInfo.navigationButton.setAttribute('tooltiptext',
 					aInfo.navigationBroadcaster.getAttribute(navigationTooltipAttr));
-				aInfo.navigation.setAttribute('mode',
+				aInfo.navigationButton.setAttribute('mode',
 					'navigation');
 			}
 			aInfo.navigationBroadcaster.setAttribute('mode', 'navigation');
@@ -882,26 +887,26 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					aInfo.menuItem.getAttribute(navigationTooltipAttr));
 		}
 		else {
-			if (aInfo.navigation) {
-				aInfo.navigation.setAttribute('label',
+			if (aInfo.navigationButton) {
+				aInfo.navigationButton.setAttribute('label',
 					aInfo.navigationBroadcaster.getAttribute('label-link'));
-				aInfo.navigation.setAttribute('tooltiptext',
+				aInfo.navigationButton.setAttribute('tooltiptext',
 					aInfo.navigationBroadcaster.getAttribute('tooltiptext-link')
 						.replace(/%s/gi, (link.label || link.href)
 						.replace(/\s+/g, ' ')));
-				aInfo.navigation.setAttribute('mode',
+				aInfo.navigationButton.setAttribute('mode',
 					'link');
 				link = null;
 			}
 			aInfo.navigationBroadcaster.setAttribute('mode', 'link');
 		}
 
-		if (!aInfo.base) return;
+		if (!aInfo.baseButton) return;
 
-		aInfo.base.removeAttribute('rewindforward-override');
+		aInfo.baseButton.removeAttribute('rewindforward-override');
 		if (
 			!aInfo.canOverride ||
-			(!link && (aInfo.navigation || !aInfo.canSkip))
+			(!link && (aInfo.navigationButton || !aInfo.canSkip))
 			) {
 			aInfo.base.setAttribute('label',
 				aInfo.base.getAttribute('rewindforward-original-label'));
@@ -914,24 +919,24 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		}
 		else {
 			if (!link) {
-				aInfo.base.setAttribute('label',
+				aInfo.baseButton.setAttribute('label',
 					aInfo.navigationBroadcaster.getAttribute('label-navigation'));
-				aInfo.base.setAttribute('tooltiptext',
+				aInfo.baseButton.setAttribute('tooltiptext',
 					aInfo.navigationBroadcaster.getAttribute(navigationTooltipAttr));
-				aInfo.base.setAttribute('rewindforward-override',
+				aInfo.baseButton.setAttribute('rewindforward-override',
 					'navigation');
-				aInfo.base.removeAttribute('disabled');
+				aInfo.baseButton.removeAttribute('disabled');
 			}
 			else {
-				aInfo.base.setAttribute('label',
+				aInfo.baseButton.setAttribute('label',
 					aInfo.navigationBroadcaster.getAttribute('label-link'));
-				aInfo.base.setAttribute('tooltiptext',
+				aInfo.baseButton.setAttribute('tooltiptext',
 					aInfo.navigationBroadcaster.getAttribute('tooltiptext-link')
 						.replace(/%s/gi, (link.label || link.href)
 						.replace(/\s+/g, ' ')));
-				aInfo.base.setAttribute('rewindforward-override',
+				aInfo.baseButton.setAttribute('rewindforward-override',
 					'link');
-				aInfo.base.removeAttribute('disabled');
+				aInfo.baseButton.removeAttribute('disabled');
 			}
 		}
 	},
