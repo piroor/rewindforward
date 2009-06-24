@@ -1,0 +1,2 @@
+skin	rewindforward-platform	classic/1.0	jar:chrome/rewindforward.jar!/skin/rewindforward/luna/	appversion>=3.0
+skin	rewindforward-platform	classic/1.0	jar:chrome/rewindforward.jar!/skin/rewindforward/aero/	appversion>=3.0 osversion>=6

@@ -9,9 +9,6 @@ locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
 locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
 
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
-skin	rewindforward-luna	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-luna/	appversion>=3.0 os=WINNT
-skin	rewindforward-aero	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-aero/	appversion>=3.0 os=WINNT osversion>=6
-skin	rewindforward-darwin	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward-darwin/	appversion>=3.0 os=Darwin
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
 skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
 
@@ -19,26 +16,3 @@ style	chrome://browser/content/browser.xul	chrome://rewindforward/skin/rewindfor
 style	chrome://browser/content/browser.xul	chrome://rewindforward-luna/skin/toolbar.css
 style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/skin/rewindforward.css
 style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward-luna/skin/toolbar.css
-
-
-override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-luna/skin/buttons.png	os=WINNT
-override	chrome://rewindforward/skin/buttons2.png	chrome://rewindforward-luna/skin/buttons2.png	os=WINNT
-override	chrome://rewindforward/skin/buttons-small.png	chrome://rewindforward-luna/skin/buttons-small.png	os=WINNT
-override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-luna/skin/buttons-small2.png	os=WINNT
-override	chrome://rewindforward/skin/rewind.png	chrome://rewindforward-luna/skin/rewind.png	os=WINNT
-override	chrome://rewindforward/skin/fastforward.png	chrome://rewindforward-luna/skin/fastforward.png	os=WINNT
-override	chrome://rewindforward/skin/previous.png	chrome://rewindforward-luna/skin/previous.png	os=WINNT
-override	chrome://rewindforward/skin/next.png	chrome://rewindforward-luna/skin/next.png	os=WINNT
-override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-aero/skin/buttons.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/buttons2.png	chrome://rewindforward-aero/skin/buttons2.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/buttons-small.png	chrome://rewindforward-aero/skin/buttons-small.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/buttons-small2.png	chrome://rewindforward-aero/skin/buttons-small2.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/rewind.png	chrome://rewindforward-aero/skin/rewind.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/fastforward.png	chrome://rewindforward-aero/skin/fastforward.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/previous.png	chrome://rewindforward-aero/skin/previous.png	os=WINNT osversion>=6
-override	chrome://rewindforward/skin/next.png	chrome://rewindforward-aero/skin/next.png	os=WINNT osversion>=6
-
-override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar.css	os=Darwin
-override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons.png	os=Darwin
-override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-darwin/skin/toolbar-fx3.5.css	os=Darwin appversion>=3.4
-override	chrome://rewindforward/skin/buttons.png	chrome://rewindforward-darwin/skin/buttons-fx3.5.png	os=Darwin appversion>=3.4

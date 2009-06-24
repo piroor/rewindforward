@@ -1,0 +1,15 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+.rewindMenuItem {
+	list-style-image: url("rewind.png") !important;
+}
+.fastforwardMenuItem {
+	list-style-image: url("fastforward.png") !important;
+}
+
+.prevMenuItem {
+	list-style-image: url("previous.png") !important;
+}
+.nextMenuItem {
+	list-style-image: url("next.png") !important;
+}

@@ -1,0 +1,35 @@
+.rewindMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/rewind.png") !important;
+}
+.fastforwardMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/fastforward.png") !important;
+}
+
+.prevMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/previous.png") !important;
+}
+.nextMenuItem {
+	list-style-image: url("chrome://rewindforward/skin/next.png") !important;
+}
+
+menuitem[rewindforward-menuitem-backforward="true"] image {
+	max-width: 16px !important;
+	max-height: 16px !important;
+}
+#back-button menuitem[rewindforward-menuitem-backforward="true"] {
+	list-style-image: url(chrome://browser/skin/Toolbar-small.png) !important;
+	-moz-image-region: rect(0px, 16px, 16px, 0px) !important;
+}
+#forward-button menuitem[rewindforward-menuitem-backforward="true"] {
+	list-style-image: url(chrome://browser/skin/Toolbar-small.png) !important;
+	-moz-image-region: rect(0px, 32px, 16px, 16px) !important;
+}
+
+
+#rewindMenu menuseparator[index="-1"],
+#fastforwardMenu menuseparator[index="-1"] {
+	border-top: 1px solid -moz-DialogText;
+	border-right: none 0;
+	border-bottom: none 0;
+	border-left: none 0;
+}
