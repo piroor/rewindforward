@@ -1133,6 +1133,11 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	},
 	newFillHistoryMenu : function(aPopup) // Firefox 3
 	{
+		// clear old items
+		Array.slice(aPopup.getElementsByAttribute('rewindforward-menuitem', '*')).forEach(function(aItem) {
+			aPopup.removeChild(aItem);
+		});
+
 		window.__rewindforward__FillHistoryMenu(aPopup);
 
 		var nodes = aPopup.childNodes;
@@ -1141,7 +1146,8 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		var current,
 			c_host,
 			prev,
-			p_host;
+			p_host,
+			separator;
 		for (var i = nodes.length-1; i > -1; i--)
 		{
 			if (!nodes[i].getAttribute('index')) break;
@@ -1162,8 +1168,11 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 					(c_host && !p_host) ||
 					(c_host != p_host)
 				)
-				)
-				aPopup.insertBefore(document.createElement('menuseparator'), nodes[i+1]).setAttribute('index', -1);
+				) {
+				separator = document.createElement('menuseparator');
+				separator.setAttribute('rewindforward-menuitem', true);
+				aPopup.insertBefore(separator, nodes[i+1]).setAttribute('index', -1);
+			}
 
 			prev = current;
 			p_host = c_host;
@@ -1178,8 +1187,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		if (prev || next) {
 			aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
+			aPopup.firstChild.setAttribute('rewindforward-menuitem', true);
 			if (next) {
 				var nextItem = document.createElement('menuitem');
+				nextItem.setAttribute('rewindforward-menuitem', true);
 				nextItem.setAttribute('class', 'menuitem-iconic nextMenuItem');
 				nextItem.setAttribute('oncommand', 'RewindForwardService.goNext(event);');
 				nextItem.setAttribute('label',
@@ -1194,6 +1205,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			}
 			if (prev) {
 				var prevItem = document.createElement('menuitem');
+				prevItem.setAttribute('rewindforward-menuitem', true);
 				prevItem.setAttribute('class', 'menuitem-iconic prevMenuItem');
 				prevItem.setAttribute('oncommand', 'RewindForwardService.goPrevious(event);');
 				prevItem.setAttribute('label',
