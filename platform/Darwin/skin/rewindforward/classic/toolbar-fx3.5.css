@@ -11,7 +11,7 @@
 [rewindforward-anothericon="true"] .toolbarbutton-1.fastforward-button,
 [rewindforward-anothericon="true"] #back-button[rewindforward-override],
 [rewindforward-anothericon="true"] #forward-button[rewindforward-override] {
-	list-style-image: url("buttons-fx3.5.png") !important;
+	list-style-image: url("chrome://rewindforward-platform/skin/buttons-fx3.5.png") !important;
 }
 
 

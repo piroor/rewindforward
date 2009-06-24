@@ -1,4 +1,4 @@
 skin	rewindforward-platform	classic/1.0	jar:chrome/rewindforward.jar!/skin/rewindforward/classic/	appversion>=3.0
 
-override	chrome://rewindforward-platform/skin/toolbar.css	chrome://rewindforward-platform/skin/toolbar-fx3.css	appversion>=3.0
-override	chrome://rewindforward-platform/skin/toolbar.css	chrome://rewindforward-platform/skin/toolbar-fx3.5.css	appversion>=3.4
+override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-platform/skin/toolbar-fx3.css	appversion>=3.0
+override	chrome://rewindforward/skin/toolbar.css	chrome://rewindforward-platform/skin/toolbar-fx3.5.css	appversion>=3.4

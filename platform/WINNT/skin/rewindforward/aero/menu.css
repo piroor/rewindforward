@@ -1,15 +1,15 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 .rewindMenuItem {
-	list-style-image: url("rewind.png") !important;
+	list-style-image: url("chrome://rewindforward-platform/skin/rewind.png") !important;
 }
 .fastforwardMenuItem {
-	list-style-image: url("fastforward.png") !important;
+	list-style-image: url("chrome://rewindforward-platform/skin/fastforward.png") !important;
 }
 
 .prevMenuItem {
-	list-style-image: url("previous.png") !important;
+	list-style-image: url("chrome://rewindforward-platform/skin/previous.png") !important;
 }
 .nextMenuItem {
-	list-style-image: url("next.png") !important;
+	list-style-image: url("chrome://rewindforward-platform/skin/next.png") !important;
 }
