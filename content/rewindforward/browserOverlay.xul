@@ -12,7 +12,7 @@
 
 <commandset id="mainCommandSet">
 	<command id="Browser:Rewind"
-		oncommand="(this.getAttribute('mode') != 'navigation' &amp;&amp; RewindForwardService.goPrevious()) || RewindForwardService.goRewind();"
+		oncommand="this.getAttribute('mode') == 'navigation' ? RewindForwardService.goRewind() : RewindForwardService.goPreviousOrRewind() ;"
 		label-navigation="&rewindCmd.label;"
 		label-link="&prevCmd.label;"
 		tooltiptext-navigation="&rewindButton.tooltip;"
@@ -24,7 +24,7 @@
 		tooltiptext-link-blank="&prevButton.tooltip.blank;"/>
 
 	<command id="Browser:Fastforward"
-		oncommand="(this.getAttribute('mode') != 'navigation' &amp;&amp; RewindForwardService.goNext()) || RewindForwardService.goFastforward();"
+		oncommand="this.getAttribute('mode') == 'navigation' ? RewindForwardService.goFastforward() : RewindForwardService.goNextOrFastforward() ;"
 		label-navigation="&fastforwardCmd.label;"
 		label-link="&nextCmd.label;"
 		tooltiptext-navigation="&fastforwardButton.tooltip;"
@@ -89,7 +89,7 @@
 
 <toolbarbutton id="rewind-button" class="rewind-button toolbarbutton-1"
 	command="Browser:Rewind"
-	onclick="RewindForwardService.goPrevious(event) || RewindForwardService.goRewind(event);"
+	onclick="RewindForwardService.goPreviousOrRewind(event);"
 	label="&rewindCmd.label;"
 	tooltiptext="&rewindButton.tooltip;"
 	context="rewindMenu"
@@ -103,7 +103,7 @@
 
 <toolbarbutton id="fastforward-button" class="fastforward-button toolbarbutton-1"
 	command="Browser:Fastforward"
-	onclick="RewindForwardService.goNext(event) || RewindForwardService.goFastforward(event);"
+	onclick="RewindForwardService.goNextOrFastforward(event);"
 	label="&fastforwardCmd.label;"
 	tooltiptext="&fastforwardButton.tooltip;"
 	context="fastforwardMenu"

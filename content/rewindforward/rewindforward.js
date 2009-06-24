@@ -192,6 +192,11 @@ var RewindForwardService = {
 		return true;
 	},
  
+	goPreviousOrRewind : function(aEvent) 
+	{
+		return this.goPrevious(aEvent) || this.goRewind(aEvent);
+	},
+ 
 	goFastforward : function(aEvent) 
 	{
 		return this.rewindOrFastforward('fastforward', aEvent);
@@ -215,6 +220,11 @@ var RewindForwardService = {
 			this.loadLink(link.href, link.referrer, link.view, 1);
 
 		return true;
+	},
+ 
+	goNextOrFastforward : function(aEvent) 
+	{
+		return this.goNext(aEvent) || this.goFastforward(aEvent);
 	},
  
 	rewindOrFastforward : function(aType, aEvent) 
