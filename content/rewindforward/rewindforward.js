@@ -435,13 +435,15 @@ var RewindForwardService = {
 			customRule = this.getCustomRule(w.location.href, rel);
 
 		// find "next" or "prev" link with XPath
-		var xpath;
+		var xpath, comment;
 		if (customRule && customRule.rule) {
 			xpath = customRule.rule;
 			rate = customRule.rate;
+			comment = customRule.comment;
 		}
 		else {
 			xpath = ['(descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link | (descendant::A | descendant::xhtml:a | descendant::AREA | descendant::xhtml:area | descendant::LINK | descendant::xhtml:link)/descendant::*)[not(local-name() = "style" or local-name() = "STYLE" or local-name() = "script" or local-name() = "SCRIPT") and contains(concat(" ", @rel, " "), " ', rel, ' ")]'].join('');
+			comment = 'builtin rule for rel/rev';
 		}
 	//dump('XPATH: '+xpath+'\n');
 		var links = this.getLinksFromXPath(xpath, d, rate, this.kLINK_TYPE_RELATED);
@@ -457,11 +459,15 @@ var RewindForwardService = {
 		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType, links.toSource());
 		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType+'LastCount', lastCount);
 
+		links.forEach(function(aLink) {
+			aLink.comment = comment;
+		});
+
 		return links;
 	},
 	getCustomRule : function(aURI, aRelation)
 	{
-		var customRule;
+		var customRule, customRuleEntry;
 		var rel = aRelation;
 		var result = {
 				rule : '',
@@ -504,7 +510,7 @@ var RewindForwardService = {
 			if (pos > -1) {
 				// "list[pos]" is the rule. But if there is "*" rule, list[0] is "*" and the rule is "list[pos+1]".
 				const offset = this.getPref('rewindforward.rule.'+rel+'.*') ? 1 : 0 ;
-				const customRuleEntry = list[pos+offset];
+				customRuleEntry = list[pos+offset];
 //dump('found entry: '+customRuleEntry+'\n');
 				customRule = this.getPref('rewindforward.rule.'+rel+'.'+customRuleEntry);
 			}
@@ -514,6 +520,7 @@ var RewindForwardService = {
 			result.rate = this.kLINK_RELATED;
 		}
 		else {
+			result.comment = 'from custom rule for "'+customRuleEntry+'" / '+rel;
 			result.rate = this.kLINK_RELATED_CUSTOM;
 		}
 
@@ -552,6 +559,7 @@ var RewindForwardService = {
 
 				rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
 				if (rule) {
+					result.comment = 'from siteinfo for "'+this.siteInfo[i].urls[j]+'"';
 					result.rule = (result.rule ? result.rule+'|' : '' ) + rule;
 					result.rate = this.kLINK_RELATED_CUSTOM;
 					break findRule;
