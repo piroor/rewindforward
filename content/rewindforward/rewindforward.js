@@ -123,7 +123,7 @@ var RewindForwardService = {
  
 	openNewTab : function(aURI, aReferrer) 
 	{
-		var tab = ('TabbrowserService' in window) ? gBrowser.addTabInternal(aURI, aReferrer, { parentTab : gBrowser.selectedTab.tabId }) : gBrowser.addTab(aURI, aReferrer) ;
+		var tab = gBrowser.addTab(aURI, aReferrer);
 
 		var loadInBackground = this.getPref('browser.tabs.loadInBackground');
 		if (aEvent.shiftKey) loadInBackground = !loadInBackground;
@@ -167,19 +167,17 @@ var RewindForwardService = {
   
 	// do rewind/fastforward 
 	
-	goRewind : function(aForceToRewind, aEvent) 
+	goRewind : function(aEvent) 
 	{
-		this.rewindOrFastforward('rewind', aForceToRewind, aEvent);
+		return this.rewindOrFastforward('rewind', aEvent);
 	},
  
 	goPrevious : function(aEvent) 
 	{
-		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
+		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return false;
 
-		var link = this.getLinkInMainFrame(
-				this.getLinksFromAllFrames('prev')
-			);
-		if (!link) return;
+		var link = this.getLinkInMainFrame(this.getLinksFromAllFrames('prev'));
+		if (!link) return false;
 
 		var usetab = aEvent && aEvent.button == 1;
 
@@ -190,21 +188,21 @@ var RewindForwardService = {
 			this.openNewTab(link.href, link.referrer);
 		else
 			this.loadLink(link.href, link.referrer, link.view, -1);
+
+		return true;
 	},
  
-	goFastforward : function(aForceToFastforward, aEvent) 
+	goFastforward : function(aEvent) 
 	{
-		this.rewindOrFastforward('fastforward', aForceToFastforward, aEvent);
+		return this.rewindOrFastforward('fastforward', aEvent);
 	},
  
 	goNext : function(aEvent) 
 	{
-		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
+		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return false;
 
-		var link = this.getLinkInMainFrame(
-				this.getLinksFromAllFrames('next')
-			);
-		if (!link) return;
+		var link = this.getLinkInMainFrame(this.getLinksFromAllFrames('next'));
+		if (!link) return false;
 
 		var usetab = aEvent && aEvent.button == 1;
 
@@ -215,47 +213,22 @@ var RewindForwardService = {
 			this.openNewTab(link.href, link.referrer);
 		else
 			this.loadLink(link.href, link.referrer, link.view, 1);
+
+		return true;
 	},
  
-	rewindOrFastforward : function(aType, aForce, aEvent) 
+	rewindOrFastforward : function(aType, aEvent) 
 	{
-		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return;
-
+		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return false;
 		var usetab = aEvent && aEvent.button == 1;
-
-
-		var link = (aType == 'rewind') ?
-					(
-						this.shouldFindPrevLinks ?
-							this.getLinksFromAllFrames('prev') :
-							null
-					) :
-					(
-						this.shouldFindNextLinks ?
-							this.getLinksFromAllFrames('next') :
-							null
-					);
-
-		if (!aForce && link && link.length) {
-			link = this.getLinkInMainFrame(link);
-
-			if ('referrerBlocked' in gBrowser.selectedTab && gBrowser.selectedTab.referrerBlocked)
-				link.referrer = null;
-
-			if (usetab)
-				this.openNewTab(link.href, link.referrer);
-			else
-				this.loadLink(link.href, link.referrer, link.view, (aType == 'rewind' ? -1 : 1 ));
-
-			return;
-		}
-
 
 		var SH      = gBrowser.sessionHistory;
 		var current = this.getHistoryEntryAt(SH.index);
 		var c_host  = this.domainRegExp.test(current.URI.spec) ? RegExp.$1 : null ;
 
-		var check = (aType == 'rewind') ? function(aIndex) { return aIndex > -1 } : function(aIndex) { return aIndex < SH.count }
+		var check = (aType == 'rewind') ?
+						function(aIndex) { return aIndex > -1 } :
+						function(aIndex) { return aIndex < SH.count }
 		var step  = (aType == 'rewind') ? -1 : 1 ;
 		var start = (aType == 'rewind') ? SH.index-1 : SH.index+1 ;
 
@@ -275,8 +248,9 @@ var RewindForwardService = {
 					i -= step;
 				}
 
-				if (usetab)
+				if (usetab) {
 					this.openNewTab(entry.URI.spec, entry.referrerURI);
+				}
 				else {
 					try {
 						gBrowser.webNavigation.gotoIndex(i);
@@ -284,7 +258,7 @@ var RewindForwardService = {
 					catch(e) {
 					}
 				}
-				return;
+				return true;
 			}
 		}
 
@@ -292,6 +266,8 @@ var RewindForwardService = {
 			this.openNewTab(entry.URI.spec, entry.referrerURI);
 		else
 			gBrowser.webNavigation.gotoIndex((aType == 'rewind') ? 0 : SH.count-1 );
+
+		return true;
 	},
   
 	// get next/prev link 
@@ -1229,9 +1205,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 				return;
 
 			case 'DOMAttrModified':
-			case 'DOMSubtreeModified':
 			case 'DOMNodeInserted':
-			case 'DOMNodeInsertedIntoDocument':
 				this.onDocumentModified(aEvent);
 				return;
 
@@ -1612,9 +1586,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		gBrowser.addEventListener('DOMContentLoaded', this, true);
 		gBrowser.addEventListener('DOMAttrModified', this, true);
-		gBrowser.addEventListener('DOMSubtreeModified', this, true);
 		gBrowser.addEventListener('DOMNodeInserted', this, true);
-		gBrowser.addEventListener('DOMNodeInsertedIntoDocument', this, true);
 
 		this.addPrefListener(this);
 		this.observe(null, 'nsPref:changed', 'rewindforward.gonextprev.exceptions');
@@ -1693,9 +1665,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 
 		gBrowser.removeEventListener('DOMContentLoaded', this, true);
 		gBrowser.removeEventListener('DOMAttrModified', this, true);
-		gBrowser.removeEventListener('DOMSubtreeModified', this, true);
 		gBrowser.removeEventListener('DOMNodeInserted', this, true);
-		gBrowser.removeEventListener('DOMNodeInsertedIntoDocument', this, true);
 
 		var popup = this.backForwardMenu;
 		if (popup) {
@@ -1713,70 +1683,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
   
 	// prefs 
 	
-	getPref : function(aPrefstring, aPrefBranch) 
-	{
-		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-		try {
-			switch (branch.getPrefType(aPrefstring))
-			{
-				case branch.PREF_STRING:
-					return decodeURIComponent(escape(branch.getCharPref(aPrefstring)));
-					break;
-				case branch.PREF_INT:
-					return branch.getIntPref(aPrefstring);
-					break;
-				default:
-					return branch.getBoolPref(aPrefstring);
-					break;
-			}
-		}
-		catch(e) {
-		}
-
-		return null;
-	},
- 
-	setPref : function(aPrefstring, aValue, aPrefBranch) 
-	{
-		const branch = aPrefBranch || Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch);
-		switch (typeof aValue)
-		{
-			case 'string':
-				branch.setCharPref(aPrefstring, unescape(encodeURIComponent(aValue)));
-				break;
-			case 'number':
-				branch.setIntPref(aPrefstring, parseInt(aValue));
-				break;
-			default:
-				branch.setBoolPref(aPrefstring, aValue);
-				break;
-		}
-	},
- 
-	addPrefListener : function(aObserver) 
-	{
-		var domains = ('domains' in aObserver) ? aObserver.domains : [aObserver.domain] ;
-		try {
-			var pbi = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch).QueryInterface(Components.interfaces.nsIPrefBranchInternal);
-			for (var i = 0; i < domains.length; i++)
-				pbi.addObserver(domains[i], aObserver, false);
-		}
-		catch(e) {
-		}
-	},
- 
-	removePrefListener : function(aObserver) 
-	{
-		var domains = ('domains' in aObserver) ? aObserver.domains : [aObserver.domain] ;
-		try {
-			var pbi = Components.classes['@mozilla.org/preferences;1'].getService(Components.interfaces.nsIPrefBranch).QueryInterface(Components.interfaces.nsIPrefBranchInternal);
-			for (var i = 0; i < domains.length; i++)
-				pbi.removeObserver(domains[i], aObserver, false);
-		}
-		catch(e) {
-		}
-	},
- 
 	get shouldFindNextLinks() 
 	{
 		return this.getPref('rewindforward.find_next_links');
@@ -1787,27 +1693,29 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	}
   
 }; 
+RewindForwardService.__proto__ = window['piro.sakura.ne.jp'].prefs;
 window.addEventListener('load', RewindForwardService, false);
   
-function BrowserRewind(aForceToRewind, aEvent) 
+// backward compatibility 
+
+function BrowserRewind(aEvent)
 {
-	RewindForwardService.goRewind(aForceToRewind, aEvent);
+	return RewindForwardService.goRewind(aEvent);
 }
 function BrowserRewindPrev(aEvent)
 {
-	RewindForwardService.goPrevious(aEvent);
+	return RewindForwardService.goPrevious(aEvent);
 }
 
-function BrowserFastforward(aForceToFastforward, aEvent)
+function BrowserFastforward(aEvent)
 {
-	RewindForwardService.goFastforward(aForceToFastforward, aEvent);
+	return RewindForwardService.goFastforward(aEvent);
 }
 function BrowserFastforwardNext(aEvent)
 {
-	RewindForwardService.goNext(aEvent);
+	return RewindForwardService.goNext(aEvent);
 }
- 
-// backward compatibility 
+
 function rewindforwardGetLinksFromAllFrames(aType)
 {
 	return RewindForwardService.getLinksFromAllFrames(aType);

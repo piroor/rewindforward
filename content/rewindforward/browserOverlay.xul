@@ -6,31 +6,32 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:rewindforward="http://white.sakura.ne.jp/~piro/rdf#">
 
-<script type="application/x-javascript" src="rewindforward.js"/>
-<script type="application/x-javascript" src="siteInfoLoader.js"/>
+<script type="application/x-javascript; version=1.7" src="prefs.js"/>
+<script type="application/x-javascript; version=1.7" src="rewindforward.js"/>
+<script type="application/x-javascript; version=1.7" src="siteInfoLoader.js"/>
 
 <commandset id="mainCommandSet">
 	<command id="Browser:Rewind"
-		oncommand="BrowserRewind(this.getAttribute('mode') == 'navigation');"
+		oncommand="(this.getAttribute('mode') != 'navigation' &amp;&amp; RewindForwardService.goPrevious()) || RewindForwardService.goRewind();"
 		label-navigation="&rewindCmd.label;"
 		label-link="&prevCmd.label;"
 		tooltiptext-navigation="&rewindButton.tooltip;"
 		tooltiptext-navigation-toEndPoint="&rewindButton.tooltip.toEndPoint;"
 		tooltiptext-link="&prevButton.tooltip;"/>
 	<command id="Browser:RewindPrev"
-		oncommand="BrowserRewindPrev();"
+		oncommand="RewindForwardService.goPrevious();"
 		tooltiptext-link="&prevButton.tooltip;"
 		tooltiptext-link-blank="&prevButton.tooltip.blank;"/>
 
 	<command id="Browser:Fastforward"
-		oncommand="BrowserFastforward(this.getAttribute('mode') == 'navigation');"
+		oncommand="(this.getAttribute('mode') != 'navigation' &amp;&amp; RewindForwardService.goNext()) || RewindForwardService.goFastforward();"
 		label-navigation="&fastforwardCmd.label;"
 		label-link="&nextCmd.label;"
 		tooltiptext-navigation="&fastforwardButton.tooltip;"
 		tooltiptext-navigation-toEndPoint="&fastforwardButton.tooltip.toEndPoint;"
 		tooltiptext-link="&nextButton.tooltip;"/>
 	<command id="Browser:FastforwardNext"
-		oncommand="BrowserFastforwardNext();"
+		oncommand="RewindForwardService.goNext();"
 		tooltiptext-link="&nextButton.tooltip;"
 		tooltiptext-link-blank="&nextButton.tooltip.blank;"/>
 </commandset>
@@ -46,8 +47,8 @@
 			label="&rewindCmd.label;"
 			tooltiptext-navigation="&rewindButton.tooltip;"
 			tooltiptext-navigation-toEndPoint="&rewindButton.tooltip.toEndPoint;"
-			oncommand="BrowserRewind(true); event.stopPropagation();"
-			onclick="BrowserRewind(true, event); event.stopPropagation();"/>
+			oncommand="RewindForwardService.goRewind(); event.stopPropagation();"
+			onclick="RewindForwardService.goRewind(event); event.stopPropagation();"/>
 		<menuseparator/>
 	</menupopup>
 	<menupopup id="fastforwardMenu"
@@ -60,8 +61,8 @@
 			label="&fastforwardCmd.label;"
 			tooltiptext-navigation="&fastforwardButton.tooltip;"
 			tooltiptext-navigation-toEndPoint="&fastforwardButton.tooltip.toEndPoint;"
-			oncommand="BrowserFastforward(true); event.stopPropagation();"
-			onclick="BrowserFastforward(true, event); event.stopPropagation();"/>
+			oncommand="RewindForwardService.goFastforward(); event.stopPropagation();"
+			onclick="RewindForwardService.goFastforward(event); event.stopPropagation();"/>
 		<menuseparator/>
 	</menupopup>
 	<menupopup id="prevNextLinksPopup"
@@ -69,11 +70,11 @@
 		<menuitem class="menuitem-iconic prevMenuItem"
 			label="&prevCmd.label;"
 			tooltiptext="&prevButton.tooltip.blank;"
-			oncommand="BrowserRewindPrev(event);"/>
+			oncommand="RewindForwardService.goPrevious(event);"/>
 		<menuitem class="menuitem-iconic nextMenuItem"
 			label="&nextCmd.label;"
 			tooltiptext="&nextButton.tooltip.blank;"
-			oncommand="BrowserFastforwardNext(event);"/>
+			oncommand="RewindForwardService.goNext(event);"/>
 	</menupopup>
 </popupset>
 
@@ -88,28 +89,28 @@
 
 <toolbarbutton id="rewind-button" class="rewind-button toolbarbutton-1"
 	command="Browser:Rewind"
-	onclick="BrowserRewind(false, event);"
+	onclick="RewindForwardService.goPrevious(event) || RewindForwardService.goRewind(event);"
 	label="&rewindCmd.label;"
 	tooltiptext="&rewindButton.tooltip;"
 	context="rewindMenu"
 	mode="navigation"/>
 <toolbarbutton id="rewind-prev-button" class="rewind-button toolbarbutton-1"
 	command="Browser:RewindPrev"
-	onclick="BrowserRewindPrev(event);"
+	onclick="RewindForwardService.goPrevious(event);"
 	label="&prevCmd.label;"
 	tooltiptext="&prevButton.tooltip.blank;"
 	mode="link"/>
 
 <toolbarbutton id="fastforward-button" class="fastforward-button toolbarbutton-1"
 	command="Browser:Fastforward"
-	onclick="BrowserFastforward(false, event);"
+	onclick="RewindForwardService.goNext(event) || RewindForwardService.goFastforward(event);"
 	label="&fastforwardCmd.label;"
 	tooltiptext="&fastforwardButton.tooltip;"
 	context="fastforwardMenu"
 	mode="navigation"/>
 <toolbarbutton id="fastforward-next-button" class="fastforward-button toolbarbutton-1"
 	command="Browser:FastforwardNext"
-	onclick="BrowserFastforwardNext(event);"
+	onclick="RewindForwardService.goNext(event);"
 	label="&nextCmd.label;"
 	tooltiptext="&nextButton.tooltip.blank;"
 	mode="link"/>
