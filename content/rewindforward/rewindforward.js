@@ -1108,25 +1108,34 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		var nodes = aPopup.childNodes;
 
 		var current,
-			prev;
+			c_host,
+			prev,
+			p_host;
 		for (var i = nodes.length-1; i > -1; i--)
 		{
 			if (!nodes[i].getAttribute('index')) break;
 
 			current = RewindForwardService.getHistoryEntryAt(parseInt(nodes[i].getAttribute('index')));
-			if (!prev) {
-				prev = current;
-				continue;
+
+			try {
+				c_host = current.URI.host;
+			}
+			catch(e) {
+				c_host = null;
 			}
 
 			if (
-				(!current.URI.host && prev.URI.host) ||
-				(current.URI.host && !prev.URI.host) ||
-				(current.URI.host != prev.URI.host)
+				prev &&
+				(
+					(!c_host && p_host) ||
+					(c_host && !p_host) ||
+					(c_host != p_host)
+				)
 				)
 				aPopup.insertBefore(document.createElement('menuseparator'), nodes[i+1]).setAttribute('index', -1);
 
 			prev = current;
+			p_host = c_host;
 		}
 	},
  
