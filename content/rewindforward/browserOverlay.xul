@@ -65,17 +65,6 @@
 			onclick="RewindForwardService.goFastforward(event); event.stopPropagation();"/>
 		<menuseparator/>
 	</menupopup>
-	<menupopup id="prevNextLinksPopup"
-		oncommand="RewindForwardService.hideLinksPopup();">
-		<menuitem class="menuitem-iconic prevMenuItem"
-			label="&prevCmd.label;"
-			tooltiptext="&prevButton.tooltip.blank;"
-			oncommand="RewindForwardService.goPrevious(event);"/>
-		<menuitem class="menuitem-iconic nextMenuItem"
-			label="&nextCmd.label;"
-			tooltiptext="&nextButton.tooltip.blank;"
-			oncommand="RewindForwardService.goNext(event);"/>
-	</menupopup>
 </popupset>
 
 

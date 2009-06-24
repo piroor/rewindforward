@@ -1133,9 +1133,10 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 	},
 	newFillHistoryMenu : function(aPopup) // Firefox 3
 	{
-		this.__rewindforward__FillHistoryMenu(aPopup);
+		window.__rewindforward__FillHistoryMenu(aPopup);
 
 		var nodes = aPopup.childNodes;
+		var sv = RewindForwardService;
 
 		var current,
 			c_host,
@@ -1145,7 +1146,7 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		{
 			if (!nodes[i].getAttribute('index')) break;
 
-			current = RewindForwardService.getHistoryEntryAt(parseInt(nodes[i].getAttribute('index')));
+			current = sv.getHistoryEntryAt(parseInt(nodes[i].getAttribute('index')));
 
 			try {
 				c_host = current.URI.host;
@@ -1167,68 +1168,45 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			prev = current;
 			p_host = c_host;
 		}
-	},
- 
-	get backForwardMenu() 
-	{
-		return document.getElementById('backForwardMenu');
-	},
-	
-	get backForwardMenuCurrentItem() 
-	{
-		return this.evaluateXPath(
-				'descendant::*[contains(@class, "unified-nav-current")][1]',
-				this.backForwardMenu,
-				XPathResult.FIRST_ORDERED_NODE_TYPE
-			).singleNodeValue;
-	},
-  
-	showLinksPopup : function() 
-	{
+
 		var prev = document.getElementById('rewind-prev-button') ?
 					null :
-					this.getLinkInMainFrame(this.getLinksFromAllFrames('prev')) ;
+					sv.getLinkInMainFrame(sv.getLinksFromAllFrames('prev')) ;
 		var next = document.getElementById('fastforward-next-button') ?
 					null :
-					this.getLinkInMainFrame(this.getLinksFromAllFrames('next')) ;
+					sv.getLinkInMainFrame(sv.getLinksFromAllFrames('next')) ;
 
-		if (!prev && !next) return;
-
-		var popup = document.getElementById('prevNextLinksPopup');
-		var prevItem = popup.firstChild;
-		var nextItem = popup.lastChild;
-
-		if (prev) {
-			prevItem.removeAttribute('collapsed');
-			prevItem.setAttribute('tooltiptext',
-				document.getElementById('Browser:RewindPrev')
-					.getAttribute('tooltiptext-link')
-					.replace(/%s/gi, (prev.label || prev.href))
-					.replace(/\s+/g, ' '));
+		if (prev || next) {
+			aPopup.insertBefore(document.createElement('menuseparator'), aPopup.firstChild);
+			if (next) {
+				var nextItem = document.createElement('menuitem');
+				nextItem.setAttribute('class', 'menuitem-iconic nextMenuItem');
+				nextItem.setAttribute('oncommand', 'RewindForwardService.goNext(event);');
+				nextItem.setAttribute('label',
+					document.getElementById('Browser:Fastforward')
+						.getAttribute('label-link'));
+				nextItem.setAttribute('tooltiptext',
+					document.getElementById('Browser:Fastforward')
+						.getAttribute('tooltiptext-link')
+						.replace(/%s/gi, (next.label || next.href))
+						.replace(/\s+/g, ' '));
+				aPopup.insertBefore(nextItem, aPopup.firstChild);
+			}
+			if (prev) {
+				var prevItem = document.createElement('menuitem');
+				prevItem.setAttribute('class', 'menuitem-iconic prevMenuItem');
+				prevItem.setAttribute('oncommand', 'RewindForwardService.goPrevious(event);');
+				prevItem.setAttribute('label',
+					document.getElementById('Browser:Rewind')
+						.getAttribute('label-link'));
+				prevItem.setAttribute('tooltiptext',
+					document.getElementById('Browser:Rewind')
+						.getAttribute('tooltiptext-link')
+						.replace(/%s/gi, (prev.label || prev.href))
+						.replace(/\s+/g, ' '));
+				aPopup.insertBefore(prevItem, aPopup.firstChild);
+			}
 		}
-		else {
-			prevItem.setAttribute('collapsed', true);
-		}
-
-		if (next) {
-			nextItem.removeAttribute('collapsed');
-			nextItem.setAttribute('tooltiptext',
-				document.getElementById('Browser:FastforwardNext')
-					.getAttribute('tooltiptext-link')
-					.replace(/%s/gi, (next.label || next.href))
-					.replace(/\s+/g, ' '));
-		}
-		else {
-			nextItem.setAttribute('collapsed', true);
-		}
-
-		popup.openPopup(this.backForwardMenuCurrentItem, 'start_before', 0, 0, false, false);
-	},
- 
-	hideLinksPopup : function() 
-	{
-		document.getElementById('prevNextLinksPopup').hidePopup();
-		this.backForwardMenu.hidePopup();
 	},
   
 	// handle events 
@@ -1256,17 +1234,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 			case 'DOMAttrModified':
 			case 'DOMNodeInserted':
 				this.onDocumentModified(aEvent);
-				return;
-
-			case 'popupshowing':
-				window.setTimeout(function(aSelf, aPopup) {
-					if (aPopup.boxObject.width && aPopup.boxObject.height)
-						aSelf.showLinksPopup();
-				}, 10, this, aEvent.currentTarget);
-				return;
-
-			case 'popuphiding':
-				this.hideLinksPopup();
 				return;
 		}
 	},
@@ -1601,9 +1568,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		else { // Firefox 3
 			window.__rewindforward__FillHistoryMenu = window.FillHistoryMenu;
 			window.FillHistoryMenu = this.newFillHistoryMenu;
-			var popup = this.backForwardMenu;
-			popup.addEventListener('popupshowing', this, false);
-			popup.addEventListener('popuphiding', this, false);
 		}
 
 		if ('BrowserCustomizeToolbar' in window) {
@@ -1715,12 +1679,6 @@ dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
 		gBrowser.removeEventListener('DOMContentLoaded', this, true);
 		gBrowser.removeEventListener('DOMAttrModified', this, true);
 		gBrowser.removeEventListener('DOMNodeInserted', this, true);
-
-		var popup = this.backForwardMenu;
-		if (popup) {
-			popup.removeEventListener('popupshowing', this, false);
-			popup.removeEventListener('popuphiding', this, false);
-		}
 
 		for (var i in this.siteInfoUpdateTimer)
 		{
