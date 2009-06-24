@@ -432,7 +432,7 @@ var RewindForwardService = {
 
 		// find "next" or "prev" link with XPath
 		if (this.getPref('rewindforward.related.use.siteInfo')) {
-			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel);
+			customRule = this.getCustomRuleFromSiteInfo(w.location.href, rel, d);
 			if (customRule && customRule.rule) {
 				links = this.getLinksFromXPath(customRule.rule, d, customRule.rate, this.kLINK_TYPE_RELATED);
 				comment = customRule.comment;
@@ -538,7 +538,7 @@ var RewindForwardService = {
 		result.rule = customRule;
 		return result;
 	},
-	getCustomRuleFromSiteInfo : function(aURI, aRelation)
+	getCustomRuleFromSiteInfo : function(aURI, aRelation, aDocument)
 	{
 		var rel = aRelation;
 		var result = {
@@ -565,33 +565,29 @@ var RewindForwardService = {
 			findRule:
 			for (var j = this.siteInfo[i].urls.length-1; j > -1; j--)
 			{
+				// skip SITEINFOs for microformats
+				if (this.siteInfo[i].urls[j].length <= 11)
+					continue;
+
 				if (!regexp.compile(this.siteInfo[i].urls[j]).test(aURI))
 					continue;
 
 				rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
-				if (rule) {
-					result.comment = 'from siteinfo for "'+this.siteInfo[i].urls[j]+'"';
-					result.rule = (result.rule ? result.rule+'|' : '' ) + rule;
-					result.rate = this.kLINK_RELATED_CUSTOM;
-					break findRule;
-				}
-			}
+				if (!rule) continue;
 
-/*
-			matchingResult.shift();
-			matchingResult = ['[', matchingResult.join(']['), ']'].join('')
-								.replace(/\[(undefined)?\]/g, '/')
-								.replace(/\[|\]/g, '');
-dump('result: '+matchingResult+'\n')
-			pos = matchingResult.indexOf(aURI);
-dump('found at '+pos+'\n');
-			if (pos > -1) {
-dump('found entry: '+this.siteInfo[i].urls[pos]+'\n');
-				result.rule = this.siteInfo[i].rules[this.siteInfo[i].urls[pos]].nextLink;
+				if (!this.evaluateXPath(rule, aDocument, XPathResult.BOOLEAN_TYPE).booleanValue)
+					continue;
+
+				let pageElement = this.siteInfo[i].rules[this.siteInfo[i].urls[j]].pageElement;
+				if (pageElement &&
+					!this.evaluateXPath(pageElement, aDocument, XPathResult.BOOLEAN_TYPE).booleanValue)
+					continue;
+
+				result.comment = 'from siteinfo for "'+this.siteInfo[i].urls[j]+'"';
+				result.rule = (result.rule ? result.rule+'|' : '' ) + rule;
 				result.rate = this.kLINK_RELATED_CUSTOM;
-				break;
+				break findRule;
 			}
-*/
 		}
 		return result;
 	},
