@@ -13,6 +13,4 @@ skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
 skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
 
 style	chrome://browser/content/browser.xul	chrome://rewindforward/skin/rewindforward.css
-style	chrome://browser/content/browser.xul	chrome://rewindforward-luna/skin/toolbar.css
 style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/skin/rewindforward.css
-style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward-luna/skin/toolbar.css
