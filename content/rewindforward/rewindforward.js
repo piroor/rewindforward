@@ -243,7 +243,7 @@ var RewindForwardService = {
 
 		if (dirs.length) {
 			for (var i = dirs.length-1; i > -1; i--)
-				dirs[i].create(dirs[i].DIRECTORY_TYPE, 0644);
+				dirs[i].create(dirs[i].DIRECTORY_TYPE, 0755);
 		}
 
 		var tempFile = this.getFileFromKeyword('TmpD');
