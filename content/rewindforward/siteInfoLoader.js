@@ -83,12 +83,13 @@ RewindForwardSiteInfoLoader.prototype = {
 
 		if (info.urls && info.urls.length &&
 			info.rules && rulesFound) {
-			RewindForwardService.setPref(
-				'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.cache',
-				info.toSource());
-			RewindForwardService.setPref(
-				'rewindforward.siteinfo.'+encodeURIComponent(this.uri)+'.last',
-				String(Date.now()));
+			let name = encodeURIComponent(this.uri);
+			let file = RewindForwardService.siteInfoDirectory.clone();
+			file.append(name+'.js');
+			RewindForwardService.writeTo(info.toSource(), file, 'UTF-8');
+			RewindForwardService.setPref('rewindforward.siteinfo.'+name+'.last', String(Date.now()));
+			// clear old data
+			RewindForwardService.clearPref('rewindforward.siteinfo.'+name+'.cache');
 		}
 
 		delete this.request;

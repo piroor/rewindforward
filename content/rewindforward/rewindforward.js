@@ -164,7 +164,118 @@ var RewindForwardService = {
 
 		docShell.loadURI(aURI, docShell.LOAD_FLAGS_IS_LINK , aReferrer, null, null);
 	},
+ 
+// file I/O 
+	
+	get DirectoryService() 
+	{
+		if (!this._DirectoryService) {
+			this._DirectoryService = Components
+					.classes['@mozilla.org/file/directory_service;1']
+					.getService(Components.interfaces.nsIProperties);
+		}
+		return this._DirectoryService;
+	},
+	
+	getFileFromKeyword : function(aKeyword) 
+	{
+		try {
+			return this.DirectoryService.get(aKeyword, Components.interfaces.nsIFile);
+		}
+		catch(e) {
+		}
+		return null;
+	},
   
+	readFrom : function(aTarget, aEncoding) 
+	{
+		aTarget = aTarget.QueryInterface(Components.interfaces.nsILocalFile)
+		var stream = Components
+						.classes['@mozilla.org/network/file-input-stream;1']
+						.createInstance(Components.interfaces.nsIFileInputStream);
+		try {
+			stream.init(aTarget, 1, 0, false); // open as "read only"
+		}
+		catch(ex) {
+			return null;
+		}
+
+		var fileContents = null;
+		try {
+			if (aEncoding) {
+				var converterStream = Components
+						.classes['@mozilla.org/intl/converter-input-stream;1']
+						.createInstance(Components.interfaces.nsIConverterInputStream);
+				var buffer = stream.available();
+				converterStream.init(stream, aEncoding, buffer,
+					converterStream.DEFAULT_REPLACEMENT_CHARACTER);
+				var out = { value : null };
+				converterStream.readString(stream.available(), out);
+				converterStream.close();
+				fileContents = out.value;
+			}
+			else {
+				var scriptableStream = Components
+						.classes['@mozilla.org/scriptableinputstream;1']
+						.createInstance(Components.interfaces.nsIScriptableInputStream);
+				scriptableStream.init(stream);
+				fileContents = scriptableStream.read(scriptableStream.available());
+				scriptableStream.close();
+			}
+		}
+		finally {
+			stream.close();
+		}
+
+		return fileContents;
+	},
+ 
+	writeTo : function(aContent, aTarget, aEncoding) 
+	{
+		// create directories
+		var current = aTarget;
+		var dirs    = [];
+		while (current.parent && !current.parent.exists())
+		{
+			dirs.push(current.parent);
+			current = current.parent;
+		}
+
+		if (dirs.length) {
+			for (var i = dirs.length-1; i > -1; i--)
+				dirs[i].create(dirs[i].DIRECTORY_TYPE, 0644);
+		}
+
+		var tempFile = this.getFileFromKeyword('TmpD');
+		tempFile.append(aTarget.localName+'.writing');
+		tempFile.createUnique(tempFile.NORMAL_FILE_TYPE, 0666);
+
+		var stream = Components
+				.classes['@mozilla.org/network/file-output-stream;1']
+				.createInstance(Components.interfaces.nsIFileOutputStream);
+		stream.init(tempFile, 2, 0x200, false); // open as "write only"
+
+		if (aEncoding) {
+			var converterStream = Components
+					.classes['@mozilla.org/intl/converter-output-stream;1']
+					.createInstance(Components.interfaces.nsIConverterOutputStream);
+			var buffer = aContent.length;
+			converterStream.init(stream, aEncoding, buffer, Components.interfaces.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+			converterStream.writeString(aContent);
+			converterStream.close();
+		}
+		else {
+			stream.write(aContent, aContent.length);
+		}
+
+		stream.close();
+
+		if (aTarget.exists()) aTarget.remove(true);
+		tempFile.moveTo(aTarget.parent, aTarget.leafName);
+
+		return aTarget;
+	},
+   
 	// do rewind/fastforward 
 	
 	goRewind : function(aEvent) 
@@ -1483,9 +1594,9 @@ var RewindForwardService = {
 				return;
 
 			default:
-				if (!/^rewindforward\.siteinfo\.(.+)\.cache/.test(aData)) return;
+				if (!/^rewindforward\.siteinfo\.(.+)\.last/.test(aData)) return;
 				var uri = decodeURIComponent(RegExp.$1);
-				var cache = this.getPref(aData);
+				var cache = this.loadSiteInfoCacheFor(uri);
 				if (cache)
 					this.siteInfo[uri] = eval(cache);
 				else
@@ -1496,6 +1607,16 @@ var RewindForwardService = {
   
 	// siteinfo 
 	
+	get siteInfoDirectory() 
+	{
+		if (!this._siteInfoDirectory) {
+			this._siteInfoDirectory = this.getFileFromKeyword('ProfD');
+			this._siteInfoDirectory.append('rewindforward');
+			this._siteInfoDirectory.append('siteinfo');
+		}
+		return this._siteInfoDirectory;
+	},
+ 
 	siteInfo : {}, 
 	siteInfoUpdateTimer : {},
  
@@ -1504,12 +1625,11 @@ var RewindForwardService = {
 		var uris = this.getPref('rewindforward.siteinfo.importFrom').split('|');
 		var expire = this.getPref('rewindforward.siteinfo.expire');
 		var now = Date.now();
-		var cache;
-		var lastUpdate;
-		for (var i in uris)
+		for (let i in uris)
 		{
-			cache = this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.cache');
-			last  = parseInt(this.getPref('rewindforward.siteinfo.'+encodeURIComponent(uris[i])+'.last') || 0);
+			let name = encodeURIComponent(uris[i]);
+			let cache = this.loadSiteInfoCacheFor(uris[i]);
+			let last  = parseInt(this.getPref('rewindforward.siteinfo.'+name+'.last') || 0);
 			if (aForce || !cache || now >= expire + last) {
 				new RewindForwardSiteInfoLoader(uris[i]);
 				last = now;
@@ -1532,7 +1652,15 @@ var RewindForwardService = {
 			);
 		}
 	},
-  
+	
+	loadSiteInfoCacheFor : function(aURI) 
+	{
+		let name = encodeURIComponent(aURI);
+		let file = this.siteInfoDirectory.clone();
+		file.append(name+'.js');
+		return this.readFrom(file, 'UTF-8');
+	},
+   
 	// initialize 
 	
 	init : function() 
