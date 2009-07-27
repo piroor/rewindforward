@@ -7,6 +7,7 @@ pref("rewindforward.related.virtual_link.enabled", true);
 pref("rewindforward.related.use.label",           true);
 pref("rewindforward.related.use.customRules",     true);
 pref("rewindforward.related.use.siteInfo",        true);
+pref("rewindforward.siteInfo.unit",               250);
 pref("rewindforward.gonextprev.enabled",          true);
 pref("rewindforward.gonextprev.prev.keys",        " ,shift|VK_PAGE_UP");
 pref("rewindforward.gonextprev.next.keys",        " |VK_PAGE_DOWN");

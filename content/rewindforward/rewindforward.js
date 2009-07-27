@@ -550,47 +550,68 @@ var RewindForwardService = {
 		var pos;
 		var regexp = new RegExp();
 		var rule;
+		var unit = this.urlRulesUnit;
 
 		for (var i in this.siteInfo)
 		{
 			if (!this.siteInfo[i] || !this.siteInfo[i].urls) continue;
 
-			if (!this.siteInfo[i].urlsRule)
-				this.siteInfo[i].urlsRule = new RegExp('^('+(this.siteInfo[i].urls.join(')|^(') || '[^\s\w]')+')');
-
-			if (!this.siteInfo[i].urlsRule.test(aURI || ''))
-				continue;
-
-			// we have to find rule from last because the last rule of duplicated rules should be applied.
-			findRule:
-			for (var j = this.siteInfo[i].urls.length-1; j > -1; j--)
-			{
-				// skip SITEINFOs for microformats
-				if (this.siteInfo[i].urls[j].length <= 11)
-					continue;
-
-				if (!regexp.compile(this.siteInfo[i].urls[j]).test(aURI))
-					continue;
-
-				rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
-				if (!rule) continue;
-
-				if (!this.evaluateXPath(rule, aDocument, XPathResult.BOOLEAN_TYPE).booleanValue)
-					continue;
-
-				let pageElement = this.siteInfo[i].rules[this.siteInfo[i].urls[j]].pageElement;
-				if (pageElement &&
-					!this.evaluateXPath(pageElement, aDocument, XPathResult.BOOLEAN_TYPE).booleanValue)
-					continue;
-
-				result.comment = 'from siteinfo for "'+this.siteInfo[i].urls[j]+'"';
-				result.rule = (result.rule ? result.rule+'|' : '' ) + rule;
-				result.rate = this.kLINK_RELATED_CUSTOM;
-				break findRule;
+			if (!this.siteInfo[i].urlsRules) {
+				this.siteInfo[i].urlsRules = [];
+				let urls = this.siteInfo[i].urls.reverse();
+				while (urls.length)
+				{
+					this.siteInfo[i].urlsRules.push(
+						new RegExp(
+							'^('+
+							(urls.slice(0, unit).join(')|^(') || '[^\s\w]')+
+							')'
+						)
+					);
+					urls = urls.slice(unit+1);
+				}
 			}
+
+			this.siteInfo[i].urlsRules.forEach(function(aRule, aIndex) {
+				if (!aRule.test(aURI || '')) return;
+
+				let offset = aIndex * unit;
+
+				// we have to find rule from last because the last rule of duplicated rules should be applied.
+				for (let j = Math.max(-1, this.siteInfo[i].urls.length - 1 - offset),
+						endj = Math.max(-1, this.siteInfo[i].urls.length - 1 - offset - unit);
+						j > endj;
+						j--
+					)
+				{
+					// skip SITEINFOs for microformats
+					if (this.siteInfo[i].urls[j].length <= 11)
+						continue;
+
+					if (!regexp.compile(this.siteInfo[i].urls[j]).test(aURI))
+						continue;
+
+					rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
+					if (!rule) continue;
+
+					if (!this.evaluateXPath(rule, aDocument, XPathResult.BOOLEAN_TYPE).booleanValue)
+						continue;
+
+					let pageElement = this.siteInfo[i].rules[this.siteInfo[i].urls[j]].pageElement;
+					if (pageElement &&
+						!this.evaluateXPath(pageElement, aDocument, XPathResult.BOOLEAN_TYPE).booleanValue)
+						continue;
+
+					result.comment = 'from siteinfo for "'+this.siteInfo[i].urls[j]+'"';
+					result.rule = (result.rule ? result.rule+'|' : '' ) + rule;
+					result.rate = this.kLINK_RELATED_CUSTOM;
+					break;
+				}
+			}, this);
 		}
 		return result;
 	},
+	urlRulesUnit : 200,
  
 	getLabeledLinks : function(aType, aWindow) 
 	{
@@ -1454,6 +1475,13 @@ var RewindForwardService = {
 				this.updateButtons(true);
 				return;
 
+			case 'rewindforward.siteInfo.unit':
+				this.urlRulesUnit = Math.max(1000, this.getPref(aData));
+				this.siteInfo.forEach(function(aInfo) {
+					aInfo.urlsRules = null;
+				}, this);
+				return;
+
 			default:
 				if (!/^rewindforward\.siteinfo\.(.+)\.cache/.test(aData)) return;
 				var uri = decodeURIComponent(RegExp.$1);
@@ -1617,6 +1645,7 @@ var RewindForwardService = {
 		this.addPrefListener(this);
 		this.observe(null, 'nsPref:changed', 'rewindforward.gonextprev.exceptions');
 		this.observe(null, 'nsPref:changed', 'rewindforward.use_another_icons');
+		this.observe(null, 'nsPref:changed', 'rewindforward.siteInfo.unit');
 
 		this.initSiteInfo();
 
