@@ -663,9 +663,11 @@ var RewindForwardService = {
 		var rule;
 		var unit = this.urlRulesUnit;
 
-		for (var i in this.siteInfo)
-		{
-			if (!this.siteInfo[i] || !this.siteInfo[i].urls) continue;
+		var uris = this.getPref('rewindforward.siteinfo.importFrom').split('|'),
+			i;
+		uris.forEach(function(aURI) {
+			i = aURI;
+			if (!this.siteInfo[i] || !this.siteInfo[i].urls) return;
 
 			if (!this.siteInfo[i].urlsRules) {
 				this.siteInfo[i].urlsRules = [];
@@ -719,7 +721,7 @@ var RewindForwardService = {
 					break;
 				}
 			}, this);
-		}
+		}, this);
 		return result;
 	},
 	urlRulesUnit : 200,
