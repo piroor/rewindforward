@@ -71,10 +71,15 @@ var RewindForwardService = {
  
 	evalInSandbox : function(aCode, aScope, aSandboxOwner)
 	{
-		var sandbox = new Components.utils.Sandbox(aSandboxOwner || window);
-		sandbox.__proto__ = aScope;
-		Components.utils.evalInSandbox(aCode, sandbox);
-		return sandbox;
+		try {
+			var sandbox = new Components.utils.Sandbox(aSandboxOwner || window);
+			sandbox.__proto__ = aScope;
+			Components.utils.evalInSandbox(aCode, sandbox);
+			return sandbox;
+		}
+		catch(e) {
+		}
+		return {};
 	},
  
 	getEventTargetId : function(aEvent) 
@@ -465,9 +470,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kFOUND_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kFOUND_PREFIX + aType+'LastCount') == lastCount) {
-			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope, w);
-			lastResult = scope.result;
+			let scope = { result : { value : {} } };
+			this.evalInSandbox('result.value = '+lastResult, scope, w);
+			lastResult = scope.result.value;
 			lastResult.referrer = referrer;
 			lastResult.view = w;
 			return lastResult;
@@ -540,9 +545,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kRELATED_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kRELATED_PREFIX + aType+'LastCount') == lastCount) {
-			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope, w);
-			lastResult = scope.result;
+			let scope = { result : { value : {} } };
+			this.evalInSandbox('result.value = '+lastResult, scope, w);
+			lastResult = scope.result.value;
 			return lastResult;
 		}
 
@@ -751,9 +756,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kLABELED_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kLABELED_PREFIX + aType+'LastCount') == lastCount) {
-			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope, w);
-			lastResult = scope.result;
+			let scope = { result : { value : {} } };
+			this.evalInSandbox('result.value = '+lastResult, scope, w);
+			lastResult = scope.result.value;
 			return lastResult;
 		}
 
@@ -860,9 +865,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount') == lastCount) {
-			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope, w);
-			lastResult = scope.result;
+			let scope = { result : { value : {} } };
+			this.evalInSandbox('result.value = '+lastResult, scope, w);
+			lastResult = scope.result.value;
 			return lastResult.href ? lastResult : null ;
 		}
 
@@ -1617,9 +1622,9 @@ var RewindForwardService = {
 				var uri = decodeURIComponent(RegExp.$1);
 				var cache = this.loadSiteInfoCacheFor(uri);
 				if (cache) {
-					let scope = { cache : null };
-					this.evalInSandbox('cache = '+cache, scope, uri);
-					this.siteInfo[uri] = scope.cache;
+					let scope = { cache : { value : {} } };
+					this.evalInSandbox('cache.value = '+cache, scope, uri);
+					this.siteInfo[uri] = scope.cache.value;
 				}
 				else
 					this.siteInfo[uri] = null;
@@ -1657,9 +1662,9 @@ var RewindForwardService = {
 				last = now;
 			}
 			else {
-				let scope = { cache : null };
-				this.evalInSandbox('cache = '+cache, scope, uris[i]);
-				this.siteInfo[uris[i]] = scope.cache;
+				let scope = { cache : { value : {} } };
+				this.evalInSandbox('cache.value = '+cache, scope, uris[i]);
+				this.siteInfo[uris[i]] = scope.cache.value;
 			}
 			if (this.siteInfoUpdateTimer[uris[i]]) {
 				window.clearTimeout(this.siteInfoUpdateTimer[uris[i]]);
