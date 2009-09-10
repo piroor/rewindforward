@@ -40,7 +40,7 @@ RewindForwardSiteInfoLoader.prototype = {
 
 			// first, try to parse as JSON
 			try {
-				var sandbox = new Components.utils.Sandbox(window);
+				var sandbox = new Components.utils.Sandbox(this.uri);
 				Components.utils.evalInSandbox('data = '+(this.request.responseText || 'null'), sandbox);
 				if (sandbox.data) {
 					sandbox.data.forEach(function(aData) {

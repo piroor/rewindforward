@@ -69,11 +69,12 @@ var RewindForwardService = {
 		return xpathResult;
 	},
  
-	evalInSandbox : function(aCode, aScope)
+	evalInSandbox : function(aCode, aScope, aSandboxOwner)
 	{
-		var sandbox = new Components.utils.Sandbox(window);
+		var sandbox = new Components.utils.Sandbox(aSandboxOwner || window);
 		sandbox.__proto__ = aScope;
 		Components.utils.evalInSandbox(aCode, sandbox);
+		return sandbox;
 	},
  
 	getEventTargetId : function(aEvent) 
@@ -465,7 +466,7 @@ var RewindForwardService = {
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kFOUND_PREFIX + aType+'LastCount') == lastCount) {
 			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope);
+			this.evalInSandbox('result = '+lastResult, scope, w);
 			lastResult = scope.result;
 			lastResult.referrer = referrer;
 			lastResult.view = w;
@@ -540,7 +541,7 @@ var RewindForwardService = {
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kRELATED_PREFIX + aType+'LastCount') == lastCount) {
 			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope);
+			this.evalInSandbox('result = '+lastResult, scope, w);
 			lastResult = scope.result;
 			return lastResult;
 		}
@@ -751,7 +752,7 @@ var RewindForwardService = {
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kLABELED_PREFIX + aType+'LastCount') == lastCount) {
 			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope);
+			this.evalInSandbox('result = '+lastResult, scope, w);
 			lastResult = scope.result;
 			return lastResult;
 		}
@@ -860,7 +861,7 @@ var RewindForwardService = {
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount') == lastCount) {
 			let scope = { result : null };
-			this.evalInSandbox('result = '+lastResult, scope);
+			this.evalInSandbox('result = '+lastResult, scope, w);
 			lastResult = scope.result;
 			return lastResult.href ? lastResult : null ;
 		}
@@ -1617,7 +1618,7 @@ var RewindForwardService = {
 				var cache = this.loadSiteInfoCacheFor(uri);
 				if (cache) {
 					let scope = { cache : null };
-					this.evalInSandbox('cache = '+cache, scope);
+					this.evalInSandbox('cache = '+cache, scope, uri);
 					this.siteInfo[uri] = scope.cache;
 				}
 				else
@@ -1657,7 +1658,7 @@ var RewindForwardService = {
 			}
 			else {
 				let scope = { cache : null };
-				this.evalInSandbox('cache = '+cache, scope);
+				this.evalInSandbox('cache = '+cache, scope, uris[i]);
 				this.siteInfo[uris[i]] = scope.cache;
 			}
 			if (this.siteInfoUpdateTimer[uris[i]]) {
