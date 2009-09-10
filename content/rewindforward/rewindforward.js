@@ -69,6 +69,13 @@ var RewindForwardService = {
 		return xpathResult;
 	},
  
+	evalInSandbox : function(aCode, aScope)
+	{
+		var sandbox = new Components.utils.Sandbox(window);
+		sandbox.__proto__ = aScope;
+		Components.utils.evalInSandbox(aCode, sandbox);
+	},
+ 
 	getEventTargetId : function(aEvent) 
 	{
 		if (aEvent.sourceEvent) aEvent = aEvent.sourceEvent;
@@ -457,7 +464,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kFOUND_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kFOUND_PREFIX + aType+'LastCount') == lastCount) {
-			lastResult = eval(lastResult);
+			let scope = { result : null };
+			this.evalInSandbox('result = '+lastResult, scope);
+			lastResult = scope.result;
 			lastResult.referrer = referrer;
 			lastResult.view = w;
 			return lastResult;
@@ -530,7 +539,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kRELATED_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kRELATED_PREFIX + aType+'LastCount') == lastCount) {
-			lastResult = eval(lastResult);
+			let scope = { result : null };
+			this.evalInSandbox('result = '+lastResult, scope);
+			lastResult = scope.result;
 			return lastResult;
 		}
 
@@ -739,7 +750,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kLABELED_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kLABELED_PREFIX + aType+'LastCount') == lastCount) {
-			lastResult = eval(lastResult);
+			let scope = { result : null };
+			this.evalInSandbox('result = '+lastResult, scope);
+			lastResult = scope.result;
 			return lastResult;
 		}
 
@@ -846,7 +859,9 @@ var RewindForwardService = {
 		var lastResult = d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType);
 		if (lastResult &&
 			d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount') == lastCount) {
-			lastResult = eval(lastResult);
+			let scope = { result : null };
+			this.evalInSandbox('result = '+lastResult, scope);
+			lastResult = scope.result;
 			return lastResult.href ? lastResult : null ;
 		}
 
@@ -1600,8 +1615,11 @@ var RewindForwardService = {
 				if (!/^rewindforward\.siteinfo\.(.+)\.last/.test(aData)) return;
 				var uri = decodeURIComponent(RegExp.$1);
 				var cache = this.loadSiteInfoCacheFor(uri);
-				if (cache)
-					this.siteInfo[uri] = eval(cache);
+				if (cache) {
+					let scope = { cache : null };
+					this.evalInSandbox('cache = '+cache, scope);
+					this.siteInfo[uri] = scope.cache;
+				}
 				else
 					this.siteInfo[uri] = null;
 		}
@@ -1638,7 +1656,9 @@ var RewindForwardService = {
 				last = now;
 			}
 			else {
-				this.siteInfo[uris[i]] = eval(cache);
+				let scope = { cache : null };
+				this.evalInSandbox('cache = '+cache, scope);
+				this.siteInfo[uris[i]] = scope.cache;
 			}
 			if (this.siteInfoUpdateTimer[uris[i]]) {
 				window.clearTimeout(this.siteInfoUpdateTimer[uris[i]]);
