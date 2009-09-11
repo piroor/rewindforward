@@ -8,8 +8,6 @@ var RewindForwardService = {
 	kLABELED_PREFIX : 'rewindforward-found-labeled-links-',
 	kVIRTUAL_PREFIX : 'rewindforward-found-virtual-links-',
 
-	kGENERATED_ID_PREFIX : 'rewindforward-found-link-',
-
 	domainRegExp : /^\w+:\/\/([^:\/]+)(\/|$)/,
 	gonextprevExceptions : /[^\w\W]/,
 
@@ -467,12 +465,9 @@ var RewindForwardService = {
 						.getService(Components.interfaces.nsIIOService)
 						.newURI(w.location.href, null, null);
 
-		var lastResult = d.documentElement.getAttribute(this.kFOUND_PREFIX + aType);
+		var lastResult = d[this.kFOUND_PREFIX + aType];
 		if (lastResult &&
-			d.documentElement.getAttribute(this.kFOUND_PREFIX + aType+'LastCount') == lastCount) {
-			let scope = { result : { value : {} } };
-			this.evalInSandbox('result.value = '+lastResult, scope, w);
-			lastResult = scope.result.value;
+			d[this.kFOUND_PREFIX + aType+'LastCount'] == lastCount) {
 			lastResult.referrer = referrer;
 			lastResult.view = w;
 			return lastResult;
@@ -520,8 +515,8 @@ var RewindForwardService = {
 		});
 
 		if (resultArray.length) {
-			d.documentElement.setAttribute(this.kFOUND_PREFIX + aType, resultArray[0].toSource());
-			d.documentElement.setAttribute(this.kFOUND_PREFIX + aType+'LastCount', lastCount);
+			d[this.kFOUND_PREFIX + aType] = resultArray[0];
+			d[this.kFOUND_PREFIX + aType+'LastCount'] = lastCount;
 
 			resultArray[0].referrer = referrer;
 			resultArray[0].view = w;
@@ -542,9 +537,9 @@ var RewindForwardService = {
 		var lastCount = d.getElementsByTagName('*').length;
 
 		// use cache
-		var lastResult = d.documentElement.getAttribute(this.kRELATED_PREFIX + aType);
+		var lastResult = d[this.kRELATED_PREFIX + aType];
 		if (lastResult &&
-			d.documentElement.getAttribute(this.kRELATED_PREFIX + aType+'LastCount') == lastCount) {
+			d[this.kRELATED_PREFIX + aType+'LastCount'] == lastCount) {
 			let scope = { result : { value : {} } };
 			this.evalInSandbox('result.value = '+lastResult, scope, w);
 			lastResult = scope.result.value;
@@ -590,8 +585,8 @@ var RewindForwardService = {
 
 
 	//dump('FOUND RELATED LINKS: '+links.length+'\n')
-		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType, links.toSource());
-		d.documentElement.setAttribute(this.kRELATED_PREFIX + aType+'LastCount', lastCount);
+		d[this.kRELATED_PREFIX + aType] = links;
+		d[this.kRELATED_PREFIX + aType+'LastCount'] = lastCount;
 
 		links.forEach(function(aLink) {
 			aLink.comment = comment;
@@ -753,9 +748,9 @@ var RewindForwardService = {
 		var lastCount = d.getElementsByTagName('*').length;
 
 		// use cache
-		var lastResult = d.documentElement.getAttribute(this.kLABELED_PREFIX + aType);
+		var lastResult = d[this.kLABELED_PREFIX + aType];
 		if (lastResult &&
-			d.documentElement.getAttribute(this.kLABELED_PREFIX + aType+'LastCount') == lastCount) {
+			d[this.kLABELED_PREFIX + aType+'LastCount'] == lastCount) {
 			let scope = { result : { value : {} } };
 			this.evalInSandbox('result.value = '+lastResult, scope, w);
 			lastResult = scope.result.value;
@@ -803,8 +798,8 @@ var RewindForwardService = {
 			}
 		}
 
-		d.documentElement.setAttribute(this.kLABELED_PREFIX + aType, links.toSource());
-		d.documentElement.setAttribute(this.kLABELED_PREFIX + aType+'LastCount', lastCount);
+		d[this.kLABELED_PREFIX + aType] = links;
+		d[this.kLABELED_PREFIX + aType+'LastCount'] = lastCount;
 
 		return links;
 	},
@@ -862,9 +857,9 @@ var RewindForwardService = {
 		var lastCount = d.getElementsByTagName('*').length;
 
 		// use cache
-		var lastResult = d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType);
+		var lastResult = d[this.kVIRTUAL_PREFIX + aType];
 		if (lastResult &&
-			d.documentElement.getAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount') == lastCount) {
+			d[this.kVIRTUAL_PREFIX + aType+'LastCount'] == lastCount) {
 			let scope = { result : { value : {} } };
 			this.evalInSandbox('result.value = '+lastResult, scope, w);
 			lastResult = scope.result.value;
@@ -881,8 +876,8 @@ var RewindForwardService = {
 				type    : this.kLINK_TYPE_VIRTUAL
 			};
 
-		d.documentElement.setAttribute(this.kVIRTUAL_PREFIX + aType, link.toSource());
-		d.documentElement.setAttribute(this.kVIRTUAL_PREFIX + aType+'LastCount', lastCount);
+		d[this.kVIRTUAL_PREFIX + aType] = link;
+		d[this.kVIRTUAL_PREFIX + aType+'LastCount'] = lastCount;
 
 		return link.href ? link : null ;
 	},
