@@ -540,9 +540,6 @@ var RewindForwardService = {
 		var lastResult = d[this.kRELATED_PREFIX + aType];
 		if (lastResult &&
 			d[this.kRELATED_PREFIX + aType+'LastCount'] == lastCount) {
-			let scope = { result : { value : {} } };
-			this.evalInSandbox('result.value = '+lastResult, scope, w);
-			lastResult = scope.result.value;
 			return lastResult;
 		}
 
@@ -751,9 +748,6 @@ var RewindForwardService = {
 		var lastResult = d[this.kLABELED_PREFIX + aType];
 		if (lastResult &&
 			d[this.kLABELED_PREFIX + aType+'LastCount'] == lastCount) {
-			let scope = { result : { value : {} } };
-			this.evalInSandbox('result.value = '+lastResult, scope, w);
-			lastResult = scope.result.value;
 			return lastResult;
 		}
 
@@ -860,9 +854,6 @@ var RewindForwardService = {
 		var lastResult = d[this.kVIRTUAL_PREFIX + aType];
 		if (lastResult &&
 			d[this.kVIRTUAL_PREFIX + aType+'LastCount'] == lastCount) {
-			let scope = { result : { value : {} } };
-			this.evalInSandbox('result.value = '+lastResult, scope, w);
-			lastResult = scope.result.value;
 			return lastResult.href ? lastResult : null ;
 		}
 
