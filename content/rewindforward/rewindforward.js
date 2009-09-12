@@ -67,17 +67,15 @@ var RewindForwardService = {
 		return xpathResult;
 	},
  
-	evalInSandbox : function(aCode, aScope, aSandboxOwner)
+	evalInSandbox : function(aCode, aSandboxOwner)
 	{
 		try {
-			var sandbox = new Components.utils.Sandbox(aSandboxOwner || window);
-			sandbox.__proto__ = aScope;
-			Components.utils.evalInSandbox(aCode, sandbox);
-			return sandbox;
+			var sandbox = new Components.utils.Sandbox(aSandboxOwner || 'about:blank');
+			return Components.utils.evalInSandbox(aCode, sandbox);
 		}
 		catch(e) {
 		}
-		return {};
+		return null;
 	},
  
 	getEventTargetId : function(aEvent) 
@@ -1607,11 +1605,8 @@ var RewindForwardService = {
 				if (!/^rewindforward\.siteinfo\.(.+)\.last/.test(aData)) return;
 				var uri = decodeURIComponent(RegExp.$1);
 				var cache = this.loadSiteInfoCacheFor(uri);
-				if (cache) {
-					let scope = { cache : { value : {} } };
-					this.evalInSandbox('cache.value = '+cache, scope, uri);
-					this.siteInfo[uri] = scope.cache.value;
-				}
+				if (cache)
+					this.siteInfo[uri] = this.evalInSandbox('('+cache+')', uri);
 				else
 					this.siteInfo[uri] = null;
 		}
@@ -1648,9 +1643,7 @@ var RewindForwardService = {
 				last = now;
 			}
 			else {
-				let scope = { cache : { value : {} } };
-				this.evalInSandbox('cache.value = '+cache, scope, uris[i]);
-				this.siteInfo[uris[i]] = scope.cache.value;
+				this.siteInfo[uris[i]] = this.evalInSandbox('('+cache+')', uris[i]);;
 			}
 			if (this.siteInfoUpdateTimer[uris[i]]) {
 				window.clearTimeout(this.siteInfoUpdateTimer[uris[i]]);

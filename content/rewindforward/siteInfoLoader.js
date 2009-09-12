@@ -40,10 +40,10 @@ RewindForwardSiteInfoLoader.prototype = {
 
 			// first, try to parse as JSON
 			try {
-				var sandbox = new Components.utils.Sandbox(this.uri);
-				Components.utils.evalInSandbox('data = '+(this.request.responseText || 'null'), sandbox);
-				if (sandbox.data) {
-					sandbox.data.forEach(function(aData) {
+				let sandbox = new Components.utils.Sandbox(this.uri);
+				let data = RewindForwardService.evalInSandbox('('+(this.request.responseText || 'null')+')', sandbox);
+				if (data) {
+					data.forEach(function(aData) {
 						rules[aData.data.url] = aData.data;
 						urls.push(aData.data.url);
 						rulesFound = true;
@@ -56,17 +56,16 @@ RewindForwardSiteInfoLoader.prototype = {
 			// second, try to parse as Infogami Wiki Style
 			if (!rulesFound) {
 				try {
-					var source = this.request.responseText
+					let source = this.request.responseText
 							.replace(/((\w+)="[^"]+"[^>]*)[\s\r\n](\2)="[^"]+"/, '$1'); // 2007.2.19, fix syntax error on autopagerize wiki
-					var doc = parser.parseFromString(source, 'text/xml');
-					var textarea = RewindForwardService.evaluateXPath(
+					let doc = parser.parseFromString(source, 'text/xml');
+					let textarea = RewindForwardService.evaluateXPath(
 							'//*[@class="autopagerize_data"]',
 							doc
 						);
-					var parsedInfo;
-					for (var i = 0, maxi = textarea.snapshotLength; i < maxi; i++)
+					for (let i = 0, maxi = textarea.snapshotLength; i < maxi; i++)
 					{
-						parsedInfo = this.parseInfo(textarea.snapshotItem(i).textContent);
+						let parsedInfo = this.parseInfo(textarea.snapshotItem(i).textContent);
 						if (!parsedInfo) continue;
 						rules[parsedInfo.url] = parsedInfo;
 						urls.push(parsedInfo.url);
