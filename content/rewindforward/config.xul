@@ -143,8 +143,8 @@
 	</groupbox>
 </prefpane>
 
-<script type="application/x-javascript; version=1.7" src="prefs.js"/>
-<script type="application/x-javascript; version=1.7" src="rewindforward.js"/>
-<script type="application/x-javascript; version=1.7" src="siteInfoLoader.js"/>
+<script type="application/javascript" src="prefs.js"/>
+<script type="application/javascript" src="rewindforward.js"/>
+<script type="application/javascript" src="siteInfoLoader.js"/>
 
 </prefwindow>

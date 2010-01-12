@@ -15,9 +15,9 @@
 		height="400"
 		persist="width height screenX screenY">
 
-<script type="application/x-javascript" src="chrome://rewindforward/content/rewindforward.js"/>
-<script type="application/x-javascript" src="chrome://rewindforward/content/customizeRules.js"/>
-<script type="application/x-javascript"><![CDATA[
+<script type="application/javascript" src="chrome://rewindforward/content/rewindforward.js"/>
+<script type="application/javascript" src="chrome://rewindforward/content/customizeRules.js"/>
+<script type="application/javascript"><![CDATA[
 
 const WINMAN = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
 function opener()
