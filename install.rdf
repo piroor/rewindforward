@@ -25,6 +25,7 @@
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
 	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+		<em:translator>Mikes Kaszmán István (hu-HU locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -35,6 +36,7 @@
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
 	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+		<em:translator>Mikes Kaszmán István (hu-HU locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -45,6 +47,7 @@
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
 	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+		<em:translator>Mikes Kaszmán István (hu-HU locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -55,6 +58,7 @@
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
 	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+		<em:translator>Mikes Kaszmán István (hu-HU locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -65,6 +69,18 @@
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
 	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+		<em:translator>Mikes Kaszmán István (hu-HU locale)</em:translator>
+	  </RDF:Description>
+    </em:localized>
+    <em:localized>
+      <RDF:Description em:locale="hu-HU"
+                       em:name="Rewind/Fastforward Buttons"
+                       em:description="&quot;Ugrás az előző/következő tartományra&quot; gombok hozzáadása az eszköztárra."
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en">
+	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
+	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
+	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+		<em:translator>Mikes Kaszmán István (hu-HU locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
 

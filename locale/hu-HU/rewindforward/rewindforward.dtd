@@ -1,0 +1,86 @@
+<!ENTITY rewindCmd.label           "Ugrás előre">
+<!ENTITY rewindButton.tooltip      "Ugrás az előző tartomány utolsó oldalára">
+<!ENTITY rewindButton.tooltip.toEndPoint "Ugrás a jelenlegi tartomány első oldalára">
+<!ENTITY fastforwardCmd.label      "Ugrás hátra">
+<!ENTITY fastforwardButton.tooltip "Ugrás a következő tartomány első oldalára">
+<!ENTITY fastforwardButton.tooltip.toEndPoint "Ugrás a jelenlegi tartomány utolsó oldalára">
+<!ENTITY prevCmd.label             "Előző">
+<!ENTITY prevButton.tooltip        "Előző oldal (&#37;s)">
+<!ENTITY prevButton.tooltip.blank  "Nincs előző oldal">
+<!ENTITY nextCmd.label             "Következő">
+<!ENTITY nextButton.tooltip        "Következő oldal (&#37;s)">
+<!ENTITY nextButton.tooltip.blank  "Nincs következő oldal">
+
+
+<!ENTITY rewindforward.config.title       "Rewind/Fastforward Buttons beállításai">
+
+<!ENTITY rewindforward.general.tab             "Általános">
+
+<!ENTITY rewindforward.override_button.caption "Előző/Következő">
+<!ENTITY rewindforward.override_button.back    "Használja az &quot;Előző&quot; gombot az &quot;Ugrás az előző tartományra&quot; gomb helyett">
+<!ENTITY rewindforward.override_button.forward "Használja a &quot;Következő&quot; gombot az &quot;Ugrás a következő tartományra&quot; gomb helyett">
+
+
+<!ENTITY rewindforward.history.caption           "Ugrás az előző/következő tartományra">
+<!ENTITY rewindforward.history.fill_history_menu "Előzmények megjelenítése a gombok helyi menüjében">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.enabled  "Ugrás a jelenlegi tartomány első oldalára">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.disabled "Ugrás az előző tartomány utolsó oldalára">
+
+<!ENTITY rewindforward.related.tab               "Hasonló oldalak">
+<!ENTITY rewindforward.related.caption           "Hasonló oldalak">
+<!ENTITY rewindforward.related.find_next_links   "Használja a &quot;Következő oldal&quot; gombot az &quot;Ugrás a következő tartományra&quot; gomb helyett a hasonló oldalakhoz">
+<!ENTITY rewindforward.related.find_prev_links   "Használja az &quot;Előző oldal&quot; gombot az &quot;Ugrás az előző tartományra&quot; gomb helyett a hasonló oldalakhoz">
+
+<!ENTITY rewindforward.related.gonextprev.enabled "Az oldalak aljára érve ugrás a következő oldalakra">
+<!ENTITY rewindforward.related.gonextprev.button  "Kivételek tesztreszabása">
+
+<!ENTITY rewindforward.related.use.caption         "Automatikus javaslat a Következő/Előző oldalakhoz">
+<!ENTITY rewindforward.related.virtual_link.enabled "Egymás utáni webcímek meglátogatása az &quot;Előző oldal&quot; és a &quot;Következő oldal&quot; gombokkal">
+<!ENTITY rewindforward.related.use.label           "Javaslatok a linkek címkéje alapján">
+<!ENTITY rewindforward.related.use.customRules     "Javaslatok a beépített szabályok alapján">
+<!ENTITY rewindforward.related.use.siteInfo        "Javaslatok az oldalinformáció alapján">
+<!ENTITY rewindforward.related.customizeRules.button  "Szabályegyezések testreszabása...">
+<!ENTITY rewindforward.siteInfo.update.button      "Oldalinformáció frissítése most">
+
+<!ENTITY rewindforward.icon.caption "A &quot;Következő oldal&quot; és az &quot;Előző oldal&quot; gombok ikonjai (újraindítás szükséges)">
+<!ENTITY rewindforward.icon.normal  "Használja az 1. típus ikonjait">
+<!ENTITY rewindforward.icon.another "Használja a 2. típus ikonjait">
+
+
+<!ENTITY rewindforward.rules.title  "Szabályegyezések a Következő/Előző oldalakhoz">
+<!ENTITY rewindforward.rules.desc   "Adja meg az útvonalat tartalmazó kifejezéseket (XPath) a linkek kereséséhez, amelyek az előző/következő oldalaknak felelnek meg. A tartománynevekhez használja a (*) helyettesítő karaktert.">
+<!ENTITY rewindforward.rules.col.domain "Tartományok">
+<!ENTITY rewindforward.rules.col.prev   "Következő">
+<!ENTITY rewindforward.rules.col.next   "Előző">
+
+<!ENTITY button.newRule.label    "Új szabály">
+<!ENTITY button.modifyPrev.label "Az &quot;Előző&quot; szerkesztése">
+<!ENTITY button.modifyNext.label "A &quot;Következő&quot; szerkesztése">
+<!ENTITY button.delete.label     "Törlés">
+<!ENTITY button.reset.label      "Alapértelmezés">
+
+<!ENTITY copyDomain.label       "Tartomány másolása">
+<!ENTITY copyDomain.accesskey   "a">
+<!ENTITY copyXPath.label        "Kifejezések másolása">
+<!ENTITY copyXPath.accesskey    "i">
+<!ENTITY newRule.label          "Új kifejezés kialakítása">
+<!ENTITY newRule.accesskey      "k">
+<!ENTITY modifyPrev.label       "Az &quot;Előző&quot; kifejezés szerkesztése">
+<!ENTITY modifyPrev.accesskey   "l">
+<!ENTITY modifyNext.label       "A &quot;Következő&quot; kifejezés szerkesztése">
+<!ENTITY modifyNext.accesskey   "v">
+<!ENTITY delete.label           "Törlés">
+<!ENTITY delete.accesskey       "T">
+
+
+<!ENTITY rewindforward.exceptions.title  "Az automatikusan betöltött oldalak kivételei">
+<!ENTITY rewindforward.exceptions.desc   "Adja meg a tartományokat, amelyeknél az oldal aljára érve nincs ugrás a következő oldalakra. A tartománynevekhez használja a (*) helyettesítő karaktert.">
+<!ENTITY newSite.label          "Oldal hozzáadása">
+<!ENTITY newSite.accesskey      "h">
+<!ENTITY modifySite.label     "Szerkesztés">
+<!ENTITY modifySite.accesskey "S">
+<!ENTITY button.newSite.label    "Oldal hozzáadása">
+<!ENTITY button.modifySite.label "Szerkesztés">
+
+
+<!ENTITY rewindforward.OK                "OK">

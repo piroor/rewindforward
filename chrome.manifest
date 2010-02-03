@@ -9,6 +9,7 @@ locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
 locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
 locale	rewindforward	pl	jar:chrome/rewindforward.jar!/locale/pl/rewindforward/
 locale	rewindforward	es-AR	jar:chrome/rewindforward.jar!/locale/es-AR/rewindforward/
+locale	rewindforward	hu-HU	jar:chrome/rewindforward.jar!/locale/hu-HU/rewindforward/
 
 skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
 skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
