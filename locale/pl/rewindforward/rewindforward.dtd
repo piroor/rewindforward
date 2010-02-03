@@ -1,0 +1,86 @@
+<!ENTITY rewindCmd.label           "Przewiń wstecz">
+<!ENTITY rewindButton.tooltip      "Przejdź do poprzedniej domeny">
+<!ENTITY rewindButton.tooltip.toEndPoint "Przejdź do początku domeny">
+<!ENTITY fastforwardCmd.label      "Przewiń do przodu">
+<!ENTITY fastforwardButton.tooltip "Przejdź do następnej domeny">
+<!ENTITY fastforwardButton.tooltip.toEndPoint "Przejdź na koniec domeny">
+<!ENTITY prevCmd.label             "Poprzednia">
+<!ENTITY prevButton.tooltip        "Poprzednia strona (&#37;s)">
+<!ENTITY prevButton.tooltip.blank  "Nie ma wcześniejszej strony">
+<!ENTITY nextCmd.label             "Następna">
+<!ENTITY nextButton.tooltip        "Następna strona (&#37;s)">
+<!ENTITY nextButton.tooltip.blank  "Nie ma następnej strony">
+
+
+<!ENTITY rewindforward.config.title       "Rewind/Fastforward Buttons – ustawienia">
+
+<!ENTITY rewindforward.general.tab             "Ogólne">
+
+<!ENTITY rewindforward.override_button.caption "Wstecz/Do przodu">
+<!ENTITY rewindforward.override_button.back    "Użyj przycisku „Wstecz” zamiast „Przewiń wstecz”">
+<!ENTITY rewindforward.override_button.forward "Użyj przycisku „Do przodu” zamiast „Przewiń do przodu”">
+
+
+<!ENTITY rewindforward.history.caption           "Przyciski Przewiń wstecz/Przewiń do przodu">
+<!ENTITY rewindforward.history.fill_history_menu "Dodaj historię przycisku do menu kontekstowego przycisków">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.enabled  "Powrót do pierwszej strony domeny">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.disabled "Powrót do poprzedniej domeny">
+
+<!ENTITY rewindforward.related.tab               "Strony powiązane">
+<!ENTITY rewindforward.related.caption           "Strony powiązane">
+<!ENTITY rewindforward.related.find_next_links   "Dla stron powiązanych użyj przycisku „Następna” zamiast przycisku „Przewiń do przodu”">
+<!ENTITY rewindforward.related.find_prev_links   "Dla stron powiązanych użyj przycisku „Poprzednia” zamiast przycisku „Przewiń wstecz”">
+
+<!ENTITY rewindforward.related.gonextprev.enabled "Przechodź do następnej strony, gdy przewinięto stronę do końca">
+<!ENTITY rewindforward.related.gonextprev.button "Określ wyjątki">
+
+<!ENTITY rewindforward.related.use.caption         "Automatycznie sugeruj Następne/Poprzednie strony">
+<!ENTITY rewindforward.related.virtual_link.enabled "Przechodź do kolejnych witryn używając przycisków „Poprzednia” i „Następna”">
+<!ENTITY rewindforward.related.use.label           "Sugeruj wg nazw odnośników">
+<!ENTITY rewindforward.related.use.customRules     "Sugeruj wg wbudowanych reguł">
+<!ENTITY rewindforward.related.use.siteInfo        "Sugeruj wg informacji o stronie">
+<!ENTITY rewindforward.related.customizeRules.button  "Edytuj reguły…">
+<!ENTITY rewindforward.siteInfo.update.button      "Aktualizuj informacje o stronie">
+
+<!ENTITY rewindforward.icon.caption "Ikony przycisków „Następna” i „Poprzednia” (zmiana wymaga restartu przeglądarki)">
+<!ENTITY rewindforward.icon.normal  "Użyj ikon typ-1">
+<!ENTITY rewindforward.icon.another "Użyj ikon typ-2">
+
+
+<!ENTITY rewindforward.rules.title  "Ustalanie reguł dla przycisków Następna/Poprzednia">
+<!ENTITY rewindforward.rules.desc   "Wprowadź wyrażenie XPath do szukania odnośników, które odsyłają do następnych lub poprzednich stron. Dla nazw domen dopuszczalny jest zamiennik (*).">
+<!ENTITY rewindforward.rules.col.domain "Domeny">
+<!ENTITY rewindforward.rules.col.prev   "Poprzednia">
+<!ENTITY rewindforward.rules.col.next   "Następna">
+
+<!ENTITY button.newRule.label    "Nowa reguła">
+<!ENTITY button.modifyPrev.label "Edytuj wyrażenie dla przycisku „Poprzednia”">
+<!ENTITY button.modifyNext.label "Edytuj wyrażenie dla przycisku „Następna”">
+<!ENTITY button.delete.label     "Usuń">
+<!ENTITY button.reset.label      "Przywróć domyślne">
+
+<!ENTITY copyDomain.label       "Kopiuj domenę">
+<!ENTITY copyDomain.accesskey   "K">
+<!ENTITY copyXPath.label        "Kopiuj wyrażenia">
+<!ENTITY copyXPath.accesskey    "w">
+<!ENTITY newRule.label          "Utwórz nową regułę">
+<!ENTITY newRule.accesskey      "U">
+<!ENTITY modifyPrev.label       "Edytuj wyrażenie dla polecenia „Poprzednia”">
+<!ENTITY modifyPrev.accesskey   "P">
+<!ENTITY modifyNext.label       "Edytuj wyrażenie dla polecenia „Następna”">
+<!ENTITY modifyNext.accesskey   "N">
+<!ENTITY delete.label           "Usuń">
+<!ENTITY delete.accesskey       "U">
+
+
+<!ENTITY rewindforward.exceptions.title  "Wyjątki witryn dla automatycznego wczytywania stron">
+<!ENTITY rewindforward.exceptions.desc   "Wprowadź domeny, na których nie będzie działało automatyczne wczytywanie stron po przewinięciu strony do końca. W nazwach domen może być stosowany wieloznacznik (*).">
+<!ENTITY newSite.label          "Dodaj witrynę">
+<!ENTITY newSite.accesskey      "D">
+<!ENTITY modifySite.label     "Edytuj">
+<!ENTITY modifySite.accesskey "E">
+<!ENTITY button.newSite.label    "Dodaj witrynę">
+<!ENTITY button.modifySite.label "Edytuj">
+
+
+<!ENTITY rewindforward.OK                "OK">
