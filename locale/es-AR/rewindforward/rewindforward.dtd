@@ -1,0 +1,86 @@
+<!ENTITY rewindCmd.label           "Retroceder">
+<!ENTITY rewindButton.tooltip      "Retroceder a la última página del Sitio Web anterior">
+<!ENTITY rewindButton.tooltip.toEndPoint "Retroceder a la primer página del Sitio Web">
+<!ENTITY fastforwardCmd.label      "Avanzar">
+<!ENTITY fastforwardButton.tooltip "Avanzar a la primer página del siguiente Sitio Web">
+<!ENTITY fastforwardButton.tooltip.toEndPoint "Avanzar a la última página del Sitio Web">
+<!ENTITY prevCmd.label             "Previo">
+<!ENTITY prevButton.tooltip        "Página previa (&#37;s)">
+<!ENTITY prevButton.tooltip.blank  "No hay disponible ninguna Página previa">
+<!ENTITY nextCmd.label             "Próximo">
+<!ENTITY nextButton.tooltip        "Próxima página (&#37;s)">
+<!ENTITY nextButton.tooltip.blank  "No hay disponible ninguna Página próxima">
+
+
+<!ENTITY rewindforward.config.title       "Configuración">
+
+<!ENTITY rewindforward.general.tab             "General">
+
+<!ENTITY rewindforward.override_button.caption "Atrás/Adelante">
+<!ENTITY rewindforward.override_button.back    "Usar el botón de &quot;Atrás&quot; en lugar del botón de &quot;Retroceder&quot;">
+<!ENTITY rewindforward.override_button.forward "Usar el botón de &quot;Adelante&quot; en lugar del botón de &quot;Avanzar&quot;">
+
+
+<!ENTITY rewindforward.history.caption           "Retroceder/Avanzar">
+<!ENTITY rewindforward.history.fill_history_menu "Insertar historial en el menú contextual de los botones">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.enabled  "Retroceder a la primer página del Sitio Web actual">
+<!ENTITY rewindforward.history.goToEndPointOfCurrentDomain.disabled "Retroceder a la última página del Sitio Web previo">
+
+<!ENTITY rewindforward.related.tab               "Páginas relacionadas">
+<!ENTITY rewindforward.related.caption           "Páginas relacionadas">
+<!ENTITY rewindforward.related.find_next_links   "Usar el botón &quot;Próximo&quot; en lugar del botón de &quot;Avanzar&quot;, para páginas relacionadas">
+<!ENTITY rewindforward.related.find_prev_links   "Usar el botón &quot;Previo&quot; en lugar del botón de &quot;Retroceder&quot;, para páginas relacionadas">
+
+<!ENTITY rewindforward.related.gonextprev.enabled "Ir a las páginas siguientes cuando se desplaza el scroll hacia abajo sobre la parte inferior de la página">
+<!ENTITY rewindforward.related.gonextprev.button "Personalizar excepciones">
+
+<!ENTITY rewindforward.related.use.caption         "Auto Sugerencia para páginas de Atrás y Adelante">
+<!ENTITY rewindforward.related.virtual_link.enabled "Visite direcciones secuenciales para los botones &quot;Previo&quot; y &quot;Próximo&quot;">
+<!ENTITY rewindforward.related.use.label           "Indicado por los enlaces con etiquetas">
+<!ENTITY rewindforward.related.use.customRules     "Indicado por las reglas personalizadas">
+<!ENTITY rewindforward.related.use.siteInfo        "Indicado por la información del Sitio para la auto-paginación">
+<!ENTITY rewindforward.related.customizeRules.button  "Personalizar exactitud de las reglas...">
+<!ENTITY rewindforward.siteInfo.update.button      "Actualizar ahora la información del Sitio">
+
+<!ENTITY rewindforward.icon.caption "Iconos para los botones &quot;Previo&quot; y &quot;Próximo&quot; (Requiere reiniciar)">
+<!ENTITY rewindforward.icon.normal  "Estilo clásico">
+<!ENTITY rewindforward.icon.another "Estilo moderno">
+
+
+<!ENTITY rewindforward.rules.title  "Ajustar reglas">
+<!ENTITY rewindforward.rules.desc   "Ingrese expresión XPath para encontrar enlaces que refieren a las páginas Previa y Próxima. El carácter (*) está disponible para los nombres de los dominios.">
+<!ENTITY rewindforward.rules.col.domain "Dominios">
+<!ENTITY rewindforward.rules.col.prev   "Próximo">
+<!ENTITY rewindforward.rules.col.next   "Previo">
+
+<!ENTITY button.newRule.label    "Nueva regla">
+<!ENTITY button.modifyPrev.label "Editar la expresión para &quot;Previo&quot;">
+<!ENTITY button.modifyNext.label "Editar la expresión para &quot;Próximo&quot;">
+<!ENTITY button.delete.label     "Eliminar">
+<!ENTITY button.reset.label      "Por defecto">
+
+<!ENTITY copyDomain.label       "Copiar dominio">
+<!ENTITY copyDomain.accesskey   "C">
+<!ENTITY copyXPath.label        "Copiar expresiones">
+<!ENTITY copyXPath.accesskey    "x">
+<!ENTITY newRule.label          "Crear nueva regla">
+<!ENTITY newRule.accesskey      "r">
+<!ENTITY modifyPrev.label       "Editar la expresión para &quot;Previo&quot;">
+<!ENTITY modifyPrev.accesskey   "v">
+<!ENTITY modifyNext.label       "Editar la expresión para &quot;Próximo&quot;">
+<!ENTITY modifyNext.accesskey   "o">
+<!ENTITY delete.label           "Eliminar">
+<!ENTITY delete.accesskey       "E">
+
+
+<!ENTITY rewindforward.exceptions.title  "Excepción de Sitios">
+<!ENTITY rewindforward.exceptions.desc   "Introduzca los dominios web para prevenir la carga automática cuando se desplaza el scroll hacia abajo sobre la parte inferior de la página. El carácter (*) está disponible para los nombres de los dominios.">
+<!ENTITY newSite.label          "Agregar Sitio">
+<!ENTITY newSite.accesskey      "A">
+<!ENTITY modifySite.label     "Editar">
+<!ENTITY modifySite.accesskey "E">
+<!ENTITY button.newSite.label    "Agregar Sitio">
+<!ENTITY button.modifySite.label "Editar">
+
+
+<!ENTITY rewindforward.OK                "OK">

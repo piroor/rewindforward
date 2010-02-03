@@ -24,6 +24,7 @@
                        em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en">
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
+	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -33,6 +34,7 @@
                        em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html">
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
+	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -42,6 +44,7 @@
                        em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en">
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
+	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
     <em:localized>
@@ -51,6 +54,17 @@
                        em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en">
 	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
 	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
+	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
+	  </RDF:Description>
+    </em:localized>
+    <em:localized>
+      <RDF:Description em:locale="es-AR"
+                       em:name="Rewind/Fastforward Buttons"
+                       em:description="Agrega los botones de &quot;Retroceder &quot; y &quot;Avanzar&quot; rapidamente a la Barra de herramientas."
+                       em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en">
+	    <em:translator>Godai71.Extenzilla (it-IT locale)</em:translator>
+	    <em:translator>Leszek(teo)Życzkowski (pl locale)</em:translator>
+	    <em:translator>Juan Uriarte (es-AR locale)</em:translator>
 	  </RDF:Description>
     </em:localized>
 
