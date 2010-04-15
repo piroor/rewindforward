@@ -1594,7 +1594,7 @@ var RewindForwardService = {
 				return;
 
 			case 'rewindforward.siteInfo.unit':
-				this.urlRulesUnit = Math.max(1000, this.getPref(aData));
+				this.urlRulesUnit = Math.min(1000, this.getPref(aData));
 				for (var i in this.siteInfo)
 				{
 					this.siteInfo[i].urlsRules = null;
