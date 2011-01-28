@@ -613,7 +613,7 @@ var RewindForwardService = {
 
 		var regexp  = new RegExp('', 'g');
 		var matchingResult = domain.match(
-				regexp.compile([
+				new RegExp([
 					'(',
 					list.join('\n')
 						.replace(/^\*\n|\n\*$/g,'')
@@ -623,7 +623,7 @@ var RewindForwardService = {
 						.replace(/\*/g, '.+')
 						.replace(/\n/g,')|('),
 					')'
-				].join(''))
+				].join(''), 'g')
 			);
 		if (matchingResult) {
 			// String.match() returns the found word as a first element of the result, so we have to remove it from the list.
@@ -666,7 +666,6 @@ var RewindForwardService = {
 
 		var matchingResult;
 		var pos;
-		var regexp = new RegExp();
 		var rule;
 		var unit = this.urlRulesUnit;
 
@@ -708,7 +707,7 @@ var RewindForwardService = {
 					if (this.siteInfo[i].urls[j].length <= 11)
 						continue;
 
-					if (!regexp.compile(this.siteInfo[i].urls[j]).test(aURI))
+					if (!(new RegExp(this.siteInfo[i].urls[j])).test(aURI))
 						continue;
 
 					rule = this.siteInfo[i].rules[this.siteInfo[i].urls[j]][rel+'Link'];
@@ -1558,7 +1557,7 @@ var RewindForwardService = {
 		switch (aData)
 		{
 			case 'rewindforward.gonextprev.exceptions':
-				this.gonextprevExceptions = this.gonextprevExceptions.compile(
+				this.gonextprevExceptions = new RegExp(
 					'^(' +
 					this.getPref(aData)
 						.split('|')
