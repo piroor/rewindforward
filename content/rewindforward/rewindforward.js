@@ -43,7 +43,7 @@ var RewindForwardService = {
   
 	// utils 
 	
-	evaluateXPath : function(aExpression, aContext, aType) 
+	evaluateXPath : function RF_evaluateXPath(aExpression, aContext, aType) 
 	{
 		if (!aType) aType = XPathResult.ORDERED_NODE_SNAPSHOT_TYPE;
 		try {
@@ -67,7 +67,7 @@ var RewindForwardService = {
 		return xpathResult;
 	},
  
-	evalInSandbox : function(aCode, aSandboxOwner)
+	evalInSandbox : function RF_evalInSandbox(aCode, aSandboxOwner)
 	{
 		try {
 			var sandbox = new Components.utils.Sandbox(aSandboxOwner || 'about:blank');
@@ -78,7 +78,7 @@ var RewindForwardService = {
 		return null;
 	},
  
-	getEventTargetId : function(aEvent) 
+	getEventTargetId : function RF_getEventTargetId(aEvent) 
 	{
 		if (aEvent.sourceEvent) aEvent = aEvent.sourceEvent;
 		var node = aEvent.originalTarget || aEvent.target;
@@ -89,7 +89,7 @@ var RewindForwardService = {
 			).stringValue;
 	},
  
-	getDocShellFromDocument : function(aDocument) 
+	getDocShellFromDocument : function RF_getDocShellFromDocument(aDocument) 
 	{
 		var doc = aDocument;
 		if (!doc) return null;
@@ -103,7 +103,7 @@ var RewindForwardService = {
 		return null;
 	},
  
-	getLinkProperty : function(aNode, aProp) 
+	getLinkProperty : function RF_getLinkProperty(aNode, aProp) 
 	{
 		if (aNode.nodeType != Node.ELEMENT_NODE)
 			aNode = aNode.parentNode;
@@ -115,7 +115,7 @@ var RewindForwardService = {
 				'';
 	},
  
-	getHistoryEntryAt : function(aIndex) 
+	getHistoryEntryAt : function RF_getHistoryEntryAt(aIndex) 
 	{
 		var entry  = gBrowser.sessionHistory.getEntryAtIndex(aIndex, false);
 		var info = { URI : null, referrerURI : null };
@@ -130,7 +130,7 @@ var RewindForwardService = {
 		return info;
 	},
  
-	openNewTab : function(aURI, aReferrer) 
+	openNewTab : function RF_openNewTab(aURI, aReferrer) 
 	{
 		var tab = gBrowser.addTab(aURI, aReferrer);
 
@@ -143,7 +143,7 @@ var RewindForwardService = {
 			aEvent.target.parentNode.hidePopup();
 	},
  
-	loadLink : function(aURI, aReferrer, aWindow, aHistoryDirection) 
+	loadLink : function RF_loadLink(aURI, aReferrer, aWindow, aHistoryDirection) 
 	{
 		var win = aWindow || document.commandDispatcher.focusedWindow;
 		if (win == window) return;
@@ -186,7 +186,7 @@ var RewindForwardService = {
 		return this._DirectoryService;
 	},
 	
-	getFileFromKeyword : function(aKeyword) 
+	getFileFromKeyword : function RF_getFileFromKeyword(aKeyword) 
 	{
 		try {
 			return this.DirectoryService.get(aKeyword, Components.interfaces.nsIFile);
@@ -196,7 +196,7 @@ var RewindForwardService = {
 		return null;
 	},
   
-	readFrom : function(aTarget, aEncoding) 
+	readFrom : function RF_readFrom(aTarget, aEncoding) 
 	{
 		aTarget = aTarget.QueryInterface(Components.interfaces.nsILocalFile)
 		var stream = Components
@@ -239,7 +239,7 @@ var RewindForwardService = {
 		return fileContents;
 	},
  
-	writeTo : function(aContent, aTarget, aEncoding) 
+	writeTo : function RF_writeTo(aContent, aTarget, aEncoding) 
 	{
 		// create directories
 		var current = aTarget;
@@ -287,12 +287,12 @@ var RewindForwardService = {
    
 	// do rewind/fastforward 
 	
-	goRewind : function(aEvent) 
+	goRewind : function RF_goRewind(aEvent) 
 	{
 		return this.rewindOrFastforward('rewind', aEvent);
 	},
  
-	goPrevious : function(aEvent) 
+	goPrevious : function RF_goPrevious(aEvent) 
 	{
 		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return false;
 
@@ -312,17 +312,17 @@ var RewindForwardService = {
 		return true;
 	},
  
-	goPreviousOrRewind : function(aEvent) 
+	goPreviousOrRewind : function RF_goPreviousOrRewind(aEvent) 
 	{
 		return this.goPrevious(aEvent) || this.goRewind(aEvent);
 	},
  
-	goFastforward : function(aEvent) 
+	goFastforward : function RF_goFastforward(aEvent) 
 	{
 		return this.rewindOrFastforward('fastforward', aEvent);
 	},
  
-	goNext : function(aEvent) 
+	goNext : function RF_goNext(aEvent) 
 	{
 		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return false;
 
@@ -342,12 +342,12 @@ var RewindForwardService = {
 		return true;
 	},
  
-	goNextOrFastforward : function(aEvent) 
+	goNextOrFastforward : function RF_goNextOrFastforward(aEvent) 
 	{
 		return this.goNext(aEvent) || this.goFastforward(aEvent);
 	},
  
-	rewindOrFastforward : function(aType, aEvent) 
+	rewindOrFastforward : function RF_rewindOrFastforward(aType, aEvent) 
 	{
 		if (aEvent && aEvent.type == 'click' && aEvent.button != 1) return false;
 		var usetab = aEvent && aEvent.button == 1;
@@ -413,7 +413,7 @@ var RewindForwardService = {
 	// get next/prev link 
 	
 	// collect "next" and "previous" links from all frames 
-	getLinksFromAllFrames : function(aType)
+	getLinksFromAllFrames : function RF_getLinksFromAllFrames(aType)
 	{
 		return this.getLinksFromAllFramesInternal(
 			[gBrowser.contentWindow],
@@ -421,7 +421,7 @@ var RewindForwardService = {
 		);
 	},
 	
-	getLinksFromAllFramesInternal : function(aFrames, aType) 
+	getLinksFromAllFramesInternal : function RF_getLinksFromAllFramesInternal(aFrames, aType) 
 	{
 		var frames;
 		var link;
@@ -449,7 +449,7 @@ var RewindForwardService = {
 	},
   
 	// find "next" and "previous" link in a window 
-	getFirstLink : function(aType, aWindow)
+	getFirstLink : function RF_getFirstLink(aType, aWindow)
 	{
 		var w = aWindow || document.commandDispatcher.focusedWindow;
 		if (!w || w.top != gBrowser.contentWindow)
@@ -525,7 +525,7 @@ var RewindForwardService = {
 		return null;
 	},
 	
-	getRelatedLinks : function(aType, aWindow) 
+	getRelatedLinks : function RF_getRelatedLinks(aType, aWindow) 
 	{
 		var w = aWindow || document.commandDispatcher.focusedWindow;
 		if (!w || w.top != gBrowser.contentWindow)
@@ -583,13 +583,14 @@ var RewindForwardService = {
 		d[this.kRELATED_PREFIX + aType] = links;
 		d[this.kRELATED_PREFIX + aType+'LastCount'] = lastCount;
 
+
 		links.forEach(function(aLink) {
 			aLink.comment = comment;
 		});
 
 		return links;
 	},
-	getCustomRule : function(aLocation, aRelation)
+	getCustomRule : function RF_getCustomRule(aLocation, aRelation)
 	{
 		var customRule, customRuleEntry;
 		var rel = aRelation;
@@ -656,7 +657,7 @@ var RewindForwardService = {
 		result.rule = customRule;
 		return result;
 	},
-	getCustomRuleFromSiteInfo : function(aURI, aRelation, aDocument)
+	getCustomRuleFromSiteInfo : function RF_getCustomRuleFromSiteInfo(aURI, aRelation, aDocument)
 	{
 		var rel = aRelation;
 		var result = {
@@ -732,7 +733,7 @@ var RewindForwardService = {
 	},
 	urlRulesUnit : 200,
  
-	getLabeledLinks : function(aType, aWindow) 
+	getLabeledLinks : function RF_getLabeledLinks(aType, aWindow) 
 	{
 		var w = aWindow || document.commandDispatcher.focusedWindow;
 		if (!w || w.top != gBrowser.contentWindow)
@@ -795,7 +796,7 @@ var RewindForwardService = {
 		return links;
 	},
  
-	getLinksFromXPath : function(aXPath, aXMLDocument, aLevel, aType) 
+	getLinksFromXPath : function RF_getLinksFromXPath(aXPath, aXMLDocument, aLevel, aType) 
 	{
 		var links = [];
 		var result;
@@ -838,7 +839,7 @@ var RewindForwardService = {
 		return links;
 	},
  
-	getVirtualLink : function(aType, aWindow) 
+	getVirtualLink : function RF_getVirtualLink(aType, aWindow) 
 	{
 		var w = aWindow || document.commandDispatcher.focusedWindow;
 		if (!w || w.top != gBrowser.contentWindow)
@@ -870,7 +871,7 @@ var RewindForwardService = {
 		return link.href ? link : null ;
 	},
 	
-	incrementPageURI : function(aCount, aURI) 
+	incrementPageURI : function RF_incrementPageURI(aCount, aURI) 
 	{
 		var res = aURI.match(/^\w+:\/\/[^\/]+\/([^0-9]*|.+[0-9]+[^0-9]+)([0-9]+)([^0-9]*)$/);
 		if (!res || !res[2]) return null;
@@ -894,7 +895,7 @@ var RewindForwardService = {
 	},
    
 	// get the link in the most largest frame, from an array of links 
-	getLinkInMainFrame : function(aLinks)
+	getLinkInMainFrame : function RF_getLinkInMainFrame(aLinks)
 	{
 		if (!aLinks || !aLinks.length) return null;
 
@@ -915,7 +916,7 @@ var RewindForwardService = {
   
 // update UI 
 	
-	updateButtons : function(aFindLinks) 
+	updateButtons : function RF_updateButtons(aFindLinks) 
 	{
 		var frames = gBrowser.contentWindow.frames;
 		if (frames.length) {
@@ -953,7 +954,7 @@ var RewindForwardService = {
 		});
 	},
 	
-	updateButton : function(aInfo) 
+	updateButton : function RF_updateButton(aInfo) 
 	{
 		var disabled;
 		var toEndPoint = this.getPref('rewindforward.goToEndPointOfCurrentDomain');
@@ -1075,7 +1076,7 @@ var RewindForwardService = {
 		}
 	},
  
-	readyToCustomize : function() 
+	readyToCustomize : function RF_readyToCustomize() 
 	{
 		this.readyToCustomizeButton({
 			base : (this.getPref('rewindforward.override_button.back') ?
@@ -1090,7 +1091,7 @@ var RewindForwardService = {
 			navigationBroadcaster : document.getElementById('Browser:Fastforward')
 		});
 	},
-	readyToCustomizeButton : function(aInfo)
+	readyToCustomizeButton : function RF_readyToCustomizeButton(aInfo)
 	{
 		if (aInfo.base) {
 			aInfo.base.removeAttribute('rewindforward-override');
@@ -1114,7 +1115,7 @@ var RewindForwardService = {
 		}
 	},
  
-	checkSubFramesAreCompletelyLoaded : function(aFrames) 
+	checkSubFramesAreCompletelyLoaded : function RF_checkSubFramesAreCompletelyLoaded(aFrames) 
 	{
 		var result = true;
 		for (var i = 0; i < aFrames.length; i++)
@@ -1127,19 +1128,19 @@ var RewindForwardService = {
 		return result;
 	},
  
-	delayedUpdateButtons : function(aFindLinks, aSelf) 
+	delayedUpdateButtons : function RF_delayedUpdateButtons(aFindLinks, aSelf) 
 	{
 		aSelf.updateButtons(aFindLinks);
 	},
   
-	fillPopupMenu : function(aEvent) 
+	fillPopupMenu : function RF_fillPopupMenu(aEvent) 
 	{
 		var popup = aEvent.target;
 		var node  = document.getElementById(popup.getAttribute('ref-command'));
 		return this.fillPopupMenuInternal(aEvent, node);
 	},
 	
-	fillPopupMenuInternal : function(aEvent, aCommandNode, aShowBackForwardCommand) 
+	fillPopupMenuInternal : function RF_fillPopupMenuInternal(aEvent, aCommandNode, aShowBackForwardCommand) 
 	{
 		var popup = aEvent.target;
 		var node = aCommandNode;
@@ -1236,7 +1237,7 @@ var RewindForwardService = {
 		return showMenu;
 	},
  
-	updateBackForwardPopup : function(aPopup, aCommandNode) 
+	updateBackForwardPopup : function RF_updateBackForwardPopup(aPopup, aCommandNode) 
 	{
 		if (aPopup.hasChildNodes() &&
 			(aPopup.childNodes[0].getAttribute('rewindforward-menuitem') == 'true'))
@@ -1258,19 +1259,19 @@ var RewindForwardService = {
 		aPopup.firstChild.setAttribute('onclick', 'if ("checkForMiddleClick" in window) { checkForMiddleClick(this, event); }; event.stopPropagation();');
 	},
   
-	newBrowserBackMenu : function(aEvent) 
+	newBrowserBackMenu : function RF_newBrowserBackMenu(aEvent) 
 	{
 		var button = document.getElementById('back-button');
 		return RewindForwardService.fillPopupMenuInternal(aEvent, document.getElementById('Browser:Rewind'),
 			button.getAttribute('rewindforward-override') ? true : false );
 	},
-	newBrowserForwardMenu : function(aEvent)
+	newBrowserForwardMenu : function RF_newBrowserForwardMenu(aEvent)
 	{
 		var button = document.getElementById('forward-button');
 		return RewindForwardService.fillPopupMenuInternal(aEvent, document.getElementById('Browser:Fastforward'),
 			button.getAttribute('rewindforward-override') ? true : false );
 	},
-	newFillHistoryMenu : function(aPopup) // Firefox 3
+	newFillHistoryMenu : function RF_newFillHistoryMenu(aPopup) // Firefox 3
 	{
 		// clear old items
 		Array.slice(aPopup.getElementsByAttribute('rewindforward-menuitem', '*')).forEach(function(aItem) {
@@ -1362,7 +1363,7 @@ var RewindForwardService = {
   
 	// handle events 
 	
-	handleEvent : function(aEvent) 
+	handleEvent : function RF_handleEvent(aEvent) 
 	{
 		switch (aEvent.type)
 		{
@@ -1389,7 +1390,7 @@ var RewindForwardService = {
 		}
 	},
 	
-	onDocumentLoad : function(aEvent) 
+	onDocumentLoad : function RF_onDocumentLoad(aEvent) 
 	{
 		if (!aEvent.target) return;
 
@@ -1418,7 +1419,7 @@ var RewindForwardService = {
 		}
 	},
  
-	onDocumentModified : function(aEvent) 
+	onDocumentModified : function RF_onDocumentModified(aEvent) 
 	{
 		if (!this.shouldFindPrevLinks && !this.shouldFindNextLinks) return;
 
@@ -1444,7 +1445,7 @@ var RewindForwardService = {
 			this.updateButtons(true);
 	},
  
-	onKeyPress : function(aEvent) 
+	onKeyPress : function RF_onKeyPress(aEvent) 
 	{
 		const node = aEvent.originalTarget || aEvent.target;
 		if (
@@ -1550,7 +1551,7 @@ var RewindForwardService = {
 		this.loadLink(target.href, referrer, win, direction);
 	},
   
-	observe : function(aSubject, aTopic, aData) 
+	observe : function RF_observe(aSubject, aTopic, aData) 
 	{
 		if (aTopic != 'nsPref:changed') return;
 
@@ -1627,7 +1628,7 @@ var RewindForwardService = {
 	siteInfo : {}, 
 	siteInfoUpdateTimer : {},
  
-	initSiteInfo : function(aForce) 
+	initSiteInfo : function RF_initSiteInfo(aForce) 
 	{
 		var uris = this.getPref('rewindforward.siteinfo.importFrom').split('|');
 		var expire = this.getPref('rewindforward.siteinfo.expire');
@@ -1660,7 +1661,7 @@ var RewindForwardService = {
 		}
 	},
 	
-	loadSiteInfoCacheFor : function(aURI) 
+	loadSiteInfoCacheFor : function RF_loadSiteInfoCacheFor(aURI) 
 	{
 		let name = encodeURIComponent(aURI);
 		let file = this.siteInfoDirectory.clone();
@@ -1670,7 +1671,7 @@ var RewindForwardService = {
    
 	// initialize 
 	
-	init : function() 
+	init : function RF_init() 
 	{
 		if (this.initialized || !('gBrowser' in window)) return;
 		this.initialized = true;
@@ -1787,7 +1788,7 @@ var RewindForwardService = {
 		this.initialShow();
 	},
 	
-	initialShow : function() 
+	initialShow : function RF_initialShow() 
 	{
 		// show custom buttons only in the initial startup
 		const PREFROOT = 'extensions.{FA4658DE-935B-4f39-AED3-0B5034DDE225}';
@@ -1848,7 +1849,7 @@ var RewindForwardService = {
 		}
 	},
   
-	destroy : function() 
+	destroy : function RF_destroy() 
 	{
 		window.removeEventListener('keypress', this, true);
 		window.removeEventListener('unload', this, false);

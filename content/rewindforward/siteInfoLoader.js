@@ -6,7 +6,7 @@ function RewindForwardSiteInfoLoader(aURI)
 RewindForwardSiteInfoLoader.prototype = {
 	uri         : null,
 	request     : null,
-	init        : function()
+	init        : function SIL_init()
 	{
 		var request = Components.classes['@mozilla.org/xmlextras/xmlhttprequest;1']
 					.createInstance(Components.interfaces.nsIXMLHttpRequest)
@@ -18,7 +18,7 @@ RewindForwardSiteInfoLoader.prototype = {
 		request.addEventListener('error', this, false);
 		request.send(null);
 	},
-	handleEvent : function(aEvent)
+	handleEvent : function SIL_handleEvent(aEvent)
 	{
 		switch (aEvent.type)
 		{
@@ -92,7 +92,7 @@ RewindForwardSiteInfoLoader.prototype = {
 
 		delete this.request;
 	},
-	parseInfo : function(aString)
+	parseInfo : function SIL_parseInfo(aString)
 	{
 		var pattern = /^\s*([^:\s]*?)\s*:(.*)$/;
 		var info = {};
