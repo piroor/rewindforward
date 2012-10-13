@@ -279,4 +279,4 @@ step2: ブラウザの再起動
 
 ------------------------------------------------------------------------
 Rewind/Fastforward Buttons for Netscape 7 & Mozilla & Firefox
-Copyright 2004-2005 Piro(SHIMODA Hiroshi)
+Copyright 2004-2005 Piro(YUKI "Piro" Hiroshi)
