@@ -1,19 +1,19 @@
-content	rewindforward	jar:chrome/rewindforward.jar!/content/rewindforward/
+content	rewindforward	content/rewindforward/
 
 overlay	chrome://browser/content/browser.xul	chrome://rewindforward/content/browserOverlay.xul
 overlay	chrome://browser/content/browser.xul	chrome://rewindforward/content/buttonsOverlay.xul
 overlay	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/content/buttonsOverlay.xul
 
-locale	rewindforward	en-US	jar:chrome/rewindforward.jar!/locale/en-US/rewindforward/
-locale	rewindforward	ja	jar:chrome/rewindforward.jar!/locale/ja/rewindforward/
-locale	rewindforward	it-IT	jar:chrome/rewindforward.jar!/locale/it-IT/rewindforward/
-locale	rewindforward	pl	jar:chrome/rewindforward.jar!/locale/pl/rewindforward/
-locale	rewindforward	es-AR	jar:chrome/rewindforward.jar!/locale/es-AR/rewindforward/
-locale	rewindforward	hu-HU	jar:chrome/rewindforward.jar!/locale/hu-HU/rewindforward/
+locale	rewindforward	en-US	locale/en-US/rewindforward/
+locale	rewindforward	ja	locale/ja/rewindforward/
+locale	rewindforward	it-IT	locale/it-IT/rewindforward/
+locale	rewindforward	pl	locale/pl/rewindforward/
+locale	rewindforward	es-AR	locale/es-AR/rewindforward/
+locale	rewindforward	hu-HU	locale/hu-HU/rewindforward/
 
-skin	rewindforward	classic/1.0	jar:chrome/rewindforward.jar!/skin/classic/rewindforward/
-skin	rewindforward	Qute	jar:chrome/rewindforward.jar!/skin/qute/rewindforward/
-skin	rewindforward	Winestripe	jar:chrome/rewindforward.jar!/skin/qute/winestripe/
+skin	rewindforward	classic/1.0	skin/classic/rewindforward/
+skin	rewindforward	Qute	skin/qute/rewindforward/
+skin	rewindforward	Winestripe	skin/qute/winestripe/
 
 style	chrome://browser/content/browser.xul	chrome://rewindforward/skin/rewindforward.css
 style	chrome://global/content/customizeToolbar.xul	chrome://rewindforward/skin/rewindforward.css

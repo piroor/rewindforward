@@ -1,3 +1,3 @@
 copy buildscript\makexpi.sh .\
-bash makexpi.sh rewindforward version=0
+bash makexpi.sh -n rewindforward -o
 del makexpi.sh
