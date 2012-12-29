@@ -10,7 +10,8 @@
                    em:description="Adds &quot;Rewind&quot; and &quot;Fastforward&quot; buttons for the toolbar."
                    em:homepageURL="http://piro.sakura.ne.jp/xul/_rewindforward.html.en"
                    em:iconURL="chrome://rewindforward/content/icon.png"
-                   em:optionsURL="chrome://rewindforward/content/config.xul">
+                   em:optionsURL="chrome://rewindforward/content/config.xul"
+                   em:type="2">
 
 
     <em:updateURL>http://piro.sakura.ne.jp/xul/update.rdf</em:updateURL>
