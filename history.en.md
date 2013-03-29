@@ -1,5 +1,8 @@
 # History
 
+ - master/HEAD
+   * Modified: "jar" archive is no longer included.
+   * Many tiny fixes. See the [commit log](https://github.com/piroor/rewindforward/commits/master) for more information.
  - 2.1.2009091201
    * Fixed: Errors on switching focus of tabs disappeared. (regression on 2.1.2009091101)
  - 2.1.2009091101
