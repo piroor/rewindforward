@@ -1,8 +1,8 @@
 // this bases on "config.js" in Firefox
 
-const gPromptService = Components.classes['@mozilla.org/embedcomp/prompt-service;1'].getService(Components.interfaces.nsIPromptService);
-const gPrefService = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefService);
-const gPrefBranch = gPrefService.getBranch(null).QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+var gPromptService = Components.classes['@mozilla.org/embedcomp/prompt-service;1'].getService(Components.interfaces.nsIPromptService);
+var gPrefService = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefService);
+var gPrefBranch = gPrefService.getBranch(null).QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 
 
 var gFunctionsBroadcaster;
@@ -317,7 +317,7 @@ function nextColSortFunction(x, y)
 	return domainColSortFunction(x, y);
 }
 
-const gSortFunctions = {
+var gSortFunctions = {
 	domainCol: domainColSortFunction, 
 	prevCol: prevColSortFunction, 
 	nextCol: nextColSortFunction
@@ -327,7 +327,7 @@ const gSortFunctions = {
 
 
 
-const gClipboardHelper = Components.classes['@mozilla.org/widget/clipboardhelper;1'].getService(Components.interfaces.nsIClipboardHelper);
+var gClipboardHelper = Components.classes['@mozilla.org/widget/clipboardhelper;1'].getService(Components.interfaces.nsIClipboardHelper);
 function copyDomain()
 {
 	gClipboardHelper.copyString(gDomainView[view.selection.currentIndex].domainCol);
