@@ -198,7 +198,7 @@ var RewindForwardService = {
   
 	readFrom : function RF_readFrom(aTarget, aEncoding) 
 	{
-		aTarget = aTarget.QueryInterface(Components.interfaces.nsILocalFile)
+		aTarget = aTarget.QueryInterface(Components.interfaces.nsIFile)
 		var stream = Components
 						.classes['@mozilla.org/network/file-input-stream;1']
 						.createInstance(Components.interfaces.nsIFileInputStream);
